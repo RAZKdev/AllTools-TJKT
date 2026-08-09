@@ -14,6 +14,12 @@ function initRouter() {
     const logo = document.getElementById('nav-home-logo');
     const contentArea = document.getElementById('tool-content-area');
 
+    const searchInput = document.getElementById('global-search');
+    const searchResults = document.getElementById('search-results');
+    const toolCards = document.querySelectorAll(
+        '.tools-grid .tool-card[data-route]'
+    );
+
     const favoriteBtn = document.getElementById('favorite-btn');
 
     const favoritesContainer =
@@ -323,6 +329,44 @@ function initRouter() {
         ) {
             mainNav.classList.remove('active');
         }
+    }
+
+    /*
+     * ==========================================
+     * GLOBAL SEARCH
+     * ==========================================
+     */
+
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.trim().toLowerCase();
+
+            const keywords = query
+                .split(/\s+/)
+                .filter(Boolean);
+
+            toolCards.forEach(card => {
+                const title =
+                    card.querySelector('h4')?.textContent.toLowerCase() || '';
+
+                const category =
+                    card.querySelector('.card-category')?.textContent.toLowerCase() || '';
+
+                const description =
+                    card.querySelector('p')?.textContent.toLowerCase() || '';
+
+                const searchableText =
+                    `${title} ${category} ${description}`;
+
+                const matches =
+                    keywords.length === 0 ||
+                    keywords.every(keyword =>
+                        searchableText.includes(keyword)
+                    );
+
+                card.style.display = matches ? '' : 'none';
+            });
+        });
     }
 
     /*
