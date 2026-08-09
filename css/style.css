@@ -578,3 +578,536 @@ main {
         font-size: 0.9rem;
     }
 }
+
+/* ==========================================================================
+   ALLTOOLS TJKT — HOME VISUAL REFRESH v1
+   ========================================================================== */
+
+/* Search */
+.search-section {
+    margin-bottom: 1.5rem;
+}
+
+.search-container {
+    position: relative;
+}
+
+#global-search {
+    min-height: 52px;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.05);
+    font-size: 0.98rem;
+}
+
+#global-search::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.75;
+}
+
+#global-search:focus {
+    border-color: var(--primary-color);
+    box-shadow:
+        0 0 0 3px rgb(37 99 235 / 0.12),
+        0 4px 12px rgb(0 0 0 / 0.05);
+}
+
+/* Hero */
+.hero {
+    margin-bottom: 1.75rem;
+    padding: 1.5rem 1rem 0.5rem;
+    text-align: center;
+}
+
+.hero h2 {
+    margin-bottom: 0.4rem;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+}
+
+.welcome-text {
+    max-width: 680px;
+    margin: 0 auto;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Category */
+.category-section h3 {
+    margin-bottom: 0.85rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+/* Main tool cards */
+.tools-grid {
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.tool-card {
+    min-height: 230px;
+    padding: 1.1rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.04);
+}
+
+.tool-card.active-card:hover,
+.tool-card.active-card:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 18px rgb(0 0 0 / 0.08);
+}
+
+.card-visual {
+    margin-bottom: 0.8rem;
+    font-size: 1.8rem;
+}
+
+.card-category {
+    margin-bottom: 0.3rem;
+    font-size: 0.7rem;
+}
+
+.tool-card h4 {
+    margin-bottom: 0.4rem;
+    font-size: 1.05rem;
+    line-height: 1.35;
+}
+
+.tool-card p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.card-footer {
+    margin-top: 1rem;
+}
+
+/* Search results */
+.search-results-container {
+    margin-top: 0.6rem;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    main {
+        padding: 1.25rem 0.85rem;
+    }
+
+    .hero {
+        margin-bottom: 1.4rem;
+        padding: 0.75rem 0.5rem 0;
+    }
+
+    .hero h2 {
+        font-size: 1.45rem;
+    }
+
+    .welcome-text {
+        font-size: 0.88rem;
+    }
+
+    #global-search {
+        min-height: 48px;
+        padding: 0.75rem 0.9rem;
+        font-size: 0.95rem;
+    }
+
+    .category-section h3 {
+        font-size: 1.05rem;
+    }
+
+    .tools-grid {
+        gap: 0.8rem;
+        margin-top: 0.8rem;
+    }
+
+    .tool-card {
+        min-height: 210px;
+        padding: 1rem;
+    }
+}
+
+/* =========================================================
+   VISUAL HOME POLISH
+   ========================================================= */
+
+/* --- Main spacing --- */
+
+main {
+    padding-top: 1.5rem;
+}
+
+/* --- Search --- */
+
+.search-section {
+    margin-bottom: 2.25rem;
+}
+
+.search-container {
+    position: relative;
+}
+
+#global-search {
+    min-height: 52px;
+    padding: 0.85rem 1.1rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+#global-search::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.75;
+}
+
+/* --- Hero --- */
+
+.hero {
+    max-width: 760px;
+    margin: 0 auto 2.5rem;
+    text-align: center;
+}
+
+.hero h2 {
+    margin-bottom: 0.65rem;
+    font-size: clamp(1.6rem, 4vw, 2.15rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.welcome-text {
+    max-width: 650px;
+    margin: 0 auto;
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+
+/* --- Home section titles --- */
+
+.category-section h3,
+.dashboard-widget h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.85rem;
+    font-size: 1.1rem;
+    font-weight: 750;
+    letter-spacing: -0.01em;
+}
+
+/* --- Dashboard --- */
+
+.dashboard-widget {
+    margin: 0 0 1.5rem;
+}
+
+.widget-grid {
+    gap: 0.85rem;
+}
+
+.dashboard-tool-card {
+    min-height: 72px;
+    padding: 0.8rem 0.9rem;
+    border-radius: 12px;
+    background: var(--surface-color);
+}
+
+.dashboard-tool-card:hover {
+    transform: translateY(-2px);
+}
+
+.dashboard-tool-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+}
+
+/* --- Tool cards --- */
+
+.category-section {
+    margin-top: 2rem;
+}
+
+.tools-grid {
+    gap: 1rem;
+    margin-top: 0;
+}
+
+.tool-card {
+    min-height: 225px;
+    padding: 1.15rem;
+    border-radius: 14px;
+    background: var(--surface-color);
+}
+
+.card-visual {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 1rem;
+
+    border-radius: 12px;
+    background: var(--bg-color);
+
+    font-size: 1.65rem;
+}
+
+.card-category {
+    margin-bottom: 0.35rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
+}
+
+.tool-card h4 {
+    margin-bottom: 0.5rem;
+    font-size: 1.05rem;
+    font-weight: 750;
+}
+
+.tool-card p {
+    font-size: 0.9rem;
+    line-height: 1.55;
+}
+
+.card-footer {
+    margin-top: 1.1rem;
+}
+
+.btn-link {
+    font-size: 0.88rem;
+    text-decoration: none;
+}
+
+/* --- Light mode depth --- */
+
+.tool-card,
+.dashboard-tool-card {
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.03),
+        0 4px 14px rgba(0, 0, 0, 0.035);
+}
+
+/* --- Dark mode depth --- */
+
+[data-theme="dark"] .tool-card,
+[data-theme="dark"] .dashboard-tool-card {
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.18),
+        0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="dark"] #global-search {
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.18);
+}
+
+/* --- Consistent focus state --- */
+
+.tool-card.active-card:focus-visible,
+.dashboard-tool-card:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 3px;
+}
+
+/* --- Subtle interaction --- */
+
+.tool-card.active-card:hover {
+    transform: translateY(-4px);
+}
+
+.dashboard-tool-arrow {
+    color: var(--primary-color);
+    font-size: 1rem;
+    font-weight: 700;
+    transition: transform 0.15s ease;
+}
+
+.dashboard-tool-card:hover .dashboard-tool-arrow {
+    transform: translateX(3px);
+}
+
+
+/* =========================================
+   VISUAL HOME V1
+   ========================================= */
+
+/* --- Home Hero --- */
+
+.hero {
+    padding: 0.5rem 0 0.25rem;
+    margin-bottom: 2rem;
+}
+
+.hero h2 {
+    margin-bottom: 0.65rem;
+    font-size: clamp(1.5rem, 4vw, 1.9rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.welcome-text {
+    max-width: 680px;
+    margin: 0 auto;
+    font-size: 0.92rem;
+    line-height: 1.55;
+}
+
+/* --- Dashboard --- */
+
+#dashboard-top {
+    margin-bottom: 2rem;
+}
+
+.dashboard-widget {
+    margin: 0 0 1.35rem;
+}
+
+.dashboard-widget:last-child {
+    margin-bottom: 0;
+}
+
+.dashboard-widget h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.65rem;
+    font-size: 0.95rem;
+    line-height: 1.3;
+}
+
+.widget-grid {
+    gap: 0.7rem;
+}
+
+/* --- Dashboard cards --- */
+
+.dashboard-tool-card {
+    min-height: 64px;
+    padding: 0.7rem 0.8rem;
+    border-radius: 10px;
+}
+
+.dashboard-tool-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+}
+
+.dashboard-tool-content h4 {
+    font-size: 0.84rem;
+}
+
+.dashboard-tool-arrow {
+    flex-shrink: 0;
+    font-size: 0.9rem;
+}
+
+/* --- Main category section --- */
+
+.category-section {
+    margin-top: 0.5rem;
+}
+
+.category-section h3 {
+    margin-bottom: 0.8rem;
+    font-size: 1.05rem;
+    line-height: 1.3;
+}
+
+/* --- Tool cards visual hierarchy --- */
+
+.tools-grid {
+    gap: 0.9rem;
+    margin-top: 0.8rem;
+}
+
+.tool-card {
+    border-radius: 13px;
+}
+
+.tool-card.active-card {
+    border-color: color-mix(
+        in srgb,
+        var(--primary-color) 45%,
+        var(--border-color)
+    );
+}
+
+.tool-card.active-card:hover,
+.tool-card.active-card:focus-visible {
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.10),
+        0 0 0 1px var(--primary-color);
+}
+
+/* --- Search spacing on Home --- */
+
+.search-section {
+    margin-bottom: 1.8rem;
+}
+
+#global-search {
+    min-height: 46px;
+}
+
+/* --- Mobile visual balance --- */
+
+@media (max-width: 600px) {
+
+    .hero {
+        padding-top: 0.25rem;
+        margin-bottom: 1.65rem;
+    }
+
+    .hero h2 {
+        font-size: 1.45rem;
+    }
+
+    .welcome-text {
+        font-size: 0.82rem;
+        padding: 0 0.5rem;
+    }
+
+    #dashboard-top {
+        margin-bottom: 1.7rem;
+    }
+
+    .dashboard-widget {
+        margin-bottom: 1.1rem;
+    }
+
+    .widget-grid {
+        gap: 0.6rem;
+    }
+
+    .dashboard-tool-card {
+        min-height: 60px;
+        padding: 0.65rem 0.7rem;
+    }
+
+    .dashboard-tool-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+
+    .dashboard-tool-content h4 {
+        font-size: 0.8rem;
+    }
+
+    .category-section h3 {
+        font-size: 1rem;
+    }
+
+    .tools-grid {
+        gap: 0.75rem;
+    }
+}
+
