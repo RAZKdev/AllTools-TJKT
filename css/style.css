@@ -1,0 +1,509 @@
+/* ==========================================================================
+   CSS VARIABLES (Light & Dark Theme Setup)
+   ========================================================================== */
+:root {
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --bg-color: #f8fafc;
+    --surface-color: #ffffff;
+    --text-color: #0f172a;
+    --text-secondary: #475569;
+    --border-color: #e2e8f0;
+    --error-color: #ef4444;
+    --success-color: #22c55e;
+    --radius: 8px;
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -1px rgb(0 0 0 / 0.06);
+    --transition: all 0.3s ease;
+}
+
+/* Dark Mode Override via data-theme attribute */
+[data-theme="dark"] {
+    --primary-color: #3b82f6;
+    --primary-hover: #60a5fa;
+    --bg-color: #0f172a;
+    --surface-color: #1e293b;
+    --text-color: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5);
+}
+
+/* ==========================================================================
+   RESET & BASE STYLES
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: background-color var(--transition), color var(--transition);
+}
+
+/* ==========================================================================
+   HEADER & NAVIGATION
+   ========================================================================== */
+header {
+    background-color: var(--surface-color);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
+.logo h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.header-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Base Button Styles */
+button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-size: 1rem;
+    color: var(--text-color);
+}
+
+#theme-toggle, #mobile-menu-btn {
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius);
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#theme-toggle:hover, #theme-toggle:focus, 
+#mobile-menu-btn:hover, #mobile-menu-btn:focus {
+    background-color: var(--border-color);
+    outline: none;
+}
+
+/* Nav Menu */
+#main-nav {
+    width: 100%;
+    margin-top: 1rem;
+    display: none; /* Disembunyikan di mobile by default, akan diatur via CSS/JS */
+}
+
+#main-nav.active {
+    display: block;
+}
+
+#main-nav ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+#main-nav a {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    display: block;
+    transition: var(--transition);
+}
+
+#main-nav a:hover, #main-nav a:focus, #main-nav a.active {
+    color: var(--primary-color);
+    background-color: var(--bg-color);
+    outline: none;
+}
+
+/* ==========================================================================
+   MAIN CONTENT & SEARCH
+   ========================================================================== */
+main {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    width: 100%;
+}
+
+.search-section {
+    margin-bottom: 2rem;
+}
+
+#global-search {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background-color: var(--surface-color);
+    color: var(--text-color);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+#global-search:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+/* ==========================================================================
+   DYNAMIC VIEWS & HERO
+   ========================================================================== */
+.view-section {
+    display: none;
+}
+
+.view-section.active {
+    display: block;
+    animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hero {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.hero h2 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.welcome-text {
+    color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   CARDS & DASHBOARD WIDGETS
+   ========================================================================== */
+.category-section h3 {
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.category-grid, .widget-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+
+/* ==========================================================================
+   ALLTOOLS TJKT — TOOL CARDS
+   ========================================================================== */
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.25rem;
+}
+
+.tool-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 250px;
+    padding: 1.25rem;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--surface-color);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.tool-card.active-card {
+    cursor: pointer;
+    border-color: var(--primary-color);
+}
+
+.tool-card.active-card:hover,
+.tool-card.active-card:focus-visible {
+    transform: translateY(-3px);
+    border-color: var(--primary-color);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    outline: none;
+}
+
+.tool-card.coming-soon {
+    opacity: 0.7;
+}
+
+.card-visual {
+    margin-bottom: 1rem;
+    font-size: 2rem;
+}
+
+.card-content {
+    flex: 1;
+}
+
+.card-category {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+}
+
+.tool-card h4 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+}
+
+.tool-card p {
+    margin: 0;
+    line-height: 1.5;
+    color: var(--text-secondary);
+}
+
+.card-footer {
+    margin-top: 1.25rem;
+}
+
+.btn-link {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.badge-soon {
+    display: inline-block;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    background: var(--border-color);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+@media (max-width: 600px) {
+    .tools-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ================================
+   FAVORITE BUTTON UI
+   ================================ */
+
+.btn-icon {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: var(--surface-color);
+    color: var(--text-color);
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+        transform 0.15s ease,
+        color 0.15s ease,
+        background-color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.btn-icon:hover {
+    transform: scale(1.08);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-icon:active {
+    transform: scale(0.95);
+}
+
+.btn-icon.favorite-active {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-icon:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* =========================================
+   DASHBOARD FAVORITES & RECENT
+   ========================================= */
+
+.dashboard-widget {
+    margin: 1.5rem 0;
+}
+
+.dashboard-widget h3 {
+    margin-bottom: 0.8rem;
+}
+
+.widget-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(220px, 1fr)
+    );
+    gap: 1rem;
+}
+
+.dashboard-tool-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-height: 82px;
+    padding: 1rem;
+
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+
+    background: var(--surface-color);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.dashboard-tool-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-tool-card:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.dashboard-tool-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+
+    background: var(--background-color);
+
+    font-size: 1.4rem;
+}
+
+.dashboard-tool-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.dashboard-tool-category {
+    display: block;
+
+    margin-bottom: 0.2rem;
+
+    font-size: 0.68rem;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    color: var(--primary-color);
+}
+
+.dashboard-tool-content h4 {
+    margin: 0;
+
+    font-size: 0.95rem;
+
+    color: var(--text-color);
+}
+
+.dashboard-tool-arrow {
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+
+/* ===== Tool Header: Back + Favorite ===== */
+
+.tool-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: nowrap;
+}
+
+.tool-header #back-btn {
+    flex: 0 0 auto;
+}
+
+.tool-header #favorite-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    font-size: 1rem;
+    line-height: 1;
+    border-radius: 8px;
+    flex: 0 0 auto;
+}
+
+@media (max-width: 768px) {
+    .tool-header {
+        gap: 0.4rem;
+        margin-bottom: 0.85rem;
+    }
+
+    .tool-header #favorite-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+        border-radius: 7px;
+    }
+}
+

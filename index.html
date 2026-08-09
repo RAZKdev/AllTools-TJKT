@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AllTools TJKT</title>
+    <meta name="description" content="Kumpulan tools praktis untuk siswa TJKT. IP Calculator, Subnetting, dan referensi jaringan.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo" id="nav-home-logo" aria-label="Ke Halaman Utama">
+                <h1>AllTools TJKT</h1>
+            </a>
+            <div class="header-controls">
+                <button id="theme-toggle" aria-label="Ganti Tema Gelap/Terang">🌙</button>
+                <button id="mobile-menu-btn" aria-label="Buka Menu Navigasi">☰</button>
+            </div>
+            <nav id="main-nav" aria-label="Navigasi Utama">
+                <ul>
+                    <li><a href="#" data-route="home" class="active">Home</a></li>
+                    <li><a href="#" data-route="networking">Networking Tools</a></li>
+                    <li><a href="#" data-route="calculator">Calculator</a></li>
+                    <li><a href="#" data-route="converter">Converter</a></li>
+                    <li><a href="#" data-route="practice">Practice</a></li>
+                    <li><a href="#" data-route="reference">Reference</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="search-section">
+            <div class="search-container">
+                <input type="text" id="global-search" placeholder="Cari tools (contoh: subnet, IP, port)..." aria-label="Cari Tools">
+                <div id="search-results" class="search-results-container hidden"></div>
+            </div>
+        </section>
+
+        <div id="app-content">
+            
+            <section id="home-view" class="view-section active">
+                <div class="hero">
+                    <h2>Selamat Datang di AllTools TJKT</h2>
+                    <p class="welcome-text">Satu tempat untuk berbagai tools praktis belajar, latihan, dan troubleshooting jaringan komputer.</p>
+                </div>
+                
+                <div id="dashboard-top">
+                    <div id="favorites-container" class="dashboard-widget hidden">
+                        <h3>⭐ Favorit</h3>
+                        <div class="widget-grid" id="favorites-grid"></div>
+                    </div>
+                    <div id="recent-container" class="dashboard-widget hidden">
+                        <h3>🕒 Terakhir Digunakan</h3>
+                        <div class="widget-grid" id="recent-grid"></div>
+                    </div>
+                </div>
+
+                <div class="category-section">
+                    <h3>Kategori & Daftar Tools</h3>
+
+                    <div class="tools-grid">
+
+                        <div class="tool-card active-card"
+                             data-route="ip-calculator"
+                             tabindex="0"
+                             role="button">
+                            <div class="card-visual" aria-hidden="true">🌐</div>
+                            <div class="card-content">
+                                <span class="card-category">Networking</span>
+                                <h4>IP Address Calculator</h4>
+                                <p>Hitung Network, Broadcast, Host Range, dan informasi IPv4.</p>
+                            </div>
+                            <div class="card-footer">
+                                <span class="btn-link">Buka Tool →</span>
+                            </div>
+                        </div>
+
+                        <div class="tool-card active-card"
+                             data-route="subnet-calculator"
+                             tabindex="0"
+                             role="button">
+                            <div class="card-visual" aria-hidden="true">🔢</div>
+                            <div class="card-content">
+                                <span class="card-category">Networking</span>
+                                <h4>Subnet Calculator</h4>
+                                <p>Analisis subnet dan pembagian network secara lebih detail.</p>
+                            </div>
+                            <div class="card-footer">
+                                <span class="btn-link">Buka Tool →</span>
+                            </div>
+                        </div>
+
+                        <div class="tool-card active-card"
+                             data-route="mac-address"
+                             tabindex="0"
+                             role="button">
+                            <div class="card-visual" aria-hidden="true">🔗</div>
+                            <div class="card-content">
+                                <span class="card-category">Networking</span>
+                                <h4>MAC Address Tools</h4>
+                                <p>Tools untuk informasi dan analisis MAC Address.</p>
+                            </div>
+                            <div class="card-footer">
+                                <span class="btn-link">Buka Tool →</span>
+                            </div>
+                        </div>
+
+                        <div class="tool-card active-card"
+                             data-route="bandwidth-calculator"
+                             tabindex="0"
+                             role="button">
+                            <div class="card-visual" aria-hidden="true">📊</div>
+                            <div class="card-content">
+                                <span class="card-category">Calculator</span>
+                                <h4>Bandwidth Calculator</h4>
+                                <p>Hitung estimasi waktu transfer dan kebutuhan bandwidth.</p>
+                            </div>
+                            <div class="card-footer">
+                                <span class="btn-link">Buka Tool →</span>
+                            </div>
+                        </div>
+
+                        <div class="tool-card active-card"
+                             data-route="converters"
+                             tabindex="0"
+                             role="button">
+                            <div class="card-visual" aria-hidden="true">🔄</div>
+                            <div class="card-content">
+                                <span class="card-category">Converter</span>
+                                <h4>Data Unit & Base Converter</h4>
+                                <p>Konversi data, desimal, biner, dan hexadecimal.</p>
+                            </div>
+                            <div class="card-footer">
+                                <span class="btn-link">Buka Tool →</span>
+                            </div>
+                        </div>
+
+                        <div class="tool-card active-card"
+                             data-route="quiz"
+                             tabindex="0"
+                             role="button">
+                            <div class="card-visual" aria-hidden="true">🧠</div>
+                            <div class="card-content">
+                                <span class="card-category">TJKT Practice</span>
+                                <h4>Subnetting & Quiz</h4>
+                                <p>Latihan subnetting dan kuis interaktif untuk TJKT.</p>
+                            </div>
+                            <div class="card-footer">
+                                <span class="btn-link">Buka Tool →</span>
+                            </div>
+                        </div>
+
+                        <div class="tool-card active-card"
+                             data-route="network-reference"
+                             tabindex="0"
+                             role="button">
+                            <div class="card-visual" aria-hidden="true">📚</div>
+                            <div class="card-content">
+                                <span class="card-category">Reference</span>
+                                <h4>Network Reference</h4>
+                                <p>Referensi OSI, TCP/IP, port, protokol, dan jaringan.</p>
+                            </div>
+                            <div class="card-footer">
+                                <span class="btn-link">Buka Tool →</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <section id="tool-view" class="view-section hidden">
+                <div class="tool-header">
+                    <button id="back-btn" class="btn-outline">← Kembali</button>
+                    <button id="favorite-btn" class="btn-icon" aria-label="Tambah ke Favorit">☆</button>
+                </div>
+                <div id="tool-content-area">
+                    </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2026 AllTools TJKT. Dibuat untuk pembelajaran.</p>
+            <button id="settings-btn" class="btn-text">⚙️ Pengaturan Data</button>
+        </div>
+    </footer>
+
+    <script src="data/ports.js"></script>
+    <script src="data/protocols.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/tools/ip-calculator.js"></script>
+    <script src="js/tools/subnet-calculator.js"></script>
+    <script src="js/tools/mac-address.js"></script>
+    <script src="js/tools/converters.js"></script>
+    <script src="js/tools/bandwidth.js"></script>
+    <script src="js/tools/quiz.js"></script>
+    <script src="js/tools/network-reference.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
+
