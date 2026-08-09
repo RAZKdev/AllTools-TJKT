@@ -232,18 +232,22 @@ main {
 .tools-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.25rem;
-    margin-top: 1.25rem;
+    gap: 1rem;
+    margin-top: 1rem;
 }
 
 .tool-card {
     display: flex;
     flex-direction: column;
-    min-height: 250px;
-    padding: 1.25rem;
+
+    min-height: 220px;
+    padding: 1rem;
+
     border: 1px solid var(--border-color);
     border-radius: 14px;
+
     background: var(--surface-color);
+
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease,
@@ -268,8 +272,8 @@ main {
 }
 
 .card-visual {
-    margin-bottom: 1rem;
-    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.75rem;
 }
 
 .card-content {
@@ -278,8 +282,8 @@ main {
 
 .card-category {
     display: block;
-    margin-bottom: 0.35rem;
-    font-size: 0.75rem;
+    margin-bottom: 0.3rem;
+    font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -287,18 +291,19 @@ main {
 }
 
 .tool-card h4 {
-    margin: 0 0 0.5rem;
-    font-size: 1.1rem;
+    margin: 0 0 0.4rem;
+    font-size: 1.05rem;
+    line-height: 1.35;
 }
 
 .tool-card p {
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.45;
     color: var(--text-secondary);
 }
 
 .card-footer {
-    margin-top: 1.25rem;
+    margin-top: 1rem;
 }
 
 .btn-link {
