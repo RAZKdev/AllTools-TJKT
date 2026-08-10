@@ -4,7 +4,9 @@ AllTools TJKT adalah website kumpulan tools praktis untuk membantu siswa TJKT (T
 
 ## Features
 
-- IP Address Calculator
+### Networking Tools
+
+- **IP Address Calculator**
   - Network Address
   - Broadcast Address
   - Subnet Mask
@@ -15,16 +17,16 @@ AllTools TJKT adalah website kumpulan tools praktis untuk membantu siswa TJKT (T
   - IP Class
   - Binary Representation
 
-- Subnet Calculator
+- **Subnet Calculator**
   - Network Address
   - Broadcast Address
   - Host Range
   - Number of Hosts
   - Subnet Mask
   - Wildcard Mask
-  - Mendukung CIDR dan Subnet Mask
+  - CIDR dan Subnet Mask
 
-- MAC Address Tools
+- **MAC Address Tools**
   - Validasi MAC Address
   - Normalisasi format MAC
   - OUI / Prefix 24-bit
@@ -32,20 +34,35 @@ AllTools TJKT adalah website kumpulan tools praktis untuk membantu siswa TJKT (T
   - Unicast / Multicast / Broadcast
   - Locally / Universally Administered
 
-- Bandwidth & Transfer Time Calculator
+### Calculator & Converter
+
+- **Bandwidth & Transfer Time Calculator**
   - Estimasi waktu transfer file
   - KB, MB, GB, TB
   - Mbps, Gbps, KB/s, MB/s
 
-- Data Unit & Base Converter
+- **Data Unit & Base Converter**
 
-- TJKT Quiz
+### Learning
 
-- Network Reference
+- **TJKT Quiz**
+- **Network Reference**
   - OSI Model
   - TCP/IP Model
   - Common Network Ports
   - Network Protocols
+
+### Feedback System
+
+- Feedback Form
+- Bug / Saran / Feedback
+- Character Counter
+- Feedback Validation
+- Feedback Inbox
+- Feedback Filtering
+- Local Storage Prototype
+
+> Feedback System saat ini merupakan prototype frontend dan menggunakan `localStorage`. Belum menggunakan backend, API, atau database.
 
 ## Tech Stack
 
@@ -62,3 +79,10 @@ Jalankan server lokal:
 
 ```bash
 python3 -m http.server 8000
+```
+
+Kemudian buka di browser:
+
+```text
+http://localhost:8000
+```
