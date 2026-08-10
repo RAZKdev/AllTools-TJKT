@@ -122,31 +122,29 @@ function checkSubnetAnswer() {
     }
 }
 
-// Simple MCQ Quiz Data
-const mcqQuestions = [
-    {
-        q: "Layer berapa pada OSI Model yang bertanggung jawab untuk pengalamatan IP (Logical Addressing)?",
-        options: ["Layer 1 (Physical)", "Layer 2 (Data Link)", "Layer 3 (Network)", "Layer 4 (Transport)"],
-        answer: 2
-    },
-    {
-        q: "Protokol apa yang digunakan untuk menerjemahkan nama domain (URL) menjadi alamat IP?",
-        options: ["DHCP", "DNS", "FTP", "HTTP"],
-        answer: 1
-    },
-    {
-        q: "Berapa panjang bit dari sebuah alamat IPv4?",
-        options: ["32 bit", "48 bit", "64 bit", "128 bit"],
-        answer: 0
-    }
-];
-
 let currentMcqIndex = 0;
 let score = 0;
+let currentMcqQuestions = [];
+const MCQ_QUESTION_COUNT = 25;
+
+function shuffleQuestions(questions) {
+    const shuffled = [...questions];
+
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    return shuffled;
+}
 
 function startMcqQuiz() {
     currentMcqIndex = 0;
     score = 0;
+
+    currentMcqQuestions = shuffleQuestions(mcqQuestions)
+        .slice(0, Math.min(MCQ_QUESTION_COUNT, mcqQuestions.length));
+
     renderMcqQuestion();
 }
 
@@ -154,24 +152,27 @@ function renderMcqQuestion() {
     const area = document.getElementById('mcq-question-area');
     area.classList.remove('hidden');
 
-    if (currentMcqIndex >= mcqQuestions.length) {
+    if (currentMcqIndex >= currentMcqQuestions.length) {
         area.innerHTML = `
             <h4>Kuis Selesai!</h4>
-            <p>Skor Anda: ${score} dari ${mcqQuestions.length}</p>
+            <p>Skor Anda: ${score} dari ${currentMcqQuestions.length}</p>
             <button id="restart-quiz" class="btn-primary" style="margin-top: 1rem;">Ulangi Kuis</button>
         `;
         document.getElementById('restart-quiz').addEventListener('click', startMcqQuiz);
         return;
     }
 
-    const qData = mcqQuestions[currentMcqIndex];
+    const qData = currentMcqQuestions[currentMcqIndex];
     let optionsHtml = '';
     qData.options.forEach((opt, idx) => {
         optionsHtml += `<button class="btn-outline mcq-opt-btn" data-index="${idx}" style="display: block; width: 100%; margin-bottom: 0.5rem; text-align: left;">${opt}</button>`;
     });
 
     area.innerHTML = `
-        <p style="font-weight: bold; margin-bottom: 0.75rem;">Pertanyaan ${currentMcqIndex + 1} dari ${mcqQuestions.length}</p>
+        <p style="font-weight: bold; margin-bottom: 0.75rem;">Pertanyaan ${currentMcqIndex + 1} dari ${currentMcqQuestions.length}</p>
+        <p style="font-size: 0.8rem; opacity: 0.75; margin-bottom: 0.5rem;">
+            ${qData.category} • ${qData.difficulty.toUpperCase()}
+        </p>
         <p style="margin-bottom: 1rem;">${qData.q}</p>
         <div style="display: flex; flex-direction: column; gap: 0.5rem;">
             ${optionsHtml}
