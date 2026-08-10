@@ -83,6 +83,12 @@ function initRouter() {
             title: 'Network Reference',
             icon: '📚',
             category: 'Reference'
+        },
+
+        'about': {
+            title: 'About AllTools TJKT',
+            icon: '👤',
+            category: 'About'
         }
     };
 
@@ -127,6 +133,62 @@ function initRouter() {
         });
 
         card.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                navigateTo(toolId);
+            }
+        });
+
+        return card;
+    }
+
+    /*
+     * ==========================================
+     * CATEGORY TOOL CARD
+     * ==========================================
+     */
+
+    function createCategoryToolCard(toolId) {
+        const info = toolInfo[toolId];
+
+        if (!info) {
+            return null;
+        }
+
+        const card = document.createElement('div');
+
+        card.className = 'tool-card active-card';
+        card.dataset.route = toolId;
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+
+        card.innerHTML = `
+            <div class="card-visual" aria-hidden="true">
+                ${info.icon}
+            </div>
+
+            <div class="card-content">
+                <span class="card-category">
+                    ${info.category}
+                </span>
+
+                <h4>${info.title}</h4>
+
+                <p>
+                    Buka ${info.title} untuk menggunakan tool ini.
+                </p>
+            </div>
+
+            <div class="card-footer">
+                <span class="btn-link">Buka Tool →</span>
+            </div>
+        `;
+
+        card.addEventListener('click', () => {
+            navigateTo(toolId);
+        });
+
+        card.addEventListener('keydown', event => {
             if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
                 navigateTo(toolId);
@@ -234,6 +296,103 @@ function initRouter() {
      * ==========================================
      */
 
+    function initFeedback() {
+        const feedbackButtons =
+            document.querySelectorAll('.feedback-type');
+
+        const feedbackMessage =
+            document.getElementById('feedback-message');
+
+        const feedbackContext =
+            document.getElementById('feedback-context');
+
+        const feedbackCounter =
+            document.getElementById('feedback-counter');
+
+        const feedbackSubmit =
+            document.getElementById('feedback-submit');
+
+        const feedbackStatus =
+            document.getElementById('feedback-status');
+
+        if (
+            !feedbackButtons.length ||
+            !feedbackMessage ||
+            !feedbackContext ||
+            !feedbackCounter ||
+            !feedbackSubmit ||
+            !feedbackStatus
+        ) {
+            console.warn('Feedback elements tidak lengkap.');
+            return;
+        }
+
+        let selectedType = 'bug';
+
+        const feedbackLabels = {
+            bug: 'Bug',
+            suggestion: 'Saran',
+            feedback: 'Feedback'
+        };
+
+        function updateCounter() {
+            const length = feedbackMessage.value.length;
+
+            feedbackCounter.textContent =
+                `${length} / 500`;
+        }
+
+        function updateContext() {
+            feedbackContext.textContent =
+                `Halaman: About • Jenis: ${feedbackLabels[selectedType]}`;
+        }
+
+        feedbackButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                selectedType =
+                    button.dataset.feedbackType;
+
+                feedbackButtons.forEach(item => {
+                    item.classList.remove('active');
+                });
+
+                button.classList.add('active');
+
+                updateContext();
+            });
+        });
+
+        feedbackMessage.addEventListener('input', () => {
+            updateCounter();
+        });
+
+        feedbackSubmit.addEventListener('click', () => {
+            const message =
+                feedbackMessage.value.trim();
+
+            if (!message) {
+                feedbackStatus.textContent =
+                    'Tulis pesan terlebih dahulu.';
+
+                feedbackStatus.classList.remove('hidden');
+
+                feedbackMessage.focus();
+                return;
+            }
+
+            feedbackStatus.textContent =
+                `Feedback ${feedbackLabels[selectedType]} berhasil diterima. Terima kasih!`;
+
+            feedbackStatus.classList.remove('hidden');
+
+            feedbackMessage.value = '';
+            updateCounter();
+        });
+
+        updateCounter();
+        updateContext();
+    }
+
     function navigateTo(route) {
         currentRoute = route;
 
@@ -259,9 +418,191 @@ function initRouter() {
             StorageManager.addRecent(route);
 
             /*
-             * Render tool
+             * Category routes
              */
-            if (route === 'ip-calculator') {
+            const categoryTools = {
+                networking: [
+                    'ip-calculator',
+                    'subnet-calculator',
+                    'mac-address'
+                ],
+
+                calculator: [
+                    'bandwidth-calculator'
+                ],
+
+                converter: [
+                    'converters'
+                ],
+
+                practice: [
+                    'quiz'
+                ],
+
+                reference: [
+                    'network-reference'
+                ]
+            };
+
+            /*
+             * Render category
+             */
+            if (categoryTools[route]) {
+                const tools = categoryTools[route];
+
+                contentArea.innerHTML = `
+                    <div class="category-view">
+                        <div class="category-view-header">
+                            <span class="category-view-label">
+                                AllTools TJKT
+                            </span>
+
+                            <h2>${route
+                                .replace(/-/g, ' ')
+                                .replace(/\b\w/g, char => char.toUpperCase())}</h2>
+
+                            <p>
+                                Pilih tool yang ingin digunakan.
+                            </p>
+                        </div>
+
+                        <div class="tools-grid category-tools-grid"></div>
+                    </div>
+                `;
+
+                const categoryGrid =
+                    contentArea.querySelector('.category-tools-grid');
+
+                tools.forEach(toolId => {
+                    const card = createCategoryToolCard(toolId);
+
+                    if (card) {
+                        categoryGrid.appendChild(card);
+                    }
+                });
+
+            /*
+             * Render individual tool
+             */
+            } else if (route === 'about') {
+                contentArea.innerHTML = `
+                    <div class="about-view">
+
+                        <div class="about-hero">
+                            <div class="about-avatar" aria-hidden="true">
+                                👨‍💻
+                            </div>
+
+                            <span class="about-label">
+                                ABOUT THE PROJECT
+                            </span>
+
+                            <h2>AllTools TJKT</h2>
+
+                            <p>
+                                Dibuat oleh Rangga, pelajar TJKT yang sedang
+                                belajar membangun teknologi dari nol.
+                            </p>
+                        </div>
+
+                        <div class="about-section">
+                            <h3>🎯 Kenapa AllTools TJKT dibuat?</h3>
+
+                            <p>
+                                AllTools TJKT dibuat untuk mengumpulkan berbagai
+                                tools yang berguna dalam proses belajar TJKT
+                                ke dalam satu tempat yang sederhana, cepat,
+                                dan mudah digunakan.
+                            </p>
+
+                            <p>
+                                Project ini juga menjadi bagian dari perjalanan
+                                belajar membangun website menggunakan HTML,
+                                CSS, JavaScript, Git, dan teknologi web lainnya.
+                            </p>
+                        </div>
+
+                        <div class="about-section">
+                            <h3>🛠️ Status Project</h3>
+
+                            <div class="about-status">
+                                <strong>Active Development</strong>
+                                <span>AllTools TJKT terus dikembangkan dan diperbaiki.</span>
+                            </div>
+                        </div>
+
+                        <div class="about-section feedback-section">
+                            <h3>💬 Ceritain masalah atau idemu</h3>
+
+                            <p>
+                                Ada bug, punya saran, atau sekadar mau kasih feedback?
+                                Ceritain aja seperti ngobrol dengan developer.
+                            </p>
+
+                            <div class="feedback-type-group"
+                                 role="group"
+                                 aria-label="Jenis feedback">
+
+                                <button type="button"
+                                        class="feedback-type active"
+                                        data-feedback-type="bug">
+                                    🐛 Bug
+                                </button>
+
+                                <button type="button"
+                                        class="feedback-type"
+                                        data-feedback-type="suggestion">
+                                    💡 Saran
+                                </button>
+
+                                <button type="button"
+                                        class="feedback-type"
+                                        data-feedback-type="feedback">
+                                    ❤️ Feedback
+                                </button>
+
+                            </div>
+
+                            <textarea
+                                id="feedback-message"
+                                class="feedback-input"
+                                maxlength="500"
+                                placeholder="Contoh: Woi dev, search lu ngaco tuh 😂"
+                                aria-label="Tulis feedback"></textarea>
+
+                            <div class="feedback-meta">
+                                <span id="feedback-context">
+                                    Halaman: About
+                                </span>
+
+                                <span id="feedback-counter">
+                                    0 / 500
+                                </span>
+                            </div>
+
+                            <button type="button"
+                                    id="feedback-submit"
+                                    class="feedback-submit">
+                                🚀 Kirim Feedback
+                            </button>
+
+                            <div id="feedback-status"
+                                 class="feedback-status hidden"
+                                 role="status"
+                                 aria-live="polite"></div>
+                        </div>
+
+</div>
+
+                    </div>
+                `;
+
+                initFeedback();
+
+            /*
+             * Render individual tool
+             */
+            } else if (route === 'ip-calculator') {
                 renderIpCalculator(contentArea);
 
             } else if (route === 'subnet-calculator') {
@@ -294,8 +635,7 @@ function initRouter() {
                             color: var(--text-secondary);
                             margin-top: 1rem;
                         ">
-                            Modul ini akan diimplementasikan
-                            pada phase berikutnya.
+                            Modul belum tersedia.
                         </p>
                     </div>
                 `;

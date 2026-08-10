@@ -1111,3 +1111,352 @@ main {
     }
 }
 
+
+/* ==========================================
+   ABOUT PAGE
+   ========================================== */
+
+.about-view {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0.5rem 0 2rem;
+}
+
+.about-hero {
+    text-align: center;
+    padding: 2.2rem 1.5rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--surface-color);
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.03),
+        0 6px 18px rgba(0, 0, 0, 0.035);
+}
+
+.about-avatar {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 1rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+    background: var(--bg-color);
+
+    font-size: 2rem;
+}
+
+.about-label {
+    display: block;
+    margin-bottom: 0.4rem;
+
+    color: var(--primary-color);
+    font-size: 0.68rem;
+    font-weight: 750;
+    letter-spacing: 0.1em;
+}
+
+.about-hero h2 {
+    margin-bottom: 0.65rem;
+    font-size: 1.65rem;
+}
+
+.about-hero p {
+    max-width: 620px;
+    margin: 0 auto;
+
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+.about-section {
+    margin-bottom: 1rem;
+    padding: 1.25rem;
+
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--surface-color);
+
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.03),
+        0 4px 14px rgba(0, 0, 0, 0.035);
+}
+
+.about-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    margin-bottom: 0.7rem;
+    font-size: 1rem;
+    line-height: 1.35;
+}
+
+.about-section p {
+    margin-bottom: 0.7rem;
+
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.65;
+}
+
+.about-section p:last-child {
+    margin-bottom: 0;
+}
+
+.about-status,
+.feedback-placeholder {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    padding: 0.9rem 1rem;
+
+    border-radius: 10px;
+    background: var(--bg-color);
+}
+
+.about-status strong,
+.feedback-placeholder strong {
+    font-size: 0.88rem;
+}
+
+.about-status span,
+.feedback-placeholder span {
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+/* --- About dark mode --- */
+
+[data-theme="dark"] .about-hero,
+[data-theme="dark"] .about-section {
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.18),
+        0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* --- About mobile --- */
+
+@media (max-width: 600px) {
+
+    .about-view {
+        padding: 0.25rem 0 1.5rem;
+    }
+
+    .about-hero {
+        padding: 1.7rem 1rem;
+        border-radius: 14px;
+    }
+
+    .about-avatar {
+        width: 58px;
+        height: 58px;
+        margin-bottom: 0.85rem;
+        border-radius: 15px;
+        font-size: 1.7rem;
+    }
+
+    .about-hero h2 {
+        font-size: 1.4rem;
+    }
+
+    .about-hero p {
+        font-size: 0.82rem;
+    }
+
+    .about-section {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .about-section h3 {
+        font-size: 0.95rem;
+    }
+
+    .about-section p {
+        font-size: 0.84rem;
+    }
+}
+
+
+/* =========================================
+   Feedback System
+   ========================================= */
+
+.feedback-section {
+    overflow: hidden;
+}
+
+.feedback-type-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.feedback-type {
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    padding: 0.55rem 0.85rem;
+
+    background: var(--bg-color);
+    color: var(--text-color);
+
+    font: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.feedback-type:hover {
+    transform: translateY(-1px);
+}
+
+.feedback-type.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+}
+
+.feedback-input {
+    display: block;
+
+    width: 100%;
+    min-height: 120px;
+    box-sizing: border-box;
+
+    padding: 0.85rem 1rem;
+
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+
+    background: var(--bg-color);
+    color: var(--text-color);
+
+    font: inherit;
+    font-size: 0.85rem;
+    line-height: 1.5;
+
+    resize: vertical;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.feedback-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.feedback-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.feedback-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+
+    margin-top: 0.45rem;
+
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+}
+
+.feedback-submit {
+    width: 100%;
+    margin-top: 0.85rem;
+
+    border: none;
+    border-radius: 10px;
+
+    padding: 0.75rem 1rem;
+
+    background: var(--primary-color);
+    color: #fff;
+
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+.feedback-submit:hover {
+    transform: translateY(-1px);
+}
+
+.feedback-submit:active {
+    transform: translateY(0);
+}
+
+.feedback-submit:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.feedback-status {
+    margin-top: 0.75rem;
+
+    padding: 0.7rem 0.85rem;
+
+    border-radius: 8px;
+
+    background: var(--bg-color);
+
+    color: var(--text-secondary);
+
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
+.feedback-status.hidden {
+    display: none;
+}
+
+/* --- Feedback mobile --- */
+
+@media (max-width: 600px) {
+
+    .feedback-type-group {
+        gap: 0.4rem;
+    }
+
+    .feedback-type {
+        padding: 0.5rem 0.7rem;
+        font-size: 0.78rem;
+    }
+
+    .feedback-input {
+        min-height: 110px;
+        font-size: 0.82rem;
+    }
+
+    .feedback-meta {
+        font-size: 0.72rem;
+    }
+
+    .feedback-submit {
+        font-size: 0.82rem;
+    }
+}
+
