@@ -380,12 +380,48 @@ function initRouter() {
                 return;
             }
 
+            const existingFeedback =
+                JSON.parse(
+                    localStorage.getItem('alltools_feedback') || '[]'
+                );
+
+            const newFeedback = {
+                id: Date.now(),
+                type: selectedType,
+                icon:
+                    selectedType === 'bug'
+                        ? '🐛'
+                        : selectedType === 'suggestion'
+                            ? '💡'
+                            : '❤️',
+                label: feedbackLabels[selectedType],
+                status: 'NEW',
+                title: message,
+                page: 'About',
+                date: new Date().toLocaleDateString(
+                    'en-GB',
+                    {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                    }
+                )
+            };
+
+            existingFeedback.unshift(newFeedback);
+
+            localStorage.setItem(
+                'alltools_feedback',
+                JSON.stringify(existingFeedback)
+            );
+
             feedbackStatus.textContent =
                 `Feedback ${feedbackLabels[selectedType]} berhasil diterima. Terima kasih!`;
 
             feedbackStatus.classList.remove('hidden');
 
             feedbackMessage.value = '';
+
             updateCounter();
         });
 
@@ -484,7 +520,176 @@ function initRouter() {
             /*
              * Render individual tool
              */
-            } else if (route === 'about') {
+             } else if (route === 'feedback') {
+                const defaultFeedback = [
+                    {
+                        id: 'demo-1',
+                        type: 'bug',
+                        icon: '🐛',
+                        label: 'Bug',
+                        status: 'NEW',
+                        title: 'Search tidak bekerja',
+                        page: 'Home',
+                        date: '10 Aug 2026'
+                    },
+                    {
+                        id: 'demo-2',
+                        type: 'suggestion',
+                        icon: '💡',
+                        label: 'Saran',
+                        status: 'NEW',
+                        title: 'Tambahkan dark mode',
+                        page: 'Settings',
+                        date: '10 Aug 2026'
+                    },
+                    {
+                        id: 'demo-3',
+                        type: 'feedback',
+                        icon: '❤️',
+                        label: 'Feedback',
+                        status: 'READ',
+                        title: 'Website-nya keren',
+                        page: 'Home',
+                        date: '9 Aug 2026'
+                    }
+                ];
+
+                let feedbackData =
+                    JSON.parse(
+                        localStorage.getItem('alltools_feedback') || 'null'
+                    );
+
+                if (!Array.isArray(feedbackData)) {
+                    feedbackData = defaultFeedback;
+
+                    localStorage.setItem(
+                        'alltools_feedback',
+                        JSON.stringify(feedbackData)
+                    );
+                }
+
+                contentArea.innerHTML = `
+                    <div class="feedback-inbox-view">
+
+                        <div class="feedback-inbox-header">
+                            <h2>📬 Feedback Inbox</h2>
+                            <p>
+                                Kelola feedback yang masuk dari pengguna.
+                            </p>
+                        </div>
+
+                        <div class="feedback-filter"
+                             role="group"
+                             aria-label="Filter feedback">
+
+                            <button type="button"
+                                    class="active"
+                                    data-feedback-filter="all">
+                                Semua
+                            </button>
+
+                            <button type="button"
+                                    data-feedback-filter="bug">
+                                🐛 Bug
+                            </button>
+
+                            <button type="button"
+                                    data-feedback-filter="suggestion">
+                                💡 Saran
+                            </button>
+
+                            <button type="button"
+                                    data-feedback-filter="feedback">
+                                ❤️ Feedback
+                            </button>
+
+                        </div>
+
+                        <div class="feedback-inbox-count"
+                             id="feedback-inbox-count">
+                            3 feedback
+                        </div>
+
+                        <div class="feedback-card-list"
+                             id="feedback-card-list">
+                        </div>
+
+                    </div>
+                `;
+
+                const feedbackCardList =
+                    document.getElementById('feedback-card-list');
+
+                const feedbackCount =
+                    document.getElementById('feedback-inbox-count');
+
+                const feedbackFilters =
+                    document.querySelectorAll('[data-feedback-filter]');
+
+                function renderFeedbackCards(filter = 'all') {
+                    const filteredFeedback =
+                        filter === 'all'
+                            ? feedbackData
+                            : feedbackData.filter(item => item.type === filter);
+
+                    feedbackCount.textContent =
+                        `${filteredFeedback.length} feedback`;
+
+                    if (!filteredFeedback.length) {
+                        feedbackCardList.innerHTML = `
+                            <div class="about-section">
+                                <p>
+                                    Belum ada feedback pada kategori ini.
+                                </p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    feedbackCardList.innerHTML =
+                        filteredFeedback.map(item => `
+                            <article class="feedback-card">
+
+                                <div class="feedback-card-header">
+                                    <span class="feedback-card-type">
+                                        ${item.icon} ${item.label}
+                                    </span>
+
+                                    <span class="feedback-status-badge">
+                                        ${item.status === 'NEW' ? '🆕 NEW' : '✓ READ'}
+                                    </span>
+                                </div>
+
+                                <div class="feedback-card-title">
+                                    ${item.title}
+                                </div>
+
+                                <div class="feedback-card-meta">
+                                    <span>Halaman: ${item.page}</span>
+                                    <span>${item.date}</span>
+                                </div>
+
+                            </article>
+                        `).join('');
+                }
+
+                feedbackFilters.forEach(button => {
+                    button.addEventListener('click', () => {
+                        feedbackFilters.forEach(item => {
+                            item.classList.remove('active');
+                        });
+
+                        button.classList.add('active');
+
+                        renderFeedbackCards(
+                            button.dataset.feedbackFilter
+                        );
+                    });
+                });
+
+                renderFeedbackCards();
+
+} else if (route === 'about') {
                 contentArea.innerHTML = `
                     <div class="about-view">
 
@@ -590,6 +795,12 @@ function initRouter() {
                                  class="feedback-status hidden"
                                  role="status"
                                  aria-live="polite"></div>
+
+                            <button type="button"
+                                    id="feedback-inbox-btn"
+                                    class="feedback-inbox-btn">
+                                🔐 📬 Feedback Inbox
+                            </button>
                         </div>
 
 </div>
@@ -598,6 +809,15 @@ function initRouter() {
                 `;
 
                 initFeedback();
+
+                const feedbackInboxBtn =
+                    document.getElementById('feedback-inbox-btn');
+
+                if (feedbackInboxBtn) {
+                    feedbackInboxBtn.addEventListener('click', () => {
+                        navigateTo('feedback');
+                    });
+                }
 
             /*
              * Render individual tool

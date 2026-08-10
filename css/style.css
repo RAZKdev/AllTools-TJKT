@@ -1460,3 +1460,211 @@ main {
     }
 }
 
+
+/*
+ * ==========================================
+ * FEEDBACK INBOX
+ * ==========================================
+ */
+
+.feedback-inbox-view {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0.5rem 0 2rem;
+}
+
+.feedback-inbox-header {
+    margin-bottom: 1rem;
+}
+
+.feedback-inbox-header h2 {
+    margin-bottom: 0.4rem;
+    font-size: 1.35rem;
+}
+
+.feedback-inbox-header p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.feedback-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.feedback-filter button {
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+
+    padding: 0.5rem 0.8rem;
+
+    background: var(--bg-color);
+    color: var(--text-color);
+
+    font: inherit;
+    font-size: 0.78rem;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.feedback-filter button:hover {
+    transform: translateY(-1px);
+}
+
+.feedback-filter button.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+}
+
+.feedback-inbox-count {
+    margin-bottom: 0.65rem;
+
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+}
+
+.feedback-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.feedback-card {
+    padding: 1rem;
+
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+
+    background: var(--surface-color);
+
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.03),
+        0 4px 14px rgba(0, 0, 0, 0.035);
+
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.feedback-card:hover {
+    transform: translateY(-1px);
+}
+
+.feedback-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 0.75rem;
+    margin-bottom: 0.55rem;
+}
+
+.feedback-card-type {
+    color: var(--text-color);
+    font-size: 0.78rem;
+    font-weight: 650;
+}
+
+.feedback-status-badge {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 0.25rem 0.5rem;
+
+    border-radius: 999px;
+
+    background: var(--bg-color);
+    color: var(--text-secondary);
+
+    font-size: 0.68rem;
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+.feedback-card-title {
+    margin-bottom: 0.45rem;
+
+    color: var(--text-color);
+    font-size: 0.92rem;
+    font-weight: 650;
+    line-height: 1.4;
+}
+
+.feedback-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+
+    color: var(--text-secondary);
+    font-size: 0.74rem;
+    line-height: 1.5;
+}
+
+.feedback-card-meta span {
+    display: inline-flex;
+    align-items: center;
+}
+
+.feedback-card-meta span + span::before {
+    content: "•";
+    margin-right: 0.75rem;
+}
+
+[data-theme="dark"] .feedback-card {
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.18),
+        0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* --- Feedback Inbox mobile --- */
+
+@media (max-width: 600px) {
+
+    .feedback-inbox-view {
+        padding-bottom: 1.5rem;
+    }
+
+    .feedback-inbox-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .feedback-inbox-header p {
+        font-size: 0.82rem;
+    }
+
+    .feedback-filter {
+        gap: 0.4rem;
+    }
+
+    .feedback-filter button {
+        padding: 0.45rem 0.65rem;
+        font-size: 0.74rem;
+    }
+
+    .feedback-card {
+        padding: 0.85rem;
+    }
+
+    .feedback-card-header {
+        align-items: flex-start;
+    }
+
+    .feedback-card-title {
+        font-size: 0.86rem;
+    }
+
+    .feedback-card-meta {
+        font-size: 0.7rem;
+    }
+}
+
