@@ -292,6 +292,7 @@ function renderMcqQuestion() {
         }
 
         mcqResults.push({
+            category: qData.category,
             question: qData.q,
             options: [...qData.options],
             correctIndex: qData.answer,
@@ -471,6 +472,10 @@ function renderMcqResults() {
                         <div class="quiz-review-card">
                             <p class="quiz-review-question-number">
                                 Soal ${index + 1}
+                            </p>
+
+                            <p class="quiz-review-category">
+                                Kategori: <strong>${result.category}</strong>
                             </p>
 
                             <p class="quiz-review-question">

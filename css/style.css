@@ -2450,3 +2450,10 @@ main {
         scroll-behavior: auto;
     }
 }
+
+/* Quiz Review Category */
+.quiz-review-category {
+    margin-top: 0.35rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
