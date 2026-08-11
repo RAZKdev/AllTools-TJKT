@@ -378,40 +378,57 @@ function renderMcqQuestion() {
 function renderMcqResults() {
     const area = document.getElementById('mcq-question-area');
 
+    const totalQuestions = currentMcqQuestions.length;
+    const correctAnswers = mcqResults.filter(
+        result => result.isCorrect
+    ).length;
+    const timeoutAnswers = mcqResults.filter(
+        result => result.timedOut
+    ).length;
     const wrongAnswers = mcqResults.filter(
         result => !result.isCorrect
     );
+    const wrongCount = wrongAnswers.length;
+    const percentage = totalQuestions > 0
+        ? Math.round((correctAnswers / totalQuestions) * 100)
+        : 0;
+
+    let grade;
+    let feedback;
+    let gradeClass;
+
+    if (percentage >= 90) {
+        grade = 'Sangat Baik';
+        feedback = 'Pemahaman konsep jaringan kamu sudah sangat kuat.';
+        gradeClass = 'quiz-result-excellent';
+    } else if (percentage >= 80) {
+        grade = 'Baik';
+        feedback = 'Pemahaman jaringan kamu sudah baik. Tinggal perkuat beberapa konsep.';
+        gradeClass = 'quiz-result-good';
+    } else if (percentage >= 70) {
+        grade = 'Cukup';
+        feedback = 'Dasar kamu sudah ada. Review soal yang salah untuk memperkuat pemahaman.';
+        gradeClass = 'quiz-result-average';
+    } else {
+        grade = 'Perlu Latihan';
+        feedback = 'Coba pelajari kembali konsep yang masih salah lalu ulangi kuis.';
+        gradeClass = 'quiz-result-needs-practice';
+    }
 
     let reviewHtml = '';
 
     if (wrongAnswers.length === 0) {
         reviewHtml = `
-            <div
-                style="
-                    margin-top: 1rem;
-                    padding: 1rem;
-                    border-radius: var(--radius);
-                    background: var(--surface-color);
-                    border: 1px solid var(--border-color);
-                "
-            >
+            <div class="quiz-review-empty">
                 <h4>🎉 Semua Jawaban Benar!</h4>
-                <p style="margin-top: 0.5rem;">
-                    Tidak ada jawaban yang perlu direview.
-                </p>
+                <p>Tidak ada jawaban yang perlu direview.</p>
             </div>
         `;
     } else {
         reviewHtml = `
-            <div style="margin-top: 1.5rem;">
+            <div class="quiz-review-section">
                 <h4>❌ Review Jawaban Salah</h4>
-                <p
-                    style="
-                        color: var(--text-secondary);
-                        font-size: 0.9rem;
-                        margin: 0.5rem 0 1rem;
-                    "
-                >
+                <p class="quiz-review-summary">
                     ${wrongAnswers.length} soal perlu dipelajari kembali.
                 </p>
 
@@ -426,9 +443,9 @@ function renderMcqResults() {
 
                     if (result.timedOut) {
                         userAnswerHtml = `
-                            <p style="margin-top: 0.5rem;">
+                            <p class="quiz-review-answer">
                                 <strong>Jawaban kamu:</strong>
-                                <span style="color: var(--error-color);">
+                                <span class="quiz-answer-wrong">
                                     Tidak dijawab (waktu habis)
                                 </span>
                             </p>
@@ -441,9 +458,9 @@ function renderMcqResults() {
                             result.options[result.selectedIndex];
 
                         userAnswerHtml = `
-                            <p style="margin-top: 0.5rem;">
+                            <p class="quiz-review-answer">
                                 <strong>Jawaban kamu:</strong>
-                                <span style="color: var(--error-color);">
+                                <span class="quiz-answer-wrong">
                                     ${userLabel}. ${userText}
                                 </span>
                             </p>
@@ -451,28 +468,20 @@ function renderMcqResults() {
                     }
 
                     return `
-                        <div
-                            style="
-                                margin-top: 1rem;
-                                padding: 1rem;
-                                border-radius: var(--radius);
-                                background: var(--surface-color);
-                                border: 1px solid var(--border-color);
-                            "
-                        >
-                            <p style="font-weight: bold;">
+                        <div class="quiz-review-card">
+                            <p class="quiz-review-question-number">
                                 Soal ${index + 1}
                             </p>
 
-                            <p style="margin-top: 0.5rem;">
+                            <p class="quiz-review-question">
                                 ${result.question}
                             </p>
 
                             ${userAnswerHtml}
 
-                            <p style="margin-top: 0.5rem;">
+                            <p class="quiz-review-answer">
                                 <strong>Jawaban benar:</strong>
-                                <span style="color: var(--success-color);">
+                                <span class="quiz-answer-correct">
                                     ${correctLabel}. ${correctText}
                                 </span>
                             </p>
@@ -484,12 +493,39 @@ function renderMcqResults() {
     }
 
     area.innerHTML = `
-        <h4>Kuis Selesai!</h4>
+        <div class="quiz-result-card">
+            <h4>Kuis Selesai!</h4>
 
-        <p style="font-size: 1.1rem; margin-top: 0.5rem;">
-            Skor Anda:
-            <strong>${score} dari ${currentMcqQuestions.length}</strong>
-        </p>
+            <div class="quiz-score-main ${gradeClass}">
+                <strong>${correctAnswers} / ${totalQuestions}</strong>
+                <span>${percentage}%</span>
+            </div>
+
+            <div class="quiz-result-grade ${gradeClass}">
+                ${grade}
+            </div>
+
+            <p class="quiz-result-feedback">
+                ${feedback}
+            </p>
+
+            <div class="quiz-result-stats">
+                <div class="quiz-stat quiz-stat-correct">
+                    <strong>${correctAnswers}</strong>
+                    <span>Benar</span>
+                </div>
+
+                <div class="quiz-stat quiz-stat-wrong">
+                    <strong>${wrongCount}</strong>
+                    <span>Salah</span>
+                </div>
+
+                <div class="quiz-stat quiz-stat-timeout">
+                    <strong>${timeoutAnswers}</strong>
+                    <span>Timeout</span>
+                </div>
+            </div>
+        </div>
 
         ${reviewHtml}
 

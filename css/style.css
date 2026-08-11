@@ -2249,3 +2249,204 @@ main {
         animation: none;
     }
 }
+
+/* Quiz Results UX - Tahap 5B */
+
+.quiz-result-card {
+    margin-top: 1rem;
+    padding: 1.25rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: var(--surface-color);
+    text-align: center;
+}
+
+.quiz-result-card > h4 {
+    margin-bottom: 0.75rem;
+}
+
+.quiz-score-main {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+}
+
+.quiz-score-main strong {
+    font-size: clamp(2rem, 10vw, 3.25rem);
+    line-height: 1;
+}
+
+.quiz-score-main span {
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.quiz-result-excellent .quiz-score-main strong,
+.quiz-result-excellent .quiz-score-main span {
+    color: var(--success-color);
+}
+
+.quiz-result-good .quiz-score-main strong,
+.quiz-result-good .quiz-score-main span {
+    color: color-mix(
+        in srgb,
+        var(--success-color) 75%,
+        var(--text-color)
+    );
+}
+
+.quiz-result-average .quiz-score-main strong,
+.quiz-result-average .quiz-score-main span {
+    color: color-mix(
+        in srgb,
+        var(--error-color) 45%,
+        var(--success-color)
+    );
+}
+
+.quiz-result-needs-practice .quiz-score-main strong,
+.quiz-result-needs-practice .quiz-score-main span {
+    color: var(--error-color);
+}
+
+.quiz-result-grade {
+    display: inline-block;
+    margin-top: 0.85rem;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.quiz-result-feedback {
+    max-width: 520px;
+    margin: 0.85rem auto 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.quiz-result-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+.quiz-stat {
+    padding: 0.85rem 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: color-mix(
+        in srgb,
+        var(--surface-color) 88%,
+        var(--border-color)
+    );
+}
+
+.quiz-stat strong {
+    display: block;
+    font-size: 1.35rem;
+    line-height: 1.2;
+}
+
+.quiz-stat span {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+.quiz-stat-correct strong {
+    color: var(--success-color);
+}
+
+.quiz-stat-wrong strong,
+.quiz-stat-timeout strong {
+    color: var(--error-color);
+}
+
+.quiz-review-section {
+    margin-top: 1.5rem;
+}
+
+.quiz-review-section > h4 {
+    margin-bottom: 0.25rem;
+}
+
+.quiz-review-summary {
+    margin: 0.5rem 0 1rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.quiz-review-card,
+.quiz-review-empty {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: var(--surface-color);
+}
+
+.quiz-review-question-number {
+    font-weight: 700;
+}
+
+.quiz-review-question {
+    margin-top: 0.5rem;
+    line-height: 1.5;
+}
+
+.quiz-review-answer {
+    margin-top: 0.65rem;
+}
+
+.quiz-answer-wrong {
+    color: var(--error-color);
+}
+
+.quiz-answer-correct {
+    color: var(--success-color);
+}
+
+.quiz-review-empty {
+    margin-top: 1rem;
+}
+
+.quiz-review-empty p {
+    margin-top: 0.5rem;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 480px) {
+    .quiz-result-card {
+        padding: 1rem;
+    }
+
+    .quiz-result-stats {
+        gap: 0.5rem;
+    }
+
+    .quiz-stat {
+        padding: 0.75rem 0.35rem;
+    }
+
+    .quiz-stat strong {
+        font-size: 1.15rem;
+    }
+
+    .quiz-stat span {
+        font-size: 0.75rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .quiz-result-card,
+    .quiz-review-card {
+        scroll-behavior: auto;
+    }
+}
