@@ -228,7 +228,7 @@ function renderMcqQuestion() {
         >
             <div
                 class="quiz-progress-fill"
-                style="width: ${((currentMcqIndex + 1) / currentMcqQuestions.length) * 100}%"
+                style="transform: scaleX(${((currentMcqIndex + 1) / currentMcqQuestions.length)});"
             ></div>
         </div>
 
@@ -236,12 +236,33 @@ function renderMcqQuestion() {
             ${qData.category} • ${qData.difficulty.toUpperCase()}
         </p>
 
-        <p
+        <div
             id="mcq-timer"
-            style="font-weight: bold; margin-bottom: 1rem;"
+            class="quiz-timer quiz-timer-normal"
+            aria-live="polite"
         >
-            ⏱️ <span id="mcq-time-left">${MCQ_TIME_LIMIT}</span> detik
-        </p>
+            <div class="quiz-timer-label">
+                <span class="quiz-timer-icon" aria-hidden="true">⏱️</span>
+                <span id="mcq-time-left">${MCQ_TIME_LIMIT}</span>
+                <span>detik</span>
+            </div>
+
+            <div
+                class="quiz-timer-track"
+                aria-hidden="true"
+            >
+                <div
+                    id="mcq-timer-fill"
+                    class="quiz-timer-fill"
+                    style="transform: scaleX(1);"
+                ></div>
+            </div>
+
+            <span
+                class="quiz-timer-warning-text"
+                aria-live="polite"
+            ></span>
+        </div>
 
         <p style="margin-bottom: 1rem;">
             ${qData.q}
@@ -295,12 +316,57 @@ function renderMcqQuestion() {
     });
 
     const timerEl = area.querySelector('#mcq-time-left');
+    const timerFill = area.querySelector('#mcq-timer-fill');
+    const timerContainer = area.querySelector('#mcq-timer');
+    const warningEl = area.querySelector('.quiz-timer-warning-text');
 
     mcqTimer = setInterval(() => {
         mcqTimeLeft--;
 
         if (timerEl) {
             timerEl.textContent = mcqTimeLeft;
+        }
+
+        if (timerFill) {
+            const progress =
+                Math.max(0, mcqTimeLeft / MCQ_TIME_LIMIT);
+
+            timerFill.style.transform =
+                `scaleX(${progress})`;
+        }
+
+        if (timerContainer) {
+            timerContainer.classList.remove(
+                'quiz-timer-normal',
+                'quiz-timer-warning',
+                'quiz-timer-critical'
+            );
+
+            if (mcqTimeLeft <= 3) {
+                timerContainer.classList.add(
+                    'quiz-timer-critical'
+                );
+            } else if (mcqTimeLeft <= 7) {
+                timerContainer.classList.add(
+                    'quiz-timer-warning'
+                );
+            } else {
+                timerContainer.classList.add(
+                    'quiz-timer-normal'
+                );
+            }
+        }
+
+        if (warningEl) {
+            if (mcqTimeLeft <= 3 && mcqTimeLeft > 0) {
+                warningEl.textContent =
+                    '⚠️ Waktu hampir habis!';
+            } else if (mcqTimeLeft <= 7 && mcqTimeLeft > 3) {
+                warningEl.textContent =
+                    '⏳ Bersiap, waktu menipis';
+            } else {
+                warningEl.textContent = '';
+            }
         }
 
         if (mcqTimeLeft <= 0) {

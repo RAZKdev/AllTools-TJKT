@@ -2056,9 +2056,9 @@ main {
     background:
         linear-gradient(
             90deg,
-            var(--border-color) 0%,
-            rgba(255, 255, 255, 0.08) 50%,
-            var(--border-color) 100%
+            #e2e8f0,
+            #cbd5e1,
+            #e2e8f0
         );
     background-size: 200% 100%;
     animation: quiz-progress-track-flow 3s linear infinite;
@@ -2066,12 +2066,13 @@ main {
 
 .quiz-progress-fill {
     position: relative;
+    width: 100%;
     height: 100%;
-    min-width: 0;
     overflow: hidden;
     border-radius: 999px;
-    background: var(--accent-color);
-    transition: width 0.45s ease;
+    background: #2563eb;
+    transform-origin: left center;
+    transition: transform 0.45s ease;
 }
 
 .quiz-progress-fill::after {
@@ -2080,11 +2081,11 @@ main {
     top: 0;
     bottom: 0;
     left: 0;
-    width: 40%;
+    width: 35%;
     background: linear-gradient(
         90deg,
         transparent,
-        rgba(255, 255, 255, 0.35),
+        rgba(255, 255, 255, 0.45),
         transparent
     );
     animation: quiz-progress-shimmer 1.8s linear infinite;
@@ -2111,15 +2112,140 @@ main {
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .quiz-progress-track,
     .quiz-progress-fill {
+        animation: none;
         transition: none;
     }
 
     .quiz-progress-fill::after {
         animation: none;
     }
+}
 
-    .quiz-progress-track {
+/* Quiz Timer UX - Tahap 4B */
+.quiz-timer {
+    margin-bottom: 1rem;
+}
+
+.quiz-timer-label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.quiz-timer-icon {
+    display: inline-flex;
+    transform-origin: center;
+}
+
+.quiz-timer-track {
+    width: 100%;
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background:
+        linear-gradient(
+            90deg,
+            var(--border-color),
+            rgba(15, 23, 42, 0.08),
+            var(--border-color)
+        );
+}
+
+.quiz-timer-fill {
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--text-secondary);
+    transform-origin: left center;
+    transition:
+        transform 0.65s ease,
+        background 0.25s ease;
+}
+
+.quiz-timer-fill::after {
+    content: "";
+    display: block;
+    width: 35%;
+    height: 100%;
+    margin-left: 65%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(15, 23, 42, 0.18),
+        transparent
+    );
+    animation: quiz-timer-sheen 1.8s linear infinite;
+}
+
+.quiz-timer-warning .quiz-timer-fill {
+    background: var(--error-color);
+}
+
+.quiz-timer-critical .quiz-timer-fill {
+    background: var(--error-color);
+}
+
+.quiz-timer-warning-text {
+    display: block;
+    min-height: 1.2rem;
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--error-color);
+}
+
+.quiz-timer-critical .quiz-timer-label {
+    animation: quiz-timer-label-pulse 0.8s ease-in-out infinite;
+}
+
+.quiz-timer-critical .quiz-timer-icon {
+    animation: quiz-timer-icon-pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes quiz-timer-sheen {
+    from {
+        transform: translateX(-150%);
+    }
+
+    to {
+        transform: translateX(150%);
+    }
+}
+
+@keyframes quiz-timer-label-pulse {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+}
+
+@keyframes quiz-timer-icon-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .quiz-timer-fill {
+        transition: none;
+    }
+
+    .quiz-timer-fill::after,
+    .quiz-timer-critical .quiz-timer-label,
+    .quiz-timer-critical .quiz-timer-icon {
         animation: none;
     }
 }
