@@ -2044,3 +2044,82 @@ main {
         margin-bottom: 1.2rem;
     }
 }
+
+/* Quiz Progress Bar - Tahap 4A */
+.quiz-progress-track {
+    position: relative;
+    width: 100%;
+    height: 8px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background:
+        linear-gradient(
+            90deg,
+            var(--border-color) 0%,
+            rgba(255, 255, 255, 0.08) 50%,
+            var(--border-color) 100%
+        );
+    background-size: 200% 100%;
+    animation: quiz-progress-track-flow 3s linear infinite;
+}
+
+.quiz-progress-fill {
+    position: relative;
+    height: 100%;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--accent-color);
+    transition: width 0.45s ease;
+}
+
+.quiz-progress-fill::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 40%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.35),
+        transparent
+    );
+    animation: quiz-progress-shimmer 1.8s linear infinite;
+}
+
+@keyframes quiz-progress-shimmer {
+    from {
+        transform: translateX(-150%);
+    }
+
+    to {
+        transform: translateX(300%);
+    }
+}
+
+@keyframes quiz-progress-track-flow {
+    from {
+        background-position: 0% 0;
+    }
+
+    to {
+        background-position: 200% 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .quiz-progress-fill {
+        transition: none;
+    }
+
+    .quiz-progress-fill::after {
+        animation: none;
+    }
+
+    .quiz-progress-track {
+        animation: none;
+    }
+}

@@ -214,9 +214,23 @@ function renderMcqQuestion() {
     });
 
     area.innerHTML = `
-        <p style="font-weight: bold; margin-bottom: 0.75rem;">
+        <p style="font-weight: bold; margin-bottom: 0.5rem;">
             Pertanyaan ${currentMcqIndex + 1} dari ${currentMcqQuestions.length}
         </p>
+
+        <div
+            class="quiz-progress-track"
+            role="progressbar"
+            aria-label="Progress kuis"
+            aria-valuemin="1"
+            aria-valuemax="${currentMcqQuestions.length}"
+            aria-valuenow="${currentMcqIndex + 1}"
+        >
+            <div
+                class="quiz-progress-fill"
+                style="width: ${((currentMcqIndex + 1) / currentMcqQuestions.length) * 100}%"
+            ></div>
+        </div>
 
         <p style="font-size: 0.8rem; opacity: 0.75; margin-bottom: 0.5rem;">
             ${qData.category} • ${qData.difficulty.toUpperCase()}
