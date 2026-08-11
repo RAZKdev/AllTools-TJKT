@@ -158,22 +158,55 @@ function renderMcqQuestion() {
             <p>Skor Anda: ${score} dari ${currentMcqQuestions.length}</p>
             <button id="restart-quiz" class="btn-primary" style="margin-top: 1rem;">Ulangi Kuis</button>
         `;
+
         document.getElementById('restart-quiz').addEventListener('click', startMcqQuiz);
         return;
     }
 
     const qData = currentMcqQuestions[currentMcqIndex];
+
+    // Simpan pasangan option + index asli agar jawaban benar
+    // tetap terlacak setelah pilihan diacak.
+    const shuffledOptions = qData.options.map((text, index) => ({
+        text,
+        originalIndex: index
+    }));
+
+    for (let i = shuffledOptions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledOptions[i], shuffledOptions[j]] = [
+            shuffledOptions[j],
+            shuffledOptions[i]
+        ];
+    }
+
+    const optionLabels = ['A', 'B', 'C', 'D'];
+
     let optionsHtml = '';
-    qData.options.forEach((opt, idx) => {
-        optionsHtml += `<button class="btn-outline mcq-opt-btn" data-index="${idx}" style="display: block; width: 100%; margin-bottom: 0.5rem; text-align: left;">${opt}</button>`;
+
+    shuffledOptions.forEach((option, idx) => {
+        optionsHtml += `
+            <button
+                class="btn-outline mcq-opt-btn"
+                data-original-index="${option.originalIndex}"
+                style="display: block; width: 100%; margin-bottom: 0.5rem; text-align: left;"
+            >
+                <strong>${optionLabels[idx]}.</strong> ${option.text}
+            </button>
+        `;
     });
 
     area.innerHTML = `
-        <p style="font-weight: bold; margin-bottom: 0.75rem;">Pertanyaan ${currentMcqIndex + 1} dari ${currentMcqQuestions.length}</p>
+        <p style="font-weight: bold; margin-bottom: 0.75rem;">
+            Pertanyaan ${currentMcqIndex + 1} dari ${currentMcqQuestions.length}
+        </p>
+
         <p style="font-size: 0.8rem; opacity: 0.75; margin-bottom: 0.5rem;">
             ${qData.category} • ${qData.difficulty.toUpperCase()}
         </p>
+
         <p style="margin-bottom: 1rem;">${qData.q}</p>
+
         <div style="display: flex; flex-direction: column; gap: 0.5rem;">
             ${optionsHtml}
         </div>
@@ -181,10 +214,15 @@ function renderMcqQuestion() {
 
     area.querySelectorAll('.mcq-opt-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const selectedIdx = parseInt(e.target.getAttribute('data-index'), 10);
+            const selectedIdx = parseInt(
+                e.currentTarget.getAttribute('data-original-index'),
+                10
+            );
+
             if (selectedIdx === qData.answer) {
                 score++;
             }
+
             currentMcqIndex++;
             renderMcqQuestion();
         });
