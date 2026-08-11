@@ -1796,3 +1796,251 @@ main {
         grid-template-columns: 1fr;
     }
 }
+
+/* ==========================================================================
+   ALLTOOLS TJKT — TOOL COMPONENT SYSTEM
+   ========================================================================== */
+
+/* Tool description */
+.tool-desc {
+    margin: 0 0 1.25rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.55;
+}
+
+/* Form groups */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+/* Form controls */
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.7rem 0.8rem;
+
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+
+    background: var(--surface-color);
+    color: var(--text-color);
+
+    font: inherit;
+    font-size: 0.9rem;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.form-group textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.75;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* Buttons */
+.btn-primary,
+.btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 42px;
+    padding: 0.65rem 0.9rem;
+
+    border-radius: var(--radius);
+
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.15s ease;
+}
+
+.btn-primary {
+    border: 1px solid var(--primary-color);
+    background: var(--primary-color);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    border-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.btn-primary:active,
+.btn-outline:active {
+    transform: translateY(0);
+}
+
+.btn-primary:focus-visible,
+.btn-outline:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.btn-outline {
+    border: 1px solid var(--border-color);
+    background: var(--surface-color);
+    color: var(--text-color);
+}
+
+.btn-outline:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: var(--bg-color);
+    transform: translateY(-1px);
+}
+
+/* Validation errors */
+.error-msg {
+    display: block;
+    min-height: 1.2em;
+
+    color: var(--error-color);
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
+/* Result containers */
+.result-box {
+    width: 100%;
+    padding: 1rem;
+
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+
+    background: var(--surface-color);
+    color: var(--text-color);
+
+    overflow-x: auto;
+}
+
+.result-box p {
+    margin: 0;
+}
+
+/* Result tables */
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    font-size: 0.88rem;
+}
+
+.result-table th,
+.result-table td {
+    padding: 0.7rem 0.75rem;
+
+    border-bottom: 1px solid var(--border-color);
+
+    text-align: left;
+    vertical-align: top;
+    line-height: 1.45;
+}
+
+.result-table th {
+    font-weight: 700;
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+
+.result-table tr:last-child td {
+    border-bottom: none;
+}
+
+.result-table td:last-child {
+    font-family: monospace;
+    word-break: break-word;
+}
+
+/* Tabs */
+.converter-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Converter / quiz panels */
+.conv-panel,
+.quiz-panel {
+    width: 100%;
+}
+
+.conv-panel.hidden,
+.quiz-panel.hidden {
+    display: none;
+}
+
+/* Mobile tool components */
+@media (max-width: 600px) {
+    .tool-desc {
+        font-size: 0.85rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 0.85rem;
+    }
+
+    .btn-primary,
+    .btn-outline {
+        min-height: 40px;
+        font-size: 0.84rem;
+    }
+
+    .result-box {
+        padding: 0.85rem;
+    }
+
+    .result-table {
+        min-width: 420px;
+        font-size: 0.82rem;
+    }
+
+    .result-table th,
+    .result-table td {
+        padding: 0.6rem 0.65rem;
+    }
+
+    .converter-tabs {
+        gap: 0.4rem;
+        margin-bottom: 1.2rem;
+    }
+}

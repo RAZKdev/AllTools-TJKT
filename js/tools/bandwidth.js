@@ -16,6 +16,7 @@ function renderBandwidthCalculator(container) {
                         <option value="TB">TB</option>
                     </select>
                 </div>
+                <span id="file-size-error" class="error-msg"></span>
             </div>
 
             <div class="form-group">
@@ -29,6 +30,7 @@ function renderBandwidthCalculator(container) {
                         <option value="MBps">MB/s</option>
                     </select>
                 </div>
+                <span id="speed-error" class="error-msg"></span>
             </div>
 
             <button id="calc-bandwidth-btn" class="btn-primary">Hitung Waktu Transfer</button>
@@ -52,9 +54,26 @@ function calculateBandwidth() {
 
     const resultBox = document.getElementById('bandwidth-result');
     const outputEl = document.getElementById('bw-time-output');
+    const sizeError = document.getElementById('file-size-error');
+    const speedError = document.getElementById('speed-error');
 
-    if (isNaN(sizeVal) || isNaN(speedVal) || sizeVal <= 0 || speedVal <= 0) {
-        alert('Masukkan nilai ukuran file dan kecepatan dengan benar (lebih besar dari 0).');
+    sizeError.textContent = '';
+    speedError.textContent = '';
+    resultBox.classList.add('hidden');
+
+    let hasError = false;
+
+    if (isNaN(sizeVal) || sizeVal <= 0) {
+        sizeError.textContent = 'Ukuran file harus lebih besar dari 0.';
+        hasError = true;
+    }
+
+    if (isNaN(speedVal) || speedVal <= 0) {
+        speedError.textContent = 'Kecepatan transfer harus lebih besar dari 0.';
+        hasError = true;
+    }
+
+    if (hasError) {
         return;
     }
 

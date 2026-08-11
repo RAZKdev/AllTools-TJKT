@@ -29,6 +29,7 @@ function renderConverters(container) {
                 <div class="form-group" style="margin-top: 1rem;">
                     <label for="base-input">Nilai Angka:</label>
                     <input type="text" id="base-input" placeholder="Masukkan angka...">
+                    <span id="base-error" class="error-msg"></span>
                 </div>
                 <div class="form-group">
                     <label for="base-from">Dari Basis:</label>
@@ -56,6 +57,7 @@ function renderConverters(container) {
                 <div class="form-group">
                     <label for="data-value-input">Nilai:</label>
                     <input type="number" id="data-value-input" placeholder="Contoh: 1024" value="1">
+                    <span id="data-value-error" class="error-msg"></span>
                 </div>
                 <div class="form-group">
                     <label for="data-unit-select">Satuan Asal:</label>
@@ -149,12 +151,21 @@ function handleIPv4Convert() {
 function handleBaseConvert() {
     const val = document.getElementById('base-input').value.trim();
     const fromBase = parseInt(document.getElementById('base-from').value, 10);
-    
-    if (!val) return;
+    const errorEl = document.getElementById('base-error');
+    const resultBox = document.getElementById('base-conv-result');
 
-    let decimalVal = parseInt(val, fromBase);
+    errorEl.textContent = '';
+    resultBox.classList.add('hidden');
+
+    if (!val) {
+        errorEl.textContent = 'Nilai angka tidak boleh kosong.';
+        return;
+    }
+
+    const decimalVal = parseInt(val, fromBase);
+
     if (isNaN(decimalVal)) {
-        alert('Nilai angka tidak sesuai dengan basis yang dipilih.');
+        errorEl.textContent = 'Nilai angka tidak sesuai dengan basis yang dipilih.';
         return;
     }
 
@@ -162,19 +173,28 @@ function handleBaseConvert() {
     document.getElementById('base-res-bin').textContent = decimalVal.toString(2);
     document.getElementById('base-res-hex').textContent = decimalVal.toString(16).toUpperCase();
     document.getElementById('base-res-oct').textContent = decimalVal.toString(8);
-    
-    document.getElementById('base-conv-result').classList.remove('hidden');
+
+    resultBox.classList.remove('hidden');
 }
 
 // Handler Data Unit Converter
 function handleDataConvert() {
     const val = parseFloat(document.getElementById('data-value-input').value);
     const unit = document.getElementById('data-unit-select').value;
+    const errorEl = document.getElementById('data-value-error');
+    const resultBox = document.getElementById('data-conv-result');
 
-    if (isNaN(val)) return;
+    errorEl.textContent = '';
+    resultBox.classList.add('hidden');
+
+    if (isNaN(val) || val <= 0) {
+        errorEl.textContent = 'Nilai harus lebih besar dari 0.';
+        return;
+    }
 
     // Konversi semua ke basis terendah yaitu Bytes
     let bytes = 0;
+
     switch(unit) {
         case 'bit': bytes = val / 8; break;
         case 'Byte': bytes = val; break;
@@ -189,6 +209,7 @@ function handleDataConvert() {
     }
 
     const bits = bytes * 8;
+
     document.getElementById('d-bits').textContent = bits.toLocaleString();
     document.getElementById('d-bytes').textContent = bytes.toLocaleString();
     document.getElementById('d-kb').textContent = (bytes / 1000).toFixed(2);
@@ -198,6 +219,6 @@ function handleDataConvert() {
     document.getElementById('d-gb').textContent = (bytes / Math.pow(10, 9)).toFixed(6);
     document.getElementById('d-gib').textContent = (bytes / Math.pow(2, 30)).toFixed(6);
 
-    document.getElementById('data-conv-result').classList.remove('hidden');
+    resultBox.classList.remove('hidden');
 }
 
