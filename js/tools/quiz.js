@@ -386,9 +386,16 @@ function renderMcqResults() {
     const timeoutAnswers = mcqResults.filter(
         result => result.timedOut
     ).length;
-    const wrongAnswers = mcqResults.filter(
+    // Semua jawaban yang perlu direview: salah + timeout.
+    const reviewAnswers = mcqResults.filter(
         result => !result.isCorrect
     );
+
+    // Statistik "Salah" tidak boleh memasukkan timeout.
+    const wrongAnswers = mcqResults.filter(
+        result => !result.isCorrect && !result.timedOut
+    );
+
     const wrongCount = wrongAnswers.length;
     const percentage = totalQuestions > 0
         ? Math.round((correctAnswers / totalQuestions) * 100)
@@ -418,7 +425,7 @@ function renderMcqResults() {
 
     let reviewHtml = '';
 
-    if (wrongAnswers.length === 0) {
+    if (reviewAnswers.length === 0) {
         reviewHtml = `
             <div class="quiz-review-empty">
                 <h4>🎉 Semua Jawaban Benar!</h4>
@@ -430,10 +437,10 @@ function renderMcqResults() {
             <div class="quiz-review-section">
                 <h4>❌ Review Jawaban Salah</h4>
                 <p class="quiz-review-summary">
-                    ${wrongAnswers.length} soal perlu dipelajari kembali.
+                    ${reviewAnswers.length} soal perlu dipelajari kembali.
                 </p>
 
-                ${wrongAnswers.map((result, index) => {
+                ${reviewAnswers.map((result, index) => {
                     const correctLabel =
                         ['A', 'B', 'C', 'D'][result.correctIndex];
 
