@@ -475,7 +475,7 @@ function renderMcqResults() {
                             </p>
 
                             <p class="quiz-review-category">
-                                Kategori: <strong>${result.category}</strong>
+                                ${result.category}
                             </p>
 
                             <p class="quiz-review-question">
