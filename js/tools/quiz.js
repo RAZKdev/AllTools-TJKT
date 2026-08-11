@@ -239,7 +239,8 @@ function renderMcqQuestion() {
         <div
             id="mcq-timer"
             class="quiz-timer quiz-timer-normal"
-            aria-live="polite"
+            role="timer"
+            aria-label="Waktu tersisa"
         >
             <div class="quiz-timer-label">
                 <span class="quiz-timer-icon" aria-hidden="true">⏱️</span>
