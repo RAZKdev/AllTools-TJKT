@@ -2250,6 +2250,31 @@ main {
     }
 }
 
+/* Quiz Answer Lock - selected answer during transition */
+.quiz-answer-selected {
+    border-color: var(--success-color) !important;
+    background: color-mix(
+        in srgb,
+        var(--success-color) 12%,
+        var(--surface-color)
+    ) !important;
+    box-shadow: 0 0 0 2px color-mix(
+        in srgb,
+        var(--success-color) 25%,
+        transparent
+    );
+    opacity: 1 !important;
+}
+
+.quiz-answer-locked-message {
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    color: var(--success-color);
+}
+
 /* Quiz Results UX - Tahap 5B */
 
 .quiz-result-card {
@@ -2319,6 +2344,30 @@ main {
     border-radius: 999px;
     font-size: 0.85rem;
     font-weight: 700;
+}
+
+.quiz-result-duration {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: 520px;
+    margin: 1rem auto 0;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: color-mix(
+        in srgb,
+        var(--surface-color) 88%,
+        var(--border-color)
+    );
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.quiz-result-duration strong {
+    color: var(--text-color);
+    font-size: 0.95rem;
 }
 
 .quiz-result-feedback {

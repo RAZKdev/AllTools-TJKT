@@ -126,6 +126,8 @@ let currentMcqIndex = 0;
 let score = 0;
 let currentMcqQuestions = [];
 let mcqResults = [];
+let mcqStartTime = null;
+let mcqEndTime = null;
 
 const MCQ_QUESTION_COUNT = 25;
 const MCQ_TIME_LIMIT = 15;
@@ -155,6 +157,8 @@ function startMcqQuiz() {
     currentMcqIndex = 0;
     score = 0;
     mcqResults = [];
+    mcqStartTime = Date.now();
+    mcqEndTime = null;
 
     currentMcqQuestions = shuffleQuestions(mcqQuestions)
         .slice(0, Math.min(MCQ_QUESTION_COUNT, mcqQuestions.length));
@@ -281,6 +285,23 @@ function renderMcqQuestion() {
 
         answered = true;
 
+        area.querySelectorAll('.mcq-opt-btn').forEach(btn => {
+            btn.disabled = true;
+            btn.setAttribute('aria-disabled', 'true');
+
+            const btnIndex = parseInt(
+                btn.getAttribute('data-original-index'),
+                10
+            );
+
+            if (selectedIdx !== null && btnIndex === selectedIdx) {
+                btn.classList.add('quiz-answer-selected');
+                btn.setAttribute('aria-pressed', 'true');
+            } else {
+                btn.setAttribute('aria-pressed', 'false');
+            }
+        });
+
         clearInterval(mcqTimer);
         mcqTimer = null;
 
@@ -303,7 +324,19 @@ function renderMcqQuestion() {
         });
 
         currentMcqIndex++;
-        renderMcqQuestion();
+
+        const transitionMessage = document.createElement('p');
+        transitionMessage.className = 'quiz-answer-locked-message';
+        transitionMessage.setAttribute('role', 'status');
+        transitionMessage.textContent = timedOut
+            ? '⏰ Waktu habis. Melanjutkan...'
+            : '✓ Jawaban tercatat. Melanjutkan...';
+
+        area.appendChild(transitionMessage);
+
+        setTimeout(() => {
+            renderMcqQuestion();
+        }, 2000);
     };
 
     area.querySelectorAll('.mcq-opt-btn').forEach(btn => {
@@ -401,6 +434,20 @@ function renderMcqResults() {
     const percentage = totalQuestions > 0
         ? Math.round((correctAnswers / totalQuestions) * 100)
         : 0;
+
+    mcqEndTime = Date.now();
+
+    const durationSeconds = Math.max(
+        0,
+        Math.round((mcqEndTime - mcqStartTime) / 1000)
+    );
+
+    const durationMinutes = Math.floor(durationSeconds / 60);
+    const remainingSeconds = durationSeconds % 60;
+
+    const durationText = durationMinutes > 0
+        ? `${durationMinutes} menit ${remainingSeconds} detik`
+        : `${remainingSeconds} detik`;
 
     let grade;
     let feedback;
@@ -521,6 +568,11 @@ function renderMcqResults() {
             <p class="quiz-result-feedback">
                 ${feedback}
             </p>
+
+            <div class="quiz-result-duration">
+                <span>⏱️ Waktu pengerjaan</span>
+                <strong>${durationText}</strong>
+            </div>
 
             <div class="quiz-result-stats">
                 <div class="quiz-stat quiz-stat-correct">
