@@ -569,11 +569,6 @@ function renderMcqResults() {
                 ${feedback}
             </p>
 
-            <div class="quiz-result-duration">
-                <span>⏱️ Waktu pengerjaan</span>
-                <strong>${durationText}</strong>
-            </div>
-
             <div class="quiz-result-stats">
                 <div class="quiz-stat quiz-stat-correct">
                     <strong>${correctAnswers}</strong>
@@ -588,6 +583,11 @@ function renderMcqResults() {
                 <div class="quiz-stat quiz-stat-timeout">
                     <strong>${timeoutAnswers}</strong>
                     <span>Timeout</span>
+                </div>
+
+                <div class="quiz-stat quiz-stat-duration">
+                    <strong>${durationText}</strong>
+                    <span>Waktu</span>
                 </div>
             </div>
         </div>
