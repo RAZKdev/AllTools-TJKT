@@ -160,8 +160,55 @@ function startMcqQuiz() {
     mcqStartTime = Date.now();
     mcqEndTime = null;
 
-    currentMcqQuestions = shuffleQuestions(mcqQuestions)
-        .slice(0, Math.min(MCQ_QUESTION_COUNT, mcqQuestions.length));
+    const MCQ_DIFFICULTY_BLUEPRINT = {
+        easy: 8,
+        medium: 7,
+        hard: 5,
+        expert: 3,
+        nightmare: 2
+    };
+
+    const difficultyPools = {
+        easy: [],
+        medium: [],
+        hard: [],
+        expert: [],
+        nightmare: []
+    };
+
+    mcqQuestions.forEach(question => {
+        if (difficultyPools[question.difficulty]) {
+            difficultyPools[question.difficulty].push(question);
+        }
+    });
+
+    Object.entries(MCQ_DIFFICULTY_BLUEPRINT).forEach(
+        ([difficulty, requiredCount]) => {
+            const availableCount =
+                difficultyPools[difficulty].length;
+
+            if (availableCount < requiredCount) {
+                throw new Error(
+                    `Quiz difficulty pool insufficient: ${difficulty} ` +
+                    `needs ${requiredCount}, found ${availableCount}`
+                );
+            }
+        }
+    );
+
+    currentMcqQuestions = [];
+
+    Object.entries(MCQ_DIFFICULTY_BLUEPRINT).forEach(
+        ([difficulty, requiredCount]) => {
+            const selected = shuffleQuestions(
+                difficultyPools[difficulty]
+            ).slice(0, requiredCount);
+
+            currentMcqQuestions.push(...selected);
+        }
+    );
+
+    currentMcqQuestions = shuffleQuestions(currentMcqQuestions);
 
     renderMcqQuestion();
 }
@@ -237,7 +284,7 @@ function renderMcqQuestion() {
         </div>
 
         <p style="font-size: 0.8rem; opacity: 0.75; margin-bottom: 0.5rem;">
-            ${qData.category} • ${qData.difficulty.toUpperCase()}
+            ${qData.category}
         </p>
 
         <div
