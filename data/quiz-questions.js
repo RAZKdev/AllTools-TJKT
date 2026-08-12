@@ -24,7 +24,7 @@ const mcqQuestions = [
         ],
         answer: 2,
         category: "OSI",
-        difficulty: "easy"
+        difficulty: "medium"
     },
     {
         q: "Ethernet terutama bekerja pada layer OSI?",
@@ -36,7 +36,7 @@ const mcqQuestions = [
         ],
         answer: 0,
         category: "OSI",
-        difficulty: "medium"
+        difficulty: "easy"
     },
     {
         q: "Layer OSI yang bertanggung jawab terhadap routing packet adalah?",
@@ -48,7 +48,7 @@ const mcqQuestions = [
         ],
         answer: 2,
         category: "OSI",
-        difficulty: "easy"
+        difficulty: "hard"
     },
     {
         q: "MAC Address paling berkaitan dengan layer OSI?",
@@ -60,7 +60,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "OSI",
-        difficulty: "easy"
+        difficulty: "expert"
     },
     {
         q: "Layer OSI yang menangani enkripsi, kompresi, dan translasi format data adalah?",
@@ -72,7 +72,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "OSI",
-        difficulty: "medium"
+        difficulty: "easy"
     },
     {
         q: "Layer OSI yang mengatur pembentukan dan pemeliharaan sesi komunikasi adalah?",
@@ -96,7 +96,7 @@ const mcqQuestions = [
         ],
         answer: 0,
         category: "OSI",
-        difficulty: "hard"
+        difficulty: "medium"
     },
 
     // =========================
@@ -136,7 +136,7 @@ const mcqQuestions = [
         ],
         answer: 2,
         category: "TCP/IP",
-        difficulty: "medium"
+        difficulty: "easy"
     },
     {
         q: "TCP menggunakan mekanisme apa untuk memastikan koneksi dibuat sebelum pertukaran data?",
@@ -160,7 +160,7 @@ const mcqQuestions = [
         ],
         answer: 0,
         category: "TCP/IP",
-        difficulty: "easy"
+        difficulty: "medium"
     },
     {
         q: "Jika aplikasi membutuhkan kecepatan dan dapat mentoleransi sebagian packet loss, protokol transport yang biasanya lebih sesuai adalah?",
@@ -172,7 +172,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "TCP/IP",
-        difficulty: "medium"
+        difficulty: "hard"
     },
     {
         q: "Manakah yang bukan termasuk layer utama model TCP/IP?",
@@ -184,7 +184,7 @@ const mcqQuestions = [
         ],
         answer: 3,
         category: "TCP/IP",
-        difficulty: "medium"
+        difficulty: "hard"
     },
 
     // =========================
@@ -224,7 +224,7 @@ const mcqQuestions = [
         ],
         answer: 2,
         category: "Protocol",
-        difficulty: "easy"
+        difficulty: "medium"
     },
     {
         q: "Protokol yang digunakan untuk transfer file antara client dan server adalah?",
@@ -248,7 +248,7 @@ const mcqQuestions = [
         ],
         answer: 0,
         category: "Protocol",
-        difficulty: "medium"
+        difficulty: "hard"
     },
     {
         q: "Protokol yang digunakan untuk menguji konektivitas dengan mekanisme echo request dan echo reply adalah?",
@@ -272,7 +272,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "Protocol",
-        difficulty: "medium"
+        difficulty: "expert"
     },
     {
         q: "Port default HTTPS adalah?",
@@ -284,7 +284,7 @@ const mcqQuestions = [
         ],
         answer: 3,
         category: "Protocol",
-        difficulty: "medium"
+        difficulty: "hard"
     },
 
     // =========================
@@ -360,7 +360,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "IPv4",
-        difficulty: "medium"
+        difficulty: "expert"
     },
     {
         q: "Berapakah jumlah host usable pada jaringan /24?",
@@ -372,7 +372,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "IPv4",
-        difficulty: "easy"
+        difficulty: "medium"
     },
     {
         q: "Subnet mask 255.255.255.0 setara dengan prefix?",
@@ -384,7 +384,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "IPv4",
-        difficulty: "easy"
+        difficulty: "hard"
     },
 
     // =========================
@@ -400,7 +400,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "Subnetting",
-        difficulty: "easy"
+        difficulty: "medium"
     },
     {
         q: "Berapakah jumlah host usable pada subnet /26?",
@@ -412,7 +412,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "Subnetting",
-        difficulty: "easy"
+        difficulty: "medium"
     },
     {
         q: "Berapakah jumlah host usable pada subnet /27?",
@@ -424,7 +424,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "Subnetting",
-        difficulty: "easy"
+        difficulty: "medium"
     },
     {
         q: "Berapakah jumlah host usable pada subnet /28?",
@@ -436,7 +436,7 @@ const mcqQuestions = [
         ],
         answer: 0,
         category: "Subnetting",
-        difficulty: "easy"
+        difficulty: "medium"
     },
     {
         q: "IP 192.168.1.70/26 berada pada network address?",
@@ -448,7 +448,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "Subnetting",
-        difficulty: "medium"
+        difficulty: "hard"
     },
     {
         q: "IP 192.168.10.130/26 berada pada network address?",
@@ -460,7 +460,7 @@ const mcqQuestions = [
         ],
         answer: 2,
         category: "Subnetting",
-        difficulty: "medium"
+        difficulty: "hard"
     },
     {
         q: "Berapakah block size dari subnet mask /27?",
@@ -472,7 +472,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "Subnetting",
-        difficulty: "medium"
+        difficulty: "hard"
     },
     {
         q: "Berapakah block size dari subnet mask /26?",
@@ -484,7 +484,7 @@ const mcqQuestions = [
         ],
         answer: 2,
         category: "Subnetting",
-        difficulty: "medium"
+        difficulty: "hard"
     },
     {
         q: "Network 192.168.1.0/26 memiliki broadcast address?",
@@ -496,7 +496,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "Subnetting",
-        difficulty: "medium"
+        difficulty: "hard"
     },
     {
         q: "IP 10.10.10.200/27 berada pada subnet yang memiliki network address?",
@@ -508,7 +508,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "Subnetting",
-        difficulty: "hard"
+        difficulty: "expert"
     },
 
     // =========================
@@ -524,7 +524,7 @@ const mcqQuestions = [
         ],
         answer: 2,
         category: "Network Device",
-        difficulty: "easy"
+        difficulty: "hard"
     },
     {
         q: "Perangkat yang meneruskan frame berdasarkan MAC Address adalah?",
@@ -536,7 +536,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "Network Device",
-        difficulty: "easy"
+        difficulty: "medium"
     },
     {
         q: "Perangkat yang bekerja dengan memperkuat atau meregenerasi sinyal agar jangkauan transmisi lebih jauh adalah?",
@@ -572,7 +572,7 @@ const mcqQuestions = [
         ],
         answer: 0,
         category: "Network Device",
-        difficulty: "medium"
+        difficulty: "expert"
     },
 
     // =========================
