@@ -48,7 +48,7 @@ const mcqQuestions = [
         ],
         answer: 2,
         category: "OSI",
-        difficulty: "hard"
+        difficulty: "easy"
     },
     {
         q: "MAC Address paling berkaitan dengan layer OSI?",
@@ -60,7 +60,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "OSI",
-        difficulty: "expert"
+        difficulty: "easy"
     },
     {
         q: "Layer OSI yang menangani enkripsi, kompresi, dan translasi format data adalah?",
@@ -172,7 +172,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "TCP/IP",
-        difficulty: "hard"
+        difficulty: "easy"
     },
     {
         q: "Manakah yang bukan termasuk layer utama model TCP/IP?",
@@ -184,7 +184,7 @@ const mcqQuestions = [
         ],
         answer: 3,
         category: "TCP/IP",
-        difficulty: "hard"
+        difficulty: "easy"
     },
 
     // =========================
@@ -248,7 +248,7 @@ const mcqQuestions = [
         ],
         answer: 0,
         category: "Protocol",
-        difficulty: "hard"
+        difficulty: "easy"
     },
     {
         q: "Protokol yang digunakan untuk menguji konektivitas dengan mekanisme echo request dan echo reply adalah?",
@@ -272,7 +272,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "Protocol",
-        difficulty: "expert"
+        difficulty: "easy"
     },
     {
         q: "Port default HTTPS adalah?",
@@ -284,7 +284,7 @@ const mcqQuestions = [
         ],
         answer: 3,
         category: "Protocol",
-        difficulty: "hard"
+        difficulty: "easy"
     },
 
     // =========================
@@ -360,7 +360,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "IPv4",
-        difficulty: "expert"
+        difficulty: "easy"
     },
     {
         q: "Berapakah jumlah host usable pada jaringan /24?",
@@ -384,7 +384,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "IPv4",
-        difficulty: "hard"
+        difficulty: "easy"
     },
 
     // =========================
@@ -448,7 +448,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "Subnetting",
-        difficulty: "hard"
+        difficulty: "medium"
     },
     {
         q: "IP 192.168.10.130/26 berada pada network address?",
@@ -460,7 +460,7 @@ const mcqQuestions = [
         ],
         answer: 2,
         category: "Subnetting",
-        difficulty: "hard"
+        difficulty: "medium"
     },
     {
         q: "Berapakah block size dari subnet mask /27?",
@@ -472,7 +472,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "Subnetting",
-        difficulty: "hard"
+        difficulty: "medium"
     },
     {
         q: "Berapakah block size dari subnet mask /26?",
@@ -484,7 +484,7 @@ const mcqQuestions = [
         ],
         answer: 2,
         category: "Subnetting",
-        difficulty: "hard"
+        difficulty: "medium"
     },
     {
         q: "Network 192.168.1.0/26 memiliki broadcast address?",
@@ -496,7 +496,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "Subnetting",
-        difficulty: "hard"
+        difficulty: "medium"
     },
     {
         q: "IP 10.10.10.200/27 berada pada subnet yang memiliki network address?",
@@ -508,7 +508,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "Subnetting",
-        difficulty: "expert"
+        difficulty: "medium"
     },
 
     // =========================
@@ -524,7 +524,7 @@ const mcqQuestions = [
         ],
         answer: 2,
         category: "Network Device",
-        difficulty: "hard"
+        difficulty: "easy"
     },
     {
         q: "Perangkat yang meneruskan frame berdasarkan MAC Address adalah?",
@@ -572,7 +572,7 @@ const mcqQuestions = [
         ],
         answer: 0,
         category: "Network Device",
-        difficulty: "expert"
+        difficulty: "medium"
     },
 
     // =========================
@@ -676,7 +676,7 @@ const mcqQuestions = [
         ],
         answer: 0,
         category: "OSI",
-        difficulty: "hard"
+        difficulty: "medium"
     },
 
     // =========================
@@ -768,7 +768,7 @@ const mcqQuestions = [
         ],
         answer: 0,
         category: "Protocol",
-        difficulty: "expert"
+        difficulty: "medium"
     },
 
     // =========================
@@ -860,7 +860,7 @@ const mcqQuestions = [
         ],
         answer: 1,
         category: "Subnetting",
-        difficulty: "hard"
+        difficulty: "medium"
     },
     {
         q: "Sebuah jaringan 192.168.100.0/24 harus dibagi menggunakan VLSM untuk kebutuhan 100 host, 50 host, dan 20 host. Rancangan prefix minimum yang paling efisien secara berurutan adalah?",
@@ -1044,7 +1044,7 @@ const mcqQuestions = [
         ],
         answer: 0,
         category: "TCP/IP",
-        difficulty: "hard"
+        difficulty: "medium"
     },
 
     // =========================
@@ -1084,7 +1084,7 @@ const mcqQuestions = [
         ],
         answer: 0,
         category: "Protocol",
-        difficulty: "hard"
+        difficulty: "medium"
     },
     {
         q: "Sebuah PC berada pada subnet yang sama dengan gateway. ARP table sudah berisi MAC gateway dan ping gateway berhasil. Ping ke IP server pada jaringan lain juga berhasil, tetapi koneksi HTTPS ke server timeout. Dari PC lain pada subnet yang sama, HTTPS ke server berhasil. Pemeriksaan paling tepat pada PC tersebut adalah?",
@@ -1136,7 +1136,7 @@ const mcqQuestions = [
         ],
         answer: 2,
         category: "IPv4",
-        difficulty: "hard"
+        difficulty: "medium"
     },
     {
         q: "Sebuah PC menggunakan IP 192.168.40.130/25 dan gateway 192.168.40.1. PC dapat berkomunikasi dengan host lokal, tetapi semua jaringan di luar subnet gagal diakses. Pemeriksaan awal menunjukkan gateway berada pada subnet yang sama dan dapat diping. Router memiliki interface untuk subnet tersebut, tetapi belum memiliki route menuju jaringan tujuan. Penyebab utama kegagalan adalah?",
@@ -1198,9 +1198,9 @@ const mcqQuestions = [
             "2048",
             "4096"
         ],
-        answer: 3,
+        answer: 1,
         category: "Subnetting",
-        difficulty: "expert"
+        difficulty: "medium"
     },
     {
         q: "Sebuah organisasi memiliki network 10.50.0.0/24 dengan kebutuhan 100 host, 50 host, 25 host, dan 10 host. Menggunakan VLSM, subnet untuk kebutuhan terbesar sudah ditempatkan sebagai 10.50.0.0/25. Pilihan alokasi berikut yang paling tepat untuk tiga kebutuhan sisanya tanpa overlap adalah?",

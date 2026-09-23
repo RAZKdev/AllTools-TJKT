@@ -450,8 +450,12 @@ function initRouter() {
 
             /*
              * Simpan sebagai Recently Used
+             * Hanya untuk tool routes yang ada di toolInfo —
+             * category routes dan 'feedback' tidak punya card di dashboard.
              */
-            StorageManager.addRecent(route);
+            if (toolInfo[route]) {
+                StorageManager.addRecent(route);
+            }
 
             /*
              * Category routes
@@ -626,6 +630,15 @@ function initRouter() {
                 const feedbackFilters =
                     document.querySelectorAll('[data-feedback-filter]');
 
+                function escapeHtml(str) {
+                    return String(str)
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#39;');
+                }
+
                 function renderFeedbackCards(filter = 'all') {
                     const filteredFeedback =
                         filter === 'all'
@@ -652,7 +665,7 @@ function initRouter() {
 
                                 <div class="feedback-card-header">
                                     <span class="feedback-card-type">
-                                        ${item.icon} ${item.label}
+                                        ${escapeHtml(item.icon)} ${escapeHtml(item.label)}
                                     </span>
 
                                     <span class="feedback-status-badge">
@@ -661,12 +674,12 @@ function initRouter() {
                                 </div>
 
                                 <div class="feedback-card-title">
-                                    ${item.title}
+                                    ${escapeHtml(item.title)}
                                 </div>
 
                                 <div class="feedback-card-meta">
-                                    <span>Halaman: ${item.page}</span>
-                                    <span>${item.date}</span>
+                                    <span>Halaman: ${escapeHtml(item.page)}</span>
+                                    <span>${escapeHtml(item.date)}</span>
                                 </div>
 
                             </article>
@@ -799,7 +812,7 @@ function initRouter() {
                             <button type="button"
                                     id="feedback-inbox-btn"
                                     class="feedback-inbox-btn">
-                                🔐 📬 Feedback Inbox
+                                📬 Feedback Inbox
                             </button>
                         </div>
 

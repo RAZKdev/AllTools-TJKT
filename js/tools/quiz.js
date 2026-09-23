@@ -132,6 +132,156 @@ let mcqEndTime = null;
 const MCQ_QUESTION_COUNT = 25;
 const MCQ_TIME_LIMIT = 15;
 
+const QUIZ_PROGRESS_STORAGE_KEY =
+    'alltools-tjkt-quiz-progress-v1';
+
+function getQuizProgress() {
+    const emptyProgress = {
+        sessions: 0,
+        totalQuestions: 0,
+        totalCorrect: 0,
+        totalTimeouts: 0,
+        bestPercentage: 0,
+        bestScore: 0,
+        bestTotal: 0,
+        totalDurationSeconds: 0,
+        categories: {},
+        history: []
+    };
+
+    try {
+        const raw = localStorage.getItem(
+            QUIZ_PROGRESS_STORAGE_KEY
+        );
+
+        if (!raw) {
+            return emptyProgress;
+        }
+
+        const parsed = JSON.parse(raw);
+
+        return {
+            ...emptyProgress,
+            ...parsed,
+            categories: {
+                ...emptyProgress.categories,
+                ...(parsed.categories || {})
+            },
+            history: Array.isArray(parsed.history)
+                ? parsed.history
+                : []
+        };
+    } catch (error) {
+        console.warn(
+            'Quiz progress: gagal membaca localStorage.',
+            error
+        );
+
+        return emptyProgress;
+    }
+}
+
+function saveQuizProgress(progress) {
+    try {
+        localStorage.setItem(
+            QUIZ_PROGRESS_STORAGE_KEY,
+            JSON.stringify(progress)
+        );
+
+        return true;
+    } catch (error) {
+        console.warn(
+            'Quiz progress: gagal menyimpan localStorage.',
+            error
+        );
+
+        return false;
+    }
+}
+
+function recordQuizProgress(results, durationSeconds) {
+    const progress = getQuizProgress();
+
+    const totalQuestions = results.length;
+    const correctAnswers = results.filter(
+        result => result.isCorrect
+    ).length;
+
+    const timeoutAnswers = results.filter(
+        result => result.timedOut
+    ).length;
+
+    const percentage = totalQuestions > 0
+        ? Math.round(
+            (correctAnswers / totalQuestions) * 100
+        )
+        : 0;
+
+    progress.sessions += 1;
+    progress.totalQuestions += totalQuestions;
+    progress.totalCorrect += correctAnswers;
+    progress.totalTimeouts += timeoutAnswers;
+    progress.totalDurationSeconds += durationSeconds;
+
+    if (percentage > progress.bestPercentage) {
+        progress.bestPercentage = percentage;
+        progress.bestScore = correctAnswers;
+        progress.bestTotal = totalQuestions;
+    }
+
+    results.forEach(result => {
+        const category = result.category;
+
+        if (!progress.categories[category]) {
+            progress.categories[category] = {
+                total: 0,
+                correct: 0
+            };
+        }
+
+        progress.categories[category].total += 1;
+
+        if (result.isCorrect) {
+            progress.categories[category].correct += 1;
+        }
+    });
+
+    progress.history.push({
+        timestamp: new Date().toISOString(),
+        total: totalQuestions,
+        correct: correctAnswers,
+        timeout: timeoutAnswers,
+        wrong: results.filter(
+            result => !result.isCorrect &&
+                !result.timedOut
+        ).length,
+        percentage,
+        durationSeconds
+    });
+
+    progress.history = progress.history.slice(-10);
+
+    saveQuizProgress(progress);
+
+    return progress;
+}
+
+function formatQuizDuration(totalSeconds) {
+    const seconds = Math.max(
+        0,
+        Math.round(totalSeconds)
+    );
+
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+
+    if (minutes > 0) {
+        return `${minutes}m ${remainingSeconds}s`;
+    }
+
+    return `${remainingSeconds}s`;
+}
+
 let mcqTimer = null;
 let mcqTimeLeft = MCQ_TIME_LIMIT;
 
@@ -496,6 +646,43 @@ function renderMcqResults() {
         ? `${durationMinutes} menit ${remainingSeconds} detik`
         : `${remainingSeconds} detik`;
 
+    const progress = recordQuizProgress(
+        mcqResults,
+        durationSeconds
+    );
+
+    const overallAccuracy =
+        progress.totalQuestions > 0
+            ? Math.round(
+                (progress.totalCorrect /
+                    progress.totalQuestions) * 100
+            )
+            : 0;
+
+    const categoryStats = Object.entries(
+        progress.categories
+    )
+        .map(([category, stats]) => ({
+            category,
+            accuracy: stats.total > 0
+                ? Math.round(
+                    (stats.correct / stats.total) * 100
+                )
+                : 0,
+            total: stats.total,
+            correct: stats.correct
+        }))
+        .sort((a, b) => a.accuracy - b.accuracy);
+
+    const weakestCategory =
+        categoryStats.length > 0
+            ? categoryStats[0]
+            : null;
+
+    const recentHistory = [
+        ...progress.history
+    ].reverse();
+
     let grade;
     let feedback;
     let gradeClass;
@@ -637,6 +824,94 @@ function renderMcqResults() {
                     <span>Waktu</span>
                 </div>
             </div>
+        </div>
+
+        <div class="quiz-progress-summary">
+            <h4>Progress Kamu</h4>
+
+            <div class="quiz-result-stats">
+                <div class="quiz-stat">
+                    <strong>${progress.sessions}</strong>
+                    <span>Total Sesi</span>
+                </div>
+
+                <div class="quiz-stat">
+                    <strong>${overallAccuracy}%</strong>
+                    <span>Accuracy</span>
+                </div>
+
+                <div class="quiz-stat">
+                    <strong>${progress.bestPercentage}%</strong>
+                    <span>Best Score</span>
+                </div>
+
+                <div class="quiz-stat">
+                    <strong>${progress.totalQuestions}</strong>
+                    <span>Soal Dijawab</span>
+                </div>
+            </div>
+
+            ${
+                weakestCategory
+                    ? `
+                        <p style="margin-top: 1rem;">
+                            Fokus latihan:
+                            <strong>
+                                ${weakestCategory.category}
+                            </strong>
+                            (${weakestCategory.accuracy}% accuracy)
+                        </p>
+                    `
+                    : ''
+            }
+
+            ${
+                recentHistory.length > 0
+                    ? `
+                        <div style="margin-top: 1rem;">
+                            <strong>10 Sesi Terakhir</strong>
+
+                            <div style="margin-top: 0.75rem;">
+                                ${
+                                    recentHistory.map(
+                                        (session, index) => `
+                                            <div
+                                                style="
+                                                    padding: 0.65rem 0;
+                                                    border-bottom:
+                                                        1px solid
+                                                        var(--border-color);
+                                                "
+                                            >
+                                                <strong>
+                                                    #${index + 1}
+                                                    —
+                                                    ${session.percentage}%
+                                                </strong>
+
+                                                <span
+                                                    style="
+                                                        margin-left: 0.5rem;
+                                                        opacity: 0.75;
+                                                    "
+                                                >
+                                                    ${session.correct}/${session.total}
+                                                    •
+                                                    ${session.timeout} timeout
+                                                    •
+                                                    ${formatQuizDuration(
+                                                        session.durationSeconds
+                                                    )}
+                                                </span>
+                                            </div>
+                                        `
+                                    ).join('')
+                                }
+                            </div>
+                        </div>
+                    `
+                    : ''
+            }
         </div>
 
         ${reviewHtml}
