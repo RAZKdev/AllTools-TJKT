@@ -429,8 +429,27 @@ function initRouter() {
                 JSON.stringify(existingFeedback)
             );
 
-            feedbackStatus.textContent =
-                `Feedback ${feedbackLabels[selectedType]} berhasil diterima. Terima kasih!`;
+            const label = feedbackLabels[selectedType];
+            const waText = encodeURIComponent(`Halo Rangga, ada masukan [${label}] untuk AllTools TJKT:\n\n"${message}"`);
+            const mailSubject = encodeURIComponent(`[AllTools TJKT] Masukan ${label}`);
+            const mailBody = encodeURIComponent(`Halo Rangga,\n\nAda masukan untuk AllTools TJKT:\nJenis: ${label}\nHalaman: About\nPesan:\n${message}\n\nTerima kasih.`);
+
+            feedbackStatus.innerHTML = `
+                <div style="margin-bottom: 0.5rem; font-weight: 600;">
+                    ✓ Masukan ${label} berhasil dicatat! Terima kasih telah berkontribusi.
+                </div>
+                <div class="feedback-direct-options">
+                    <p>📤 Ingin meneruskan langsung ke kontak Rangga (Pembuat)?</p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <a href="https://wa.me/?text=${waText}" target="_blank" rel="noopener" class="btn-primary" style="font-size: 0.8rem; min-height: 34px; text-decoration: none; padding: 0.4rem 0.8rem;">
+                            💬 Kirim ke WhatsApp Pembuat
+                        </a>
+                        <a href="mailto:?subject=${mailSubject}&body=${mailBody}" class="btn-outline" style="font-size: 0.8rem; min-height: 34px; text-decoration: none; padding: 0.4rem 0.8rem;">
+                            📧 Kirim ke Email Pembuat
+                        </a>
+                    </div>
+                </div>
+            `;
 
             feedbackStatus.classList.remove('hidden');
 
@@ -540,110 +559,136 @@ function initRouter() {
              * Render individual tool
              */
              } else if (route === 'feedback') {
-                const defaultFeedback = [
-                    {
-                        id: 'demo-1',
-                        type: 'bug',
-                        icon: '🐛',
-                        label: 'Bug',
-                        status: 'NEW',
-                        title: 'Search tidak bekerja',
-                        page: 'Home',
-                        date: '10 Aug 2026'
-                    },
-                    {
-                        id: 'demo-2',
-                        type: 'suggestion',
-                        icon: '💡',
-                        label: 'Saran',
-                        status: 'NEW',
-                        title: 'Tambahkan dark mode',
-                        page: 'Settings',
-                        date: '10 Aug 2026'
-                    },
-                    {
-                        id: 'demo-3',
-                        type: 'feedback',
-                        icon: '❤️',
-                        label: 'Feedback',
-                        status: 'READ',
-                        title: 'Website-nya keren',
-                        page: 'Home',
-                        date: '9 Aug 2026'
-                    }
-                ];
+                const CREATOR_PIN_KEY = 'alltools_creator_pin';
+                const CREATOR_SESSION_KEY = 'alltools_creator_session';
+                const DEFAULT_CREATOR_PIN = '2026';
 
-                let feedbackData =
-                    JSON.parse(
-                        localStorage.getItem('alltools_feedback') || 'null'
-                    );
-
-                if (!Array.isArray(feedbackData)) {
-                    feedbackData = defaultFeedback;
-
-                    localStorage.setItem(
-                        'alltools_feedback',
-                        JSON.stringify(feedbackData)
-                    );
+                function getCreatorPin() {
+                    return localStorage.getItem(CREATOR_PIN_KEY) || DEFAULT_CREATOR_PIN;
                 }
+
+                function isCreatorAuthenticated() {
+                    return sessionStorage.getItem(CREATOR_SESSION_KEY) === 'true';
+                }
+
+                // Jika belum terautentikasi sebagai pembuat, tampilkan layar verifikasi PIN
+                if (!isCreatorAuthenticated()) {
+                    contentArea.innerHTML = `
+                        <div class="creator-gate-view">
+                            <div class="creator-gate-icon">🔒</div>
+                            <h3>Verifikasi Pembuat (Creator Only)</h3>
+                            <p>
+                                Kotak masuk masukan ini bersifat privat dan hanya dapat dibuka oleh pembuat AllTools TJKT untuk meninjau laporan bug dan saran dari pengguna.
+                            </p>
+
+                            <div class="form-group" style="margin-bottom: 0.85rem; text-align: left;">
+                                <label for="creator-pin-input" style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.35rem; display: block;">
+                                    Masukkan PIN Pengembang:
+                                </label>
+                                <input type="password" id="creator-pin-input" class="creator-pin-input" placeholder="••••" maxlength="16" autocomplete="off" autofocus>
+                            </div>
+
+                            <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1.25rem;">
+                                <button type="button" id="btn-unlock-inbox" class="btn-primary" style="min-height: 42px; padding: 0.65rem 1.4rem;">
+                                    Buka Inbox
+                                </button>
+                                <button type="button" id="btn-cancel-gate" class="btn-outline" style="min-height: 42px; padding: 0.65rem 1.2rem;">
+                                    ← Kembali
+                                </button>
+                            </div>
+
+                            <div id="creator-pin-error" class="creator-gate-error hidden"></div>
+                            
+                            <p style="margin-top: 1.5rem; margin-bottom: 0; font-size: 0.76rem; color: var(--text-secondary); opacity: 0.8;">
+                                PIN Default: <code>2026</code> (dapat diubah setelah masuk)
+                            </p>
+                        </div>
+                    `;
+
+                    const pinInput = document.getElementById('creator-pin-input');
+                    const unlockBtn = document.getElementById('btn-unlock-inbox');
+                    const cancelBtn = document.getElementById('btn-cancel-gate');
+                    const pinError = document.getElementById('creator-pin-error');
+
+                    function handleUnlock() {
+                        const enteredPin = pinInput.value.trim();
+                        if (enteredPin === getCreatorPin()) {
+                            sessionStorage.setItem(CREATOR_SESSION_KEY, 'true');
+                            navigateTo('feedback');
+                        } else {
+                            pinError.textContent = '❌ PIN salah! Akses ditolak. Hanya pembuat yang berhak membuka inbox ini.';
+                            pinError.classList.remove('hidden');
+                            pinInput.value = '';
+                            pinInput.focus();
+                        }
+                    }
+
+                    unlockBtn.addEventListener('click', handleUnlock);
+                    pinInput.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleUnlock();
+                        }
+                    });
+
+                    cancelBtn.addEventListener('click', () => {
+                        navigateTo('about');
+                    });
+
+                    return;
+                }
+
+                // JIKA TERAUTENTIKASI: Tampilkan Feedback Inbox Lengkap
+                let feedbackData = JSON.parse(
+                    localStorage.getItem('alltools_feedback') || '[]'
+                );
 
                 contentArea.innerHTML = `
                     <div class="feedback-inbox-view">
+                        <div class="feedback-inbox-toolbar">
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                <button type="button" id="btn-lock-inbox" class="btn-outline" style="font-size: 0.8rem; min-height: 34px;">
+                                    🔒 Kunci & Keluar Mode Pembuat
+                                </button>
+                                <button type="button" id="btn-change-pin" class="btn-outline" style="font-size: 0.8rem; min-height: 34px;">
+                                    🔑 Ganti PIN
+                                </button>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                <button type="button" id="btn-export-feedback" class="btn-primary" style="font-size: 0.8rem; min-height: 34px;">
+                                    📥 Ekspor JSON
+                                </button>
+                                <button type="button" id="btn-clear-feedback" class="btn-outline" style="font-size: 0.8rem; min-height: 34px; color: var(--error-color);">
+                                    🗑️ Hapus Semua
+                                </button>
+                            </div>
+                        </div>
 
                         <div class="feedback-inbox-header">
-                            <h2>📬 Feedback Inbox</h2>
+                            <h2>📬 Feedback Inbox (Area Pembuat)</h2>
                             <p>
-                                Kelola feedback yang masuk dari pengguna.
+                                Seluruh masukan dan laporan bug yang dikirim oleh pengguna pada aplikasi ini.
                             </p>
                         </div>
 
-                        <div class="feedback-filter"
-                             role="group"
-                             aria-label="Filter feedback">
-
-                            <button type="button"
-                                    class="active"
-                                    data-feedback-filter="all">
-                                Semua
-                            </button>
-
-                            <button type="button"
-                                    data-feedback-filter="bug">
-                                🐛 Bug
-                            </button>
-
-                            <button type="button"
-                                    data-feedback-filter="suggestion">
-                                💡 Saran
-                            </button>
-
-                            <button type="button"
-                                    data-feedback-filter="feedback">
-                                ❤️ Feedback
-                            </button>
-
+                        <div class="feedback-filter" role="group" aria-label="Filter feedback">
+                            <button type="button" class="active" data-feedback-filter="all">Semua</button>
+                            <button type="button" data-feedback-filter="bug">🐛 Bug</button>
+                            <button type="button" data-feedback-filter="suggestion">💡 Saran</button>
+                            <button type="button" data-feedback-filter="feedback">❤️ Feedback</button>
                         </div>
 
-                        <div class="feedback-inbox-count"
-                             id="feedback-inbox-count">
-                            3 feedback
+                        <div class="feedback-inbox-count" id="feedback-inbox-count">
+                            ${feedbackData.length} feedback
                         </div>
 
-                        <div class="feedback-card-list"
-                             id="feedback-card-list">
-                        </div>
-
+                        <div class="feedback-card-list" id="feedback-card-list"></div>
                     </div>
                 `;
 
-                const feedbackCardList =
-                    document.getElementById('feedback-card-list');
-
-                const feedbackCount =
-                    document.getElementById('feedback-inbox-count');
-
-                const feedbackFilters =
-                    document.querySelectorAll('[data-feedback-filter]');
+                const feedbackCardList = document.getElementById('feedback-card-list');
+                const feedbackCount = document.getElementById('feedback-inbox-count');
+                const feedbackFilters = document.querySelectorAll('[data-feedback-filter]');
 
                 function escapeHtml(str) {
                     return String(str)
@@ -654,65 +699,130 @@ function initRouter() {
                         .replace(/'/g, '&#39;');
                 }
 
-                function renderFeedbackCards(filter = 'all') {
-                    const filteredFeedback =
-                        filter === 'all'
-                            ? feedbackData
-                            : feedbackData.filter(item => item.type === filter);
+                function saveFeedbackData() {
+                    localStorage.setItem('alltools_feedback', JSON.stringify(feedbackData));
+                }
 
-                    feedbackCount.textContent =
-                        `${filteredFeedback.length} feedback`;
+                let currentFilter = 'all';
+
+                function renderFeedbackCards(filter = currentFilter) {
+                    currentFilter = filter;
+                    const filteredFeedback = filter === 'all'
+                        ? feedbackData
+                        : feedbackData.filter(item => item.type === filter);
+
+                    feedbackCount.textContent = `${filteredFeedback.length} feedback`;
 
                     if (!filteredFeedback.length) {
                         feedbackCardList.innerHTML = `
-                            <div class="about-section">
-                                <p>
-                                    Belum ada feedback pada kategori ini.
+                            <div class="about-section" style="text-align: center; padding: 2rem 1rem;">
+                                <p style="color: var(--text-secondary); margin: 0;">
+                                    Belum ada masukan pada kategori ini.
                                 </p>
                             </div>
                         `;
                         return;
                     }
 
-                    feedbackCardList.innerHTML =
-                        filteredFeedback.map(item => `
-                            <article class="feedback-card">
+                    feedbackCardList.innerHTML = filteredFeedback.map(item => `
+                        <article class="feedback-card" data-id="${item.id}">
+                            <div class="feedback-card-header">
+                                <span class="feedback-card-type">
+                                    ${escapeHtml(item.icon)} ${escapeHtml(item.label)}
+                                </span>
 
-                                <div class="feedback-card-header">
-                                    <span class="feedback-card-type">
-                                        ${escapeHtml(item.icon)} ${escapeHtml(item.label)}
-                                    </span>
-
-                                    <span class="feedback-status-badge">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <button type="button" class="btn-toggle-status feedback-status-badge" data-id="${item.id}" style="cursor: pointer; border: 1px solid var(--border-color);" title="Klik untuk mengubah status">
                                         ${item.status === 'NEW' ? '🆕 NEW' : '✓ READ'}
-                                    </span>
+                                    </button>
+                                    <button type="button" class="btn-delete-item" data-id="${item.id}" style="cursor: pointer; padding: 0.2rem 0.5rem; font-size: 0.8rem; color: var(--error-color); border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-color);" title="Hapus masukan ini">
+                                        ✕
+                                    </button>
                                 </div>
+                            </div>
 
-                                <div class="feedback-card-title">
-                                    ${escapeHtml(item.title)}
-                                </div>
+                            <div class="feedback-card-title">
+                                ${escapeHtml(item.title)}
+                            </div>
 
-                                <div class="feedback-card-meta">
-                                    <span>Halaman: ${escapeHtml(item.page)}</span>
-                                    <span>${escapeHtml(item.date)}</span>
-                                </div>
+                            <div class="feedback-card-meta">
+                                <span>Halaman: ${escapeHtml(item.page || 'About')}</span>
+                                <span>${escapeHtml(item.date || '-')}</span>
+                            </div>
+                        </article>
+                    `).join('');
 
-                            </article>
-                        `).join('');
+                    // Event toggle status
+                    feedbackCardList.querySelectorAll('.btn-toggle-status').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const id = btn.dataset.id;
+                            const target = feedbackData.find(f => String(f.id) === String(id));
+                            if (target) {
+                                target.status = target.status === 'NEW' ? 'READ' : 'NEW';
+                                saveFeedbackData();
+                                renderFeedbackCards();
+                            }
+                        });
+                    });
+
+                    // Event delete item
+                    feedbackCardList.querySelectorAll('.btn-delete-item').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const id = btn.dataset.id;
+                            if (confirm('Hapus pesan feedback ini?')) {
+                                feedbackData = feedbackData.filter(f => String(f.id) !== String(id));
+                                saveFeedbackData();
+                                renderFeedbackCards();
+                            }
+                        });
+                    });
                 }
 
                 feedbackFilters.forEach(button => {
                     button.addEventListener('click', () => {
-                        feedbackFilters.forEach(item => {
-                            item.classList.remove('active');
-                        });
-
+                        feedbackFilters.forEach(item => item.classList.remove('active'));
                         button.classList.add('active');
-
-                        renderFeedbackCards(
-                            button.dataset.feedbackFilter
-                        );
+                        renderFeedbackCards(button.dataset.feedbackFilter);
                     });
+                });
+
+                // Toolbar Actions
+                document.getElementById('btn-lock-inbox').addEventListener('click', () => {
+                    sessionStorage.removeItem(CREATOR_SESSION_KEY);
+                    navigateTo('about');
+                });
+
+                document.getElementById('btn-change-pin').addEventListener('click', () => {
+                    const currentPin = prompt('Masukkan PIN saat ini:');
+                    if (currentPin !== getCreatorPin()) {
+                        alert('PIN saat ini salah!');
+                        return;
+                    }
+                    const newPin = prompt('Masukkan PIN baru (minimal 4 digit):');
+                    if (!newPin || newPin.trim().length < 4) {
+                        alert('PIN baru tidak valid! Minimal 4 digit.');
+                        return;
+                    }
+                    localStorage.setItem(CREATOR_PIN_KEY, newPin.trim());
+                    alert('✓ PIN Pengembang berhasil diperbarui!');
+                });
+
+                document.getElementById('btn-export-feedback').addEventListener('click', () => {
+                    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(feedbackData, null, 2));
+                    const downloadAnchor = document.createElement('a');
+                    downloadAnchor.setAttribute("href", dataStr);
+                    downloadAnchor.setAttribute("download", `alltools_feedback_${Date.now()}.json`);
+                    document.body.appendChild(downloadAnchor);
+                    downloadAnchor.click();
+                    downloadAnchor.remove();
+                });
+
+                document.getElementById('btn-clear-feedback').addEventListener('click', () => {
+                    if (confirm('Yakin ingin menghapus seluruh data feedback? Tindakan ini tidak dapat dibatalkan.')) {
+                        feedbackData = [];
+                        saveFeedbackData();
+                        renderFeedbackCards();
+                    }
                 });
 
                 renderFeedbackCards();
@@ -826,8 +936,9 @@ function initRouter() {
 
                             <button type="button"
                                     id="feedback-inbox-btn"
-                                    class="feedback-inbox-btn">
-                                📬 Feedback Inbox
+                                    class="btn-outline"
+                                    style="width: 100%; margin-top: 1.25rem; font-size: 0.84rem; border-style: dashed; padding: 0.6rem 0.85rem;">
+                                🔒 Buka Inbox Masukan (Khusus Pembuat)
                             </button>
                         </div>
 
