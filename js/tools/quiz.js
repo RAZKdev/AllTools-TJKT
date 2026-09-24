@@ -310,57 +310,96 @@ function startMcqQuiz() {
     mcqStartTime = Date.now();
     mcqEndTime = null;
 
-    const MCQ_DIFFICULTY_BLUEPRINT = {
-        easy: 8,
-        medium: 7,
-        hard: 5,
-        expert: 3,
-        nightmare: 2
-    };
+    const area = document.getElementById('mcq-question-area');
 
-    const difficultyPools = {
-        easy: [],
-        medium: [],
-        hard: [],
-        expert: [],
-        nightmare: []
-    };
+    try {
+        const MCQ_DIFFICULTY_BLUEPRINT = {
+            easy: 8,
+            medium: 7,
+            hard: 5,
+            expert: 3,
+            nightmare: 2
+        };
 
-    mcqQuestions.forEach(question => {
-        if (difficultyPools[question.difficulty]) {
-            difficultyPools[question.difficulty].push(question);
-        }
-    });
+        const difficultyPools = {
+            easy: [],
+            medium: [],
+            hard: [],
+            expert: [],
+            nightmare: []
+        };
 
-    Object.entries(MCQ_DIFFICULTY_BLUEPRINT).forEach(
-        ([difficulty, requiredCount]) => {
-            const availableCount =
-                difficultyPools[difficulty].length;
+        mcqQuestions.forEach(question => {
+            if (difficultyPools[question.difficulty]) {
+                difficultyPools[question.difficulty].push(question);
+            }
+        });
 
-            if (availableCount < requiredCount) {
-                throw new Error(
-                    `Quiz difficulty pool insufficient: ${difficulty} ` +
-                    `needs ${requiredCount}, found ${availableCount}`
-                );
+        Object.entries(MCQ_DIFFICULTY_BLUEPRINT).forEach(
+            ([difficulty, requiredCount]) => {
+                const availableCount =
+                    difficultyPools[difficulty].length;
+
+                if (availableCount < requiredCount) {
+                    throw new Error(
+                        `Quiz difficulty pool insufficient: ${difficulty} ` +
+                        `needs ${requiredCount}, found ${availableCount}`
+                    );
+                }
+            }
+        );
+
+        currentMcqQuestions = [];
+
+        Object.entries(MCQ_DIFFICULTY_BLUEPRINT).forEach(
+            ([difficulty, requiredCount]) => {
+                const selected = shuffleQuestions(
+                    difficultyPools[difficulty]
+                ).slice(0, requiredCount);
+
+                currentMcqQuestions.push(...selected);
+            }
+        );
+
+        currentMcqQuestions = shuffleQuestions(currentMcqQuestions);
+
+        renderMcqQuestion();
+
+    } catch (error) {
+        console.error('Quiz: gagal memulai kuis.', error);
+
+        if (area) {
+            area.classList.remove('hidden');
+
+            area.innerHTML = `
+                <div class="quiz-start-error">
+                    <p class="quiz-start-error-icon" aria-hidden="true">⚠️</p>
+
+                    <p class="quiz-start-error-msg">
+                        Kuis tidak dapat dimulai.<br>
+                        Data soal mungkin tidak lengkap atau belum termuat.
+                    </p>
+
+                    <button
+                        id="quiz-error-retry-btn"
+                        class="btn-outline"
+                        style="margin-top: 1rem;"
+                    >
+                        Coba Lagi
+                    </button>
+                </div>
+            `;
+
+            const retryBtn = area.querySelector('#quiz-error-retry-btn');
+
+            if (retryBtn) {
+                retryBtn.addEventListener('click', () => {
+                    area.innerHTML = '';
+                    area.classList.add('hidden');
+                });
             }
         }
-    );
-
-    currentMcqQuestions = [];
-
-    Object.entries(MCQ_DIFFICULTY_BLUEPRINT).forEach(
-        ([difficulty, requiredCount]) => {
-            const selected = shuffleQuestions(
-                difficultyPools[difficulty]
-            ).slice(0, requiredCount);
-
-            currentMcqQuestions.push(...selected);
-        }
-    );
-
-    currentMcqQuestions = shuffleQuestions(currentMcqQuestions);
-
-    renderMcqQuestion();
+    }
 }
 
 function renderMcqQuestion() {
