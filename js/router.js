@@ -46,48 +46,56 @@ function initRouter() {
         'ip-calculator': {
             title: 'IP Address Calculator',
             icon: '🌐',
+            image: 'assets/images/ip-calculator.jpg',
             category: 'Networking'
         },
 
         'subnet-calculator': {
             title: 'Subnet Calculator',
             icon: '🔢',
+            image: 'assets/images/subnet-calculator.jpg',
             category: 'Networking'
         },
 
         'mac-address': {
             title: 'MAC Address Tools',
             icon: '🔗',
+            image: 'assets/images/mac-address.jpg',
             category: 'Networking'
         },
 
         'cable-wiring': {
             title: 'Kabel UTP & Crimping',
             icon: '🔌',
+            image: 'assets/images/cable-wiring.jpg',
             category: 'Networking'
         },
 
         'bandwidth-calculator': {
             title: 'Bandwidth Calculator',
             icon: '📊',
+            image: 'assets/images/bandwidth-calculator.jpg',
             category: 'Calculator'
         },
 
         'converters': {
             title: 'Data Unit & Base Converter',
             icon: '🔄',
+            image: 'assets/images/converters.jpg',
             category: 'Converter'
         },
 
         'quiz': {
             title: 'Subnetting & Quiz',
             icon: '🧠',
+            image: 'assets/images/quiz.jpg',
             category: 'TJKT Practice'
         },
 
         'network-reference': {
             title: 'Network Reference',
             icon: '📚',
+            image: 'assets/images/network-reference.jpg',
             category: 'Reference'
         },
 
@@ -120,7 +128,7 @@ function initRouter() {
 
         card.innerHTML = `
             <div class="dashboard-tool-icon">
-                ${info.icon}
+                ${info.image ? `<img src="${info.image}" alt="${info.title}" class="dashboard-tool-img">` : info.icon}
             </div>
 
             <div class="dashboard-tool-content">
@@ -169,8 +177,8 @@ function initRouter() {
         card.setAttribute('role', 'button');
 
         card.innerHTML = `
-            <div class="card-visual" aria-hidden="true">
-                ${info.icon}
+            <div class="card-visual">
+                ${info.image ? `<img src="${info.image}" alt="${info.title}" class="card-img" loading="lazy">` : info.icon}
             </div>
 
             <div class="card-content">
