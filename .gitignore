@@ -1,3 +1,7 @@
 *.backup
 *.before-*
 *.corrupted
+.agent/
+.vscode/
+*.zip
+*.lnk
