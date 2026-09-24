@@ -314,6 +314,9 @@ function initRouter() {
         const feedbackButtons =
             document.querySelectorAll('.feedback-type');
 
+        const feedbackSender =
+            document.getElementById('feedback-sender');
+
         const feedbackMessage =
             document.getElementById('feedback-message');
 
@@ -380,20 +383,34 @@ function initRouter() {
             updateCounter();
         });
 
-        feedbackSubmit.addEventListener('click', () => {
+        feedbackSubmit.addEventListener('click', async () => {
             const message =
                 feedbackMessage.value.trim();
 
             if (!message) {
                 feedbackStatus.textContent =
                     'Tulis pesan terlebih dahulu.';
-
+                feedbackStatus.className = 'feedback-status';
                 feedbackStatus.classList.remove('hidden');
-
                 feedbackMessage.focus();
                 return;
             }
 
+            const sender = feedbackSender ? feedbackSender.value.trim() : '';
+            const CREATOR_EMAIL = 'mmmbukanpunyague@gmail.com';
+            const label = feedbackLabels[selectedType];
+            const dateStr = new Date().toLocaleDateString(
+                'id-ID',
+                {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }
+            );
+
+            // 1. Simpan di local storage untuk Creator Inbox
             const existingFeedback =
                 JSON.parse(
                     localStorage.getItem('alltools_feedback') || '[]'
@@ -408,18 +425,12 @@ function initRouter() {
                         : selectedType === 'suggestion'
                             ? '💡'
                             : '❤️',
-                label: feedbackLabels[selectedType],
+                label: label,
                 status: 'NEW',
+                sender: sender || 'Pengunjung',
                 title: message,
                 page: 'About',
-                date: new Date().toLocaleDateString(
-                    'en-GB',
-                    {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                    }
-                )
+                date: dateStr
             };
 
             existingFeedback.unshift(newFeedback);
@@ -429,31 +440,100 @@ function initRouter() {
                 JSON.stringify(existingFeedback)
             );
 
-            const label = feedbackLabels[selectedType];
-            const waText = encodeURIComponent(`Halo Rangga, ada masukan [${label}] untuk AllTools TJKT:\n\n"${message}"`);
-            const mailSubject = encodeURIComponent(`[AllTools TJKT] Masukan ${label}`);
-            const mailBody = encodeURIComponent(`Halo Rangga,\n\nAda masukan untuk AllTools TJKT:\nJenis: ${label}\nHalaman: About\nPesan:\n${message}\n\nTerima kasih.`);
+            // 2. Siapkan URL pengiriman langsung
+            const mailSubject = `[AllTools TJKT] Masukan ${label} dari ${sender || 'Pengunjung'}`;
+            const mailBodyText = `Halo Rangga,\n\nAda masukan baru untuk AllTools TJKT:\n• Pengirim: ${sender || 'Anonim'}\n• Kategori: ${label}\n• Halaman: About\n• Waktu: ${dateStr}\n\nPesan:\n"${message}"\n\n---\nDikirim dari web AllTools TJKT`;
+
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(CREATOR_EMAIL)}&su=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBodyText)}`;
+            const mailtoUrl = `mailto:${encodeURIComponent(CREATOR_EMAIL)}?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBodyText)}`;
+            const waText = encodeURIComponent(`Halo Rangga, ada masukan [${label}] untuk AllTools TJKT dari ${sender || 'Pengunjung'}:\n\n"${message}"`);
+
+            // UI loading state
+            const originalBtnText = feedbackSubmit.textContent;
+            feedbackSubmit.disabled = true;
+            feedbackSubmit.textContent = '⏳ Mengirim ke email pembuat...';
+
+            let apiSent = false;
+            let apiNeedsActivation = false;
+
+            try {
+                const response = await fetch(`https://formsubmit.co/ajax/${CREATOR_EMAIL}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        _subject: mailSubject,
+                        _template: 'table',
+                        _captcha: 'false',
+                        Pengirim: sender || 'Anonim (Pengguna AllTools)',
+                        Kategori: label,
+                        Halaman: 'About',
+                        Waktu: dateStr,
+                        Pesan: message
+                    })
+                });
+
+                const resData = await response.json();
+                if (resData.success === 'true' || resData.success === true) {
+                    apiSent = true;
+                } else if (resData.message && resData.message.toLowerCase().includes('activation')) {
+                    apiNeedsActivation = true;
+                }
+            } catch (err) {
+                console.warn('Background email delivery notice:', err);
+            } finally {
+                feedbackSubmit.disabled = false;
+                feedbackSubmit.textContent = originalBtnText;
+            }
+
+            let statusNotice = '';
+            if (apiSent) {
+                statusNotice = `
+                    <div style="margin-bottom: 0.6rem; font-weight: 600; color: var(--success-color, #10b981);">
+                        ✅ Masukan berhasil terkirim langsung ke email pembuat (${CREATOR_EMAIL})!
+                    </div>
+                `;
+            } else if (apiNeedsActivation) {
+                statusNotice = `
+                    <div style="margin-bottom: 0.6rem; font-weight: 600; color: #f59e0b;">
+                        ⚠️ Masukan dicatat! (FormSubmit menunggu 1x klik "Activate Form" di email ${CREATOR_EMAIL}).
+                    </div>
+                `;
+            } else {
+                statusNotice = `
+                    <div style="margin-bottom: 0.6rem; font-weight: 600; color: var(--primary-color, #3b82f6);">
+                        ✓ Masukan berhasil dicatat! Anda dapat mengirimkannya langsung ke email pembuat di bawah:
+                    </div>
+                `;
+            }
 
             feedbackStatus.innerHTML = `
-                <div style="margin-bottom: 0.5rem; font-weight: 600;">
-                    ✓ Masukan ${label} berhasil dicatat! Terima kasih telah berkontribusi.
-                </div>
+                ${statusNotice}
                 <div class="feedback-direct-options">
-                    <p>📤 Ingin meneruskan langsung ke kontak Rangga (Pembuat)?</p>
+                    <p style="margin: 0.2rem 0 0.5rem; font-size: 0.8rem; color: var(--text-secondary);">
+                        📧 Tujuan Email: <strong>${CREATOR_EMAIL}</strong>
+                    </p>
                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        <a href="https://wa.me/?text=${waText}" target="_blank" rel="noopener" class="btn-primary" style="font-size: 0.8rem; min-height: 34px; text-decoration: none; padding: 0.4rem 0.8rem;">
-                            💬 Kirim ke WhatsApp Pembuat
+                        <a href="${gmailUrl}" target="_blank" rel="noopener" class="btn-primary" style="font-size: 0.8rem; min-height: 34px; text-decoration: none; padding: 0.4rem 0.85rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                            📬 Buka di Gmail Web
                         </a>
-                        <a href="mailto:?subject=${mailSubject}&body=${mailBody}" class="btn-outline" style="font-size: 0.8rem; min-height: 34px; text-decoration: none; padding: 0.4rem 0.8rem;">
-                            📧 Kirim ke Email Pembuat
+                        <a href="${mailtoUrl}" class="btn-outline" style="font-size: 0.8rem; min-height: 34px; text-decoration: none; padding: 0.4rem 0.85rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                            ✉️ Aplikasi Email Default
+                        </a>
+                        <a href="https://wa.me/?text=${waText}" target="_blank" rel="noopener" class="btn-outline" style="font-size: 0.8rem; min-height: 34px; text-decoration: none; padding: 0.4rem 0.85rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                            💬 WhatsApp
                         </a>
                     </div>
                 </div>
             `;
 
+            feedbackStatus.className = 'feedback-status';
             feedbackStatus.classList.remove('hidden');
 
             feedbackMessage.value = '';
+            if (feedbackSender) feedbackSender.value = '';
 
             updateCounter();
         });
@@ -561,10 +641,14 @@ function initRouter() {
              } else if (route === 'feedback') {
                 const CREATOR_PIN_KEY = 'alltools_creator_pin';
                 const CREATOR_SESSION_KEY = 'alltools_creator_session';
-                const DEFAULT_CREATOR_PIN = '2026';
+                const DEFAULT_CREATOR_PIN = '1234';
 
                 function getCreatorPin() {
-                    return localStorage.getItem(CREATOR_PIN_KEY) || DEFAULT_CREATOR_PIN;
+                    const savedPin = localStorage.getItem(CREATOR_PIN_KEY);
+                    if (!savedPin || savedPin === '2026') {
+                        return DEFAULT_CREATOR_PIN;
+                    }
+                    return savedPin;
                 }
 
                 function isCreatorAuthenticated() {
@@ -600,7 +684,7 @@ function initRouter() {
                             <div id="creator-pin-error" class="creator-gate-error hidden"></div>
                             
                             <p style="margin-top: 1.5rem; margin-bottom: 0; font-size: 0.76rem; color: var(--text-secondary); opacity: 0.8;">
-                                PIN Default: <code>2026</code> (dapat diubah setelah masuk)
+                                PIN Default: <code>1234</code> (dapat diubah setelah masuk)
                             </p>
                         </div>
                     `;
@@ -746,6 +830,7 @@ function initRouter() {
                             </div>
 
                             <div class="feedback-card-meta">
+                                <span>Dari: <strong>${escapeHtml(item.sender || 'Pengunjung')}</strong></span>
                                 <span>Halaman: ${escapeHtml(item.page || 'About')}</span>
                                 <span>${escapeHtml(item.date || '-')}</span>
                             </div>
@@ -906,11 +991,19 @@ function initRouter() {
 
                             </div>
 
+                            <input
+                                type="text"
+                                id="feedback-sender"
+                                class="feedback-sender-input"
+                                placeholder="Nama atau Kontak / Email kamu (opsional)"
+                                maxlength="80"
+                                aria-label="Nama atau Kontak pengirim">
+
                             <textarea
                                 id="feedback-message"
                                 class="feedback-input"
                                 maxlength="500"
-                                placeholder="Contoh: Woi dev, search lu ngaco tuh 😂"
+                                placeholder="Tulis kritik, saran, atau laporan bug di sini..."
                                 aria-label="Tulis feedback"></textarea>
 
                             <div class="feedback-meta">
