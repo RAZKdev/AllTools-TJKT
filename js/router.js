@@ -61,6 +61,12 @@ function initRouter() {
             category: 'Networking'
         },
 
+        'cable-wiring': {
+            title: 'Kabel UTP & Crimping',
+            icon: '🔌',
+            category: 'Networking'
+        },
+
         'bandwidth-calculator': {
             title: 'Bandwidth Calculator',
             icon: '📊',
@@ -464,7 +470,8 @@ function initRouter() {
                 networking: [
                     'ip-calculator',
                     'subnet-calculator',
-                    'mac-address'
+                    'mac-address',
+                    'cable-wiring'
                 ],
 
                 calculator: [
@@ -855,6 +862,9 @@ function initRouter() {
 
             } else if (route === 'network-reference') {
                 renderNetworkReference(contentArea);
+
+            } else if (route === 'cable-wiring') {
+                renderCableWiring(contentArea);
 
             } else {
                 contentArea.innerHTML = `
