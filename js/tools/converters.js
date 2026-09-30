@@ -112,6 +112,88 @@ function renderConverters(container) {
     container.querySelector('#convert-data-btn').addEventListener('click', handleDataConvert);
 }
 
+// Parser & Validator Universal IPv4 Decimal & Binary
+function parseIPv4OrBinary(rawInput) {
+    const input = String(rawInput || '').trim();
+    if (!input) {
+        return { success: false, error: 'Input tidak boleh kosong.' };
+    }
+
+    // 1. Format 32-bit Binary Kontinu (tanpa titik)
+    if (/^[01]{32}$/.test(input)) {
+        const octets = [];
+        for (let i = 0; i < 32; i += 8) {
+            octets.push(input.substring(i, i + 8));
+        }
+        const decimal = octets.map(b => parseInt(b, 2)).join('.');
+        return {
+            success: true,
+            format: 'binary_continuous',
+            decimal: decimal,
+            binary: octets.join('.'),
+            outputLabel: 'Desimal (IPv4):',
+            output: decimal
+        };
+    }
+
+    // 2. Format bertitik (harus tepat 4 oktet)
+    if (input.includes('.')) {
+        const parts = input.split('.');
+        if (parts.length !== 4) {
+            return { success: false, error: 'IPv4 harus terdiri dari tepat 4 oktet yang dipisahkan titik.' };
+        }
+
+        // A. Format Dotted Binary: Tepat 4 oktet @ 8-bit (hanya 0 dan 1)
+        if (parts.every(p => /^[01]{8}$/.test(p))) {
+            const decimal = parts.map(b => parseInt(b, 2)).join('.');
+            return {
+                success: true,
+                format: 'binary_dotted',
+                decimal: decimal,
+                binary: input,
+                outputLabel: 'Desimal (IPv4):',
+                output: decimal
+            };
+        }
+
+        // B. Deteksi jika user bermaksud memasukkan Binary tetapi panjang bit tidak tepat 8
+        const hasBinaryOnlyChars = parts.every(p => /^[01]+$/.test(p));
+        const hasOctetOver3Digits = parts.some(p => p.length > 3);
+        if (hasBinaryOnlyChars && (hasOctetOver3Digits || parts.some(p => p.length > 1 && p.length !== 8))) {
+            return { success: false, error: 'Format Binary tidak valid: setiap oktet binary harus terdiri dari tepat 8-bit (contoh: 11000000.10101000.00000001.00000001).' };
+        }
+
+        // C. Format Dotted Decimal: setiap oktet adalah angka desimal 0-255
+        const isDecimalFormat = parts.every(p => /^\d+$/.test(p));
+        if (!isDecimalFormat) {
+            return { success: false, error: 'Format tidak valid. Masukkan IPv4 Desimal (0-255) atau Binary (8 bit per oktet).' };
+        }
+
+        for (let i = 0; i < 4; i++) {
+            const p = parts[i];
+            if (p.length > 1 && p.startsWith('0')) {
+                return { success: false, error: `Oktet ke-${i + 1} (${p}) memiliki leading zero yang tidak valid.` };
+            }
+            const num = Number(p);
+            if (num < 0 || num > 255) {
+                return { success: false, error: `Oktet ke-${i + 1} bernilai ${p}, melebihi batas IPv4 (0–255).` };
+            }
+        }
+
+        const binary = parts.map(p => Number(p).toString(2).padStart(8, '0')).join('.');
+        return {
+            success: true,
+            format: 'decimal_dotted',
+            decimal: input,
+            binary: binary,
+            outputLabel: 'Binary (IPv4):',
+            output: binary
+        };
+    }
+
+    return { success: false, error: 'Format tidak dikenal. Masukkan IPv4 Desimal (contoh: 192.168.1.1) atau Binary (contoh: 11000000.10101000.00000001.00000001).' };
+}
+
 // Handler IPv4 Converter
 function handleIPv4Convert() {
     const input = document.getElementById('ipv4-conv-input').value.trim();
@@ -120,59 +202,108 @@ function handleIPv4Convert() {
     const outputEl = document.getElementById('ipv4-conv-output');
     
     errorEl.textContent = '';
-    if (!input) {
-        errorEl.textContent = 'Input tidak boleh kosong.';
-        resultBox.classList.add('hidden');
+    resultBox.classList.add('hidden');
+
+    const result = parseIPv4OrBinary(input);
+    if (!result.success) {
+        errorEl.textContent = result.error;
         return;
     }
 
-    if (input.includes('.')) {
-        // Decimal ke Binary
-        if (!isValidIPv4(input)) {
-            errorEl.textContent = 'Format IPv4 Decimal tidak valid.';
-            resultBox.classList.add('hidden');
-            return;
-        }
-        outputEl.textContent = ipToBinary(input);
-    } else {
-        // Binary ke Decimal
-        const octets = input.split('.');
-        if (octets.length !== 4 || !octets.every(o => o.length === 8 && /^[01]+$/.test(o))) {
-            errorEl.textContent = 'Format Binary tidak valid (harus 4 blok oktet @ 8-bit angka 0 dan 1).';
-            resultBox.classList.add('hidden');
-            return;
-        }
-        outputEl.textContent = octets.map(o => parseInt(o, 2)).join('.');
-    }
+    outputEl.innerHTML = `<strong>${result.outputLabel}</strong> ${result.output}`;
     resultBox.classList.remove('hidden');
+}
+
+// Konverter & Validator Basis Bilangan (Desimal, Biner, Heksadesimal, Oktal)
+function convertNumberBase(rawVal, fromBase) {
+    const val = String(rawVal || '').trim();
+    if (!val) {
+        return { success: false, error: 'Nilai angka tidak boleh kosong.' };
+    }
+
+    const base = parseInt(fromBase, 10);
+    const patterns = {
+        2: /^[01]+$/,
+        8: /^[0-7]+$/,
+        10: /^\d+$/,
+        16: /^[0-9A-Fa-f]+$/
+    };
+
+    const baseNames = {
+        2: 'Biner (hanya digit 0 dan 1)',
+        8: 'Oktal (hanya digit 0 sampai 7)',
+        10: 'Desimal (hanya digit 0 sampai 9)',
+        16: 'Heksadesimal (hanya digit 0-9 dan A-F)'
+    };
+
+    if (!patterns[base]) {
+        return { success: false, error: 'Basis asal tidak didukung.' };
+    }
+
+    // Deteksi tanda minus atau pecahan/desimal
+    if (val.includes('.') || val.includes(',')) {
+        return { success: false, error: 'Bilangan pecahan/desimal tidak didukung. Masukkan bilangan bulat positif.' };
+    }
+    if (val.startsWith('-')) {
+        return { success: false, error: 'Bilangan negatif tidak didukung. Masukkan bilangan bulat positif.' };
+    }
+
+    // Validasi pola karakter secara menyeluruh (full match)
+    if (!patterns[base].test(val)) {
+        return { 
+            success: false, 
+            error: `Input mengandung karakter tidak valid untuk ${baseNames[base]}. Masukan tidak boleh mengandung karakter di luar basis yang dipilih.` 
+        };
+    }
+
+    try {
+        // Gunakan BigInt untuk menghindari bug precision overflow pada bilangan besar
+        let decBigInt;
+        if (base === 10) {
+            decBigInt = BigInt(val);
+        } else if (base === 2) {
+            decBigInt = BigInt('0b' + val);
+        } else if (base === 8) {
+            decBigInt = BigInt('0o' + val);
+        } else if (base === 16) {
+            decBigInt = BigInt('0x' + val);
+        }
+
+        const isSafe = decBigInt <= BigInt(Number.MAX_SAFE_INTEGER);
+
+        return {
+            success: true,
+            isSafeInteger: isSafe,
+            dec: decBigInt.toString(10),
+            bin: decBigInt.toString(2),
+            hex: decBigInt.toString(16).toUpperCase(),
+            oct: decBigInt.toString(8)
+        };
+    } catch {
+        return { success: false, error: 'Nilai angka terlalu besar untuk diproses.' };
+    }
 }
 
 // Handler Number Base Converter
 function handleBaseConvert() {
     const val = document.getElementById('base-input').value.trim();
-    const fromBase = parseInt(document.getElementById('base-from').value, 10);
+    const fromBase = document.getElementById('base-from').value;
     const errorEl = document.getElementById('base-error');
     const resultBox = document.getElementById('base-conv-result');
 
     errorEl.textContent = '';
     resultBox.classList.add('hidden');
 
-    if (!val) {
-        errorEl.textContent = 'Nilai angka tidak boleh kosong.';
+    const result = convertNumberBase(val, fromBase);
+    if (!result.success) {
+        errorEl.textContent = result.error;
         return;
     }
 
-    const decimalVal = parseInt(val, fromBase);
-
-    if (isNaN(decimalVal)) {
-        errorEl.textContent = 'Nilai angka tidak sesuai dengan basis yang dipilih.';
-        return;
-    }
-
-    document.getElementById('base-res-dec').textContent = decimalVal.toString(10);
-    document.getElementById('base-res-bin').textContent = decimalVal.toString(2);
-    document.getElementById('base-res-hex').textContent = decimalVal.toString(16).toUpperCase();
-    document.getElementById('base-res-oct').textContent = decimalVal.toString(8);
+    document.getElementById('base-res-dec').textContent = result.dec;
+    document.getElementById('base-res-bin').textContent = result.bin;
+    document.getElementById('base-res-hex').textContent = result.hex;
+    document.getElementById('base-res-oct').textContent = result.oct;
 
     resultBox.classList.remove('hidden');
 }
