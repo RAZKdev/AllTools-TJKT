@@ -525,12 +525,6 @@ main {
     font-weight: 700;
 }
 
-.search-results-container {
-    margin-top: 0.6rem;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
 /* ==========================================================================
    10. FAVORITE BUTTON (star icon)
    ========================================================================== */
