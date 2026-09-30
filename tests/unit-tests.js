@@ -496,8 +496,8 @@ function parseCIDR(rawInput) {
     };
 }
 
-test('Valid Standard CIDR: 0, 1, 8, 16, 24, 31, 32', () => {
-    const validCases = [0, 1, 8, 16, 24, 31, 32];
+test('Valid Standard CIDR: 0, 1, 8, 16, 24, 30, 31, 32', () => {
+    const validCases = [0, 1, 8, 16, 24, 30, 31, 32];
     for (const val of validCases) {
         const res = parseCIDR(val);
         assert.strictEqual(res.success, true, `Should accept CIDR ${val}`);
@@ -505,38 +505,53 @@ test('Valid Standard CIDR: 0, 1, 8, 16, 24, 31, 32', () => {
     }
 });
 
-test('Valid Slash-prefixed CIDR: /24, /0, /32', () => {
+test('Valid Slash-prefixed CIDR: /24, /0, /30, /32', () => {
     assert.strictEqual(parseCIDR('/24').success, true);
     assert.strictEqual(parseCIDR('/24').cidr, 24);
     assert.strictEqual(parseCIDR('/0').success, true);
     assert.strictEqual(parseCIDR('/0').cidr, 0);
+    assert.strictEqual(parseCIDR('/30').success, true);
+    assert.strictEqual(parseCIDR('/30').cidr, 30);
     assert.strictEqual(parseCIDR('/32').success, true);
     assert.strictEqual(parseCIDR('/32').cidr, 32);
 });
 
-test('REJECT Out-of-Range CIDR: -1 and 33', () => {
+test('REJECT Out-of-Range CIDR: -1, 33, 100, 999', () => {
     assert.strictEqual(parseCIDR('-1').success, false);
     assert.strictEqual(parseCIDR('33').success, false);
+    assert.strictEqual(parseCIDR('100').success, false);
     assert.strictEqual(parseCIDR('999').success, false);
 });
 
-test('REJECT Alphanumeric Suffix / Prefix: 24abc, abc24, 24xyz, 1x', () => {
+test('REJECT Alphanumeric Suffix / Prefix: 24abc, abc24, 24xyz, 1x, 32foo, foo32', () => {
     assert.strictEqual(parseCIDR('24abc').success, false);
     assert.strictEqual(parseCIDR('abc24').success, false);
     assert.strictEqual(parseCIDR(' 24abc').success, false);
     assert.strictEqual(parseCIDR('24xyz').success, false);
     assert.strictEqual(parseCIDR('1x').success, false);
+    assert.strictEqual(parseCIDR('32foo').success, false);
+    assert.strictEqual(parseCIDR('foo32').success, false);
 });
 
-test('REJECT Decimal / Floating Point CIDR: 24.5', () => {
+test('REJECT Embedded Whitespace & Trailing Symbols: "24 abc", "24-", "+24", "++", "--"', () => {
+    assert.strictEqual(parseCIDR('24 abc').success, false);
+    assert.strictEqual(parseCIDR('24-').success, false);
+    assert.strictEqual(parseCIDR('+24').success, false);
+    assert.strictEqual(parseCIDR('++').success, false);
+    assert.strictEqual(parseCIDR('--').success, false);
+});
+
+test('REJECT Decimal / Floating Point CIDR: 24.5 and /24.5', () => {
     assert.strictEqual(parseCIDR('24.5').success, false);
     assert.strictEqual(parseCIDR('/24.5').success, false);
 });
 
-test('REJECT Empty, Whitespace, or Lone Slash: "", "   ", "/"', () => {
+test('REJECT Empty, Whitespace, Null, or Undefined', () => {
     assert.strictEqual(parseCIDR('').success, false);
     assert.strictEqual(parseCIDR('   ').success, false);
     assert.strictEqual(parseCIDR('/').success, false);
+    assert.strictEqual(parseCIDR(null).success, false);
+    assert.strictEqual(parseCIDR(undefined).success, false);
 });
 
 test('REJECT Leading Zeroes: 01, 00, /024', () => {
@@ -545,18 +560,102 @@ test('REJECT Leading Zeroes: 01, 00, /024', () => {
     assert.strictEqual(parseCIDR('/024').success, false);
 });
 
-test('Data Unit Converter: TB (10^12) and TiB (2^40) conversions', () => {
-    // 1 TB = 1,000,000,000,000 Bytes
-    const tbBytes = 1 * Math.pow(10, 12);
-    assert.strictEqual(tbBytes, 1000000000000);
+// ----------------------------------------------------
+// 7. DATA UNIT CONVERTER TEST MATRIX (SI vs IEC)
+// ----------------------------------------------------
+console.log('\n[7/7] Menguji Data Unit Conversions Matrix (SI vs IEC)...');
 
-    // 1 TiB = 1,099,511,627,776 Bytes
-    const tibBytes = 1 * Math.pow(2, 40);
-    assert.strictEqual(tibBytes, 1099511627776);
+function convertDataUnits(val, fromUnit) {
+    if (isNaN(val) || val <= 0) return null;
+    let bytes = 0;
+    switch(fromUnit) {
+        case 'bit': bytes = val / 8; break;
+        case 'Byte': bytes = val; break;
+        case 'KB': bytes = val * 1000; break;
+        case 'KiB': bytes = val * 1024; break;
+        case 'MB': bytes = val * Math.pow(10, 6); break;
+        case 'MiB': bytes = val * Math.pow(2, 20); break;
+        case 'GB': bytes = val * Math.pow(10, 9); break;
+        case 'GiB': bytes = val * Math.pow(2, 30); break;
+        case 'TB': bytes = val * Math.pow(10, 12); break;
+        case 'TiB': bytes = val * Math.pow(2, 40); break;
+        default: return null;
+    }
+    return {
+        bits: bytes * 8,
+        bytes: bytes,
+        kb: bytes / 1000,
+        kib: bytes / 1024,
+        mb: bytes / Math.pow(10, 6),
+        mib: bytes / Math.pow(2, 20),
+        gb: bytes / Math.pow(10, 9),
+        gib: bytes / Math.pow(2, 30),
+        tb: bytes / Math.pow(10, 12),
+        tib: bytes / Math.pow(2, 40)
+    };
+}
 
-    // 1 TiB in TB = 1.099511627776 TB
-    const tibToTb = (tibBytes / Math.pow(10, 12)).toFixed(8);
-    assert.strictEqual(tibToTb, '1.09951163');
+test('Data Units: 1 Byte = 8 bits, and 8 bits = 1 Byte', () => {
+    const res1 = convertDataUnits(1, 'Byte');
+    assert.strictEqual(res1.bits, 8);
+    assert.strictEqual(res1.bytes, 1);
+
+    const res2 = convertDataUnits(8, 'bit');
+    assert.strictEqual(res2.bytes, 1);
+});
+
+test('Data Units: 1 KB (SI 1000) vs 1 KiB (IEC 1024)', () => {
+    const kb = convertDataUnits(1, 'KB');
+    assert.strictEqual(kb.bytes, 1000);
+    assert.strictEqual(kb.kb, 1);
+
+    const kib = convertDataUnits(1, 'KiB');
+    assert.strictEqual(kib.bytes, 1024);
+    assert.strictEqual(kib.kib, 1);
+});
+
+test('Data Units: 1 MB (10^6) vs 1 MiB (2^20)', () => {
+    const mb = convertDataUnits(1, 'MB');
+    assert.strictEqual(mb.bytes, 1000000);
+
+    const mib = convertDataUnits(1, 'MiB');
+    assert.strictEqual(mib.bytes, 1048576);
+});
+
+test('Data Units: 1 GB (10^9) vs 1 GiB (2^30)', () => {
+    const gb = convertDataUnits(1, 'GB');
+    assert.strictEqual(gb.bytes, 1000000000);
+
+    const gib = convertDataUnits(1, 'GiB');
+    assert.strictEqual(gib.bytes, 1073741824);
+});
+
+test('Data Units: 1 TB (10^12) vs 1 TiB (2^40)', () => {
+    const tb = convertDataUnits(1, 'TB');
+    assert.strictEqual(tb.bytes, 1000000000000);
+    assert.strictEqual(tb.tb, 1);
+
+    const tib = convertDataUnits(1, 'TiB');
+    assert.strictEqual(tib.bytes, 1099511627776);
+    assert.strictEqual(tib.tib, 1);
+});
+
+test('Data Units Bidirectional: 1000 GB = 1 TB and 1024 GiB = 1 TiB', () => {
+    const fromGB = convertDataUnits(1000, 'GB');
+    assert.strictEqual(fromGB.tb, 1);
+    assert.strictEqual(fromGB.bytes, 1000000000000);
+
+    const fromGiB = convertDataUnits(1024, 'GiB');
+    assert.strictEqual(fromGiB.tib, 1);
+    assert.strictEqual(fromGiB.bytes, 1099511627776);
+});
+
+test('Data Units Cross-Conversion: 1 TiB to TB (1.09951163) and 1 TB to TiB (0.90949470)', () => {
+    const tib = convertDataUnits(1, 'TiB');
+    assert.strictEqual(tib.tb.toFixed(8), '1.09951163');
+
+    const tb = convertDataUnits(1, 'TB');
+    assert.strictEqual(tb.tib.toFixed(8), '0.90949470');
 });
 
 // ----------------------------------------------------
