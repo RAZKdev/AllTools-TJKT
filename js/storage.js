@@ -1,5 +1,14 @@
+// Batas kapasitas dan kuota penyimpanan lokal Feedback
+const FEEDBACK_LIMITS = {
+    MAX_ENTRIES: 50,
+    MAX_MESSAGE_LENGTH: 500,
+    MAX_CONTACT_LENGTH: 80
+};
+
 // LocalStorage Management untuk Favorites, Recent Tools, Feedback, dan Settings
 const StorageManager = {
+    FEEDBACK_LIMITS,
+
     // Helper defensive parsing JSON array
     safeParseArray(key, fallback = []) {
         try {
@@ -61,11 +70,24 @@ const StorageManager = {
         return rawList.map(item => this.sanitizeFeedback(item)).filter(Boolean);
     },
     saveFeedback(feedbackList) {
-        if (!Array.isArray(feedbackList)) return;
+        if (!Array.isArray(feedbackList)) {
+            return { success: false, error: 'Format data tidak valid.' };
+        }
         try {
-            localStorage.setItem('alltools_feedback', JSON.stringify(feedbackList));
+            // Batasi jumlah maksimal entri feedback (FIFO - potong jika > MAX_ENTRIES)
+            const limitedList = feedbackList.slice(0, FEEDBACK_LIMITS.MAX_ENTRIES);
+            localStorage.setItem('alltools_feedback', JSON.stringify(limitedList));
+            return { success: true, count: limitedList.length };
         } catch (e) {
             console.warn('StorageManager: Gagal menyimpan feedback ke localStorage', e);
+            const isQuota = Boolean(e && (e.name === 'QuotaExceededError' || e.code === 22 || e.code === 1014));
+            return {
+                success: false,
+                quotaExceeded: isQuota,
+                error: isQuota 
+                    ? 'Penyimpanan lokal browser penuh (QuotaExceededError). Ekspor atau bersihkan masukan lama.' 
+                    : 'Gagal menyimpan ke penyimpanan lokal browser.'
+            };
         }
     },
     sanitizeFeedback(item) {
@@ -76,8 +98,8 @@ const StorageManager = {
             icon: typeof item.icon === 'string' ? item.icon.slice(0, 4) : '💬',
             label: typeof item.label === 'string' ? item.label.slice(0, 20) : 'Feedback',
             status: item.status === 'READ' ? 'READ' : 'NEW',
-            sender: typeof item.sender === 'string' ? item.sender.trim().slice(0, 80) : 'Pengunjung',
-            title: typeof item.title === 'string' ? item.title.trim().slice(0, 500) : '',
+            sender: typeof item.sender === 'string' ? item.sender.trim().slice(0, FEEDBACK_LIMITS.MAX_CONTACT_LENGTH) : 'Pengunjung',
+            title: typeof item.title === 'string' ? item.title.trim().slice(0, FEEDBACK_LIMITS.MAX_MESSAGE_LENGTH) : '',
             page: typeof item.page === 'string' ? item.page.slice(0, 30) : 'About',
             date: typeof item.date === 'string' ? item.date.slice(0, 30) : '-'
         };

@@ -78,12 +78,13 @@ function calculateSubnet() {
                 }
             }
         } else {
-            // Format CIDR (contoh: 24)
-            cidr = parseInt(maskInput, 10);
-            if (isNaN(cidr) || cidr < 0 || cidr > 32) {
-                maskError.textContent = 'CIDR harus berada antara 0–32.';
+            // Format CIDR (contoh: 24 atau /24)
+            const cidrRes = parseCIDR(maskInput);
+            if (!cidrRes.success) {
+                maskError.textContent = cidrRes.error;
                 hasError = true;
             } else {
+                cidr = cidrRes.cidr;
                 maskLong = cidrToMask(cidr);
             }
         }

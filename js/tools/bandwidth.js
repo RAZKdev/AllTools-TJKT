@@ -17,6 +17,7 @@ function renderBandwidthCalculator(container) {
                         <option value="GB">GB (10⁹ Byte)</option>
                         <option value="GiB">GiB (2³⁰ Byte)</option>
                         <option value="TB">TB (10¹² Byte)</option>
+                        <option value="TiB">TiB (2⁴⁰ Byte)</option>
                     </select>
                 </div>
                 <span id="file-size-error" class="error-msg"></span>
@@ -101,6 +102,7 @@ function calculateBandwidth() {
         case 'GB': sizeInBytes = sizeVal * Math.pow(1000, 3); break;
         case 'GiB': sizeInBytes = sizeVal * Math.pow(1024, 3); break;
         case 'TB': sizeInBytes = sizeVal * Math.pow(1000, 4); break;
+        case 'TiB': sizeInBytes = sizeVal * Math.pow(1024, 4); break;
         default: sizeInBytes = sizeVal * Math.pow(1000, 2);
     }
 

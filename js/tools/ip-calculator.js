@@ -13,7 +13,7 @@ function renderIpCalculator(container) {
 
             <div class="form-group">
                 <label for="cidr-input">CIDR Prefix (0 - 32):</label>
-                <input type="number" id="cidr-input" min="0" max="32" placeholder="Contoh: 24">
+                <input type="text" id="cidr-input" placeholder="Contoh: 24 atau /24">
                 <span id="cidr-error" class="error-msg"></span>
             </div>
 
@@ -64,15 +64,13 @@ function calculateIP() {
         hasError = true;
     }
 
-    if (cidrInput === '') {
-        cidrError.textContent = 'Input tidak boleh kosong.';
+    let cidr = 0;
+    const cidrRes = parseCIDR(cidrInput);
+    if (!cidrRes.success) {
+        cidrError.textContent = cidrRes.error;
         hasError = true;
     } else {
-        const cidr = parseInt(cidrInput, 10);
-        if (isNaN(cidr) || cidr < 0 || cidr > 32) {
-            cidrError.textContent = 'Cidr harus berada antara 0–32.';
-            hasError = true;
-        }
+        cidr = cidrRes.cidr;
     }
 
     if (hasError) {
@@ -81,7 +79,6 @@ function calculateIP() {
     }
 
     // Proses Perhitungan Matematis Jaringan
-    const cidr = parseInt(cidrInput, 10);
     const ipLong = ipToInt(ipInput);
     const maskLong = cidrToMask(cidr);
     const netLong = ipLong & maskLong;
@@ -117,7 +114,39 @@ function calculateIP() {
     resultBox.classList.remove('hidden');
 }
 
-// Helper Functions untuk IP Calculator
+// Helper Functions untuk IP Calculator & CIDR Validation
+function parseCIDR(rawInput) {
+    if (rawInput === null || rawInput === undefined) {
+        return { success: false, error: 'Input tidak boleh kosong.' };
+    }
+    const trimmed = String(rawInput).trim();
+    if (!trimmed) {
+        return { success: false, error: 'Input tidak boleh kosong.' };
+    }
+
+    // Izinkan prefix slash opsional, misal "/24" -> "24"
+    const normalized = trimmed.startsWith('/') ? trimmed.slice(1).trim() : trimmed;
+    if (!normalized) {
+        return { success: false, error: 'Format CIDR prefix tidak valid.' };
+    }
+
+    // Strict regex: hanya digit bulat murni, tanpa minus, desimal, huruf, dll.
+    // Cegah leading zero seperti "01", "00" kecuali angka "0" tunggal.
+    if (!/^(0|[1-9]\d*)$/.test(normalized)) {
+        return { success: false, error: 'CIDR prefix harus berupa bilangan bulat antara 0–32 (contoh: 24 atau /24).' };
+    }
+
+    const cidr = Number(normalized);
+    if (!Number.isInteger(cidr) || cidr < 0 || cidr > 32) {
+        return { success: false, error: 'CIDR prefix harus berada dalam rentang 0–32.' };
+    }
+
+    return {
+        success: true,
+        cidr: cidr
+    };
+}
+
 function isValidIPv4(ip) {
     const parts = ip.split('.');
     if (parts.length !== 4) return false;

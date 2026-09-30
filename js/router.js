@@ -441,7 +441,7 @@ function initRouter() {
             };
 
             existingFeedback.unshift(newFeedback);
-            StorageManager.saveFeedback(existingFeedback);
+            const saveResult = StorageManager.saveFeedback(existingFeedback);
             lastSubmitTime = Date.now();
 
             // 2. Siapkan URL pengiriman langsung
@@ -513,7 +513,17 @@ function initRouter() {
                 `;
             }
 
+            let quotaNotice = '';
+            if (saveResult && saveResult.quotaExceeded) {
+                quotaNotice = `
+                    <div style="margin-bottom: 0.5rem; font-size: 0.8rem; color: #f59e0b; font-weight: 500;">
+                        ⚠️ Kapasitas penyimpanan lokal browser telah mencapai batas. Kami sarankan mengekspor masukan lama di Panel Masukan Lokal.
+                    </div>
+                `;
+            }
+
             feedbackStatus.innerHTML = `
+                ${quotaNotice}
                 ${statusNotice}
                 <div class="feedback-direct-options">
                     <p style="margin: 0.2rem 0 0.5rem; font-size: 0.8rem; color: var(--text-secondary);">
@@ -655,12 +665,12 @@ function initRouter() {
                     return savedPin;
                 }
 
-                function isCreatorAuthenticated() {
+                function isLocalCreatorModeActive() {
                     return sessionStorage.getItem(CREATOR_SESSION_KEY) === 'true';
                 }
 
                 // Jika belum masuk ke mode lokal pembuat, tampilkan layar PIN kenyamanan lokal
-                if (!isCreatorAuthenticated()) {
+                if (!isLocalCreatorModeActive()) {
                     contentArea.innerHTML = `
                         <div class="creator-gate-view">
                             <div class="creator-gate-icon">🛠️</div>
@@ -727,7 +737,7 @@ function initRouter() {
                     return;
                 }
 
-                // JIKA TERAUTENTIKASI LOKAL: Tampilkan Feedback Inbox Lengkap (defensive parsing)
+                // JIKA MODE LOKAL AKTIF: Tampilkan Feedback Inbox Lengkap (defensive parsing)
                 let feedbackData = StorageManager.getFeedback();
 
                 contentArea.innerHTML = `

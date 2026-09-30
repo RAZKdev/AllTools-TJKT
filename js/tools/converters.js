@@ -85,6 +85,8 @@ function renderConverters(container) {
                         <tr><td>Mebibytes (MiB)</td><td id="d-mib">-</td></tr>
                         <tr><td>Gigabytes (GB)</td><td id="d-gb">-</td></tr>
                         <tr><td>Gibibytes (GiB)</td><td id="d-gib">-</td></tr>
+                        <tr><td>Terabytes (TB)</td><td id="d-tb">-</td></tr>
+                        <tr><td>Tebibytes (TiB)</td><td id="d-tib">-</td></tr>
                     </table>
                 </div>
             </div>
@@ -349,6 +351,8 @@ function handleDataConvert() {
     document.getElementById('d-mib').textContent = (bytes / Math.pow(2, 20)).toFixed(4);
     document.getElementById('d-gb').textContent = (bytes / Math.pow(10, 9)).toFixed(6);
     document.getElementById('d-gib').textContent = (bytes / Math.pow(2, 30)).toFixed(6);
+    document.getElementById('d-tb').textContent = (bytes / Math.pow(10, 12)).toFixed(8);
+    document.getElementById('d-tib').textContent = (bytes / Math.pow(2, 40)).toFixed(8);
 
     resultBox.classList.remove('hidden');
 }

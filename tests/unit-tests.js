@@ -460,6 +460,106 @@ test('maskToCidr rejects non-contiguous mask (e.g., 255.0.255.0)', () => {
 });
 
 // ----------------------------------------------------
+// 6. STRICT CIDR VALIDATOR (P0.3)
+// ----------------------------------------------------
+console.log('\n[6/6] Menguji Strict CIDR Prefix Validation...');
+
+function parseCIDR(rawInput) {
+    if (rawInput === null || rawInput === undefined) {
+        return { success: false, error: 'Input tidak boleh kosong.' };
+    }
+    const trimmed = String(rawInput).trim();
+    if (!trimmed) {
+        return { success: false, error: 'Input tidak boleh kosong.' };
+    }
+
+    // Izinkan prefix slash opsional, misal "/24" -> "24"
+    const normalized = trimmed.startsWith('/') ? trimmed.slice(1).trim() : trimmed;
+    if (!normalized) {
+        return { success: false, error: 'Format CIDR prefix tidak valid.' };
+    }
+
+    // Strict regex: hanya digit bulat murni, tanpa minus, desimal, huruf, dll.
+    // Cegah leading zero seperti "01", "00" kecuali angka "0" tunggal.
+    if (!/^(0|[1-9]\d*)$/.test(normalized)) {
+        return { success: false, error: 'CIDR prefix harus berupa bilangan bulat antara 0–32 (contoh: 24 atau /24).' };
+    }
+
+    const cidr = Number(normalized);
+    if (!Number.isInteger(cidr) || cidr < 0 || cidr > 32) {
+        return { success: false, error: 'CIDR prefix harus berada dalam rentang 0–32.' };
+    }
+
+    return {
+        success: true,
+        cidr: cidr
+    };
+}
+
+test('Valid Standard CIDR: 0, 1, 8, 16, 24, 31, 32', () => {
+    const validCases = [0, 1, 8, 16, 24, 31, 32];
+    for (const val of validCases) {
+        const res = parseCIDR(val);
+        assert.strictEqual(res.success, true, `Should accept CIDR ${val}`);
+        assert.strictEqual(res.cidr, val);
+    }
+});
+
+test('Valid Slash-prefixed CIDR: /24, /0, /32', () => {
+    assert.strictEqual(parseCIDR('/24').success, true);
+    assert.strictEqual(parseCIDR('/24').cidr, 24);
+    assert.strictEqual(parseCIDR('/0').success, true);
+    assert.strictEqual(parseCIDR('/0').cidr, 0);
+    assert.strictEqual(parseCIDR('/32').success, true);
+    assert.strictEqual(parseCIDR('/32').cidr, 32);
+});
+
+test('REJECT Out-of-Range CIDR: -1 and 33', () => {
+    assert.strictEqual(parseCIDR('-1').success, false);
+    assert.strictEqual(parseCIDR('33').success, false);
+    assert.strictEqual(parseCIDR('999').success, false);
+});
+
+test('REJECT Alphanumeric Suffix / Prefix: 24abc, abc24, 24xyz, 1x', () => {
+    assert.strictEqual(parseCIDR('24abc').success, false);
+    assert.strictEqual(parseCIDR('abc24').success, false);
+    assert.strictEqual(parseCIDR(' 24abc').success, false);
+    assert.strictEqual(parseCIDR('24xyz').success, false);
+    assert.strictEqual(parseCIDR('1x').success, false);
+});
+
+test('REJECT Decimal / Floating Point CIDR: 24.5', () => {
+    assert.strictEqual(parseCIDR('24.5').success, false);
+    assert.strictEqual(parseCIDR('/24.5').success, false);
+});
+
+test('REJECT Empty, Whitespace, or Lone Slash: "", "   ", "/"', () => {
+    assert.strictEqual(parseCIDR('').success, false);
+    assert.strictEqual(parseCIDR('   ').success, false);
+    assert.strictEqual(parseCIDR('/').success, false);
+});
+
+test('REJECT Leading Zeroes: 01, 00, /024', () => {
+    assert.strictEqual(parseCIDR('01').success, false);
+    assert.strictEqual(parseCIDR('00').success, false);
+    assert.strictEqual(parseCIDR('/024').success, false);
+});
+
+test('Data Unit Converter: TB (10^12) and TiB (2^40) conversions', () => {
+    // 1 TB = 1,000,000,000,000 Bytes
+    const tbBytes = 1 * Math.pow(10, 12);
+    assert.strictEqual(tbBytes, 1000000000000);
+
+    // 1 TiB = 1,099,511,627,776 Bytes
+    const tibBytes = 1 * Math.pow(2, 40);
+    assert.strictEqual(tibBytes, 1099511627776);
+
+    // 1 TiB in TB = 1.099511627776 TB
+    const tibToTb = (tibBytes / Math.pow(10, 12)).toFixed(8);
+    assert.strictEqual(tibToTb, '1.09951163');
+});
+
+// ----------------------------------------------------
 // SUMMARY
 // ----------------------------------------------------
 console.log('\n========================================');
