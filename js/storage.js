@@ -1,50 +1,96 @@
-// LocalStorage Management untuk Favorites, Recent Tools, dan Settings
+// LocalStorage Management untuk Favorites, Recent Tools, Feedback, dan Settings
 const StorageManager = {
-    // FAVORITES
-    getFavorites() {
+    // Helper defensive parsing JSON array
+    safeParseArray(key, fallback = []) {
         try {
-            return JSON.parse(localStorage.getItem('alltools_favorites')) || [];
+            const raw = localStorage.getItem(key);
+            if (!raw || typeof raw !== 'string') return fallback;
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : fallback;
         } catch {
-            return [];
+            return fallback;
         }
     },
+
+    // FAVORITES
+    getFavorites() {
+        return this.safeParseArray('alltools_favorites', []);
+    },
     toggleFavorite(toolId) {
+        if (!toolId || typeof toolId !== 'string') return this.getFavorites();
         let favorites = this.getFavorites();
         if (favorites.includes(toolId)) {
             favorites = favorites.filter(id => id !== toolId);
         } else {
             favorites.push(toolId);
         }
-        localStorage.setItem('alltools_favorites', JSON.stringify(favorites));
+        try {
+            localStorage.setItem('alltools_favorites', JSON.stringify(favorites));
+        } catch (e) {
+            console.warn('StorageManager: Gagal menyimpan favorit ke localStorage', e);
+        }
         return favorites;
     },
     isFavorite(toolId) {
+        if (!toolId || typeof toolId !== 'string') return false;
         return this.getFavorites().includes(toolId);
     },
 
     // RECENT TOOLS
     getRecent() {
-        try {
-            return JSON.parse(localStorage.getItem('alltools_recent')) || [];
-        } catch {
-            return [];
-        }
+        return this.safeParseArray('alltools_recent', []);
     },
     addRecent(toolId) {
+        if (!toolId || typeof toolId !== 'string') return;
         let recent = this.getRecent();
         // Hapus jika sudah ada agar posisinya berpindah ke urutan paling atas
         recent = recent.filter(id => id !== toolId);
         recent.unshift(toolId);
         // Batasi maksimal 5 item terakhir
-        if (recent.length > 5) recent.pop();
-        localStorage.setItem('alltools_recent', JSON.stringify(recent));
+        if (recent.length > 5) recent = recent.slice(0, 5);
+        try {
+            localStorage.setItem('alltools_recent', JSON.stringify(recent));
+        } catch (e) {
+            console.warn('StorageManager: Gagal menyimpan recent ke localStorage', e);
+        }
+    },
+
+    // FEEDBACK ITEMS (Defensive & Sanitized Model)
+    getFeedback() {
+        const rawList = this.safeParseArray('alltools_feedback', []);
+        return rawList.map(item => this.sanitizeFeedback(item)).filter(Boolean);
+    },
+    saveFeedback(feedbackList) {
+        if (!Array.isArray(feedbackList)) return;
+        try {
+            localStorage.setItem('alltools_feedback', JSON.stringify(feedbackList));
+        } catch (e) {
+            console.warn('StorageManager: Gagal menyimpan feedback ke localStorage', e);
+        }
+    },
+    sanitizeFeedback(item) {
+        if (!item || typeof item !== 'object') return null;
+        return {
+            id: typeof item.id === 'number' ? item.id : Date.now(),
+            type: ['bug', 'suggestion', 'feedback'].includes(item.type) ? item.type : 'feedback',
+            icon: typeof item.icon === 'string' ? item.icon.slice(0, 4) : '💬',
+            label: typeof item.label === 'string' ? item.label.slice(0, 20) : 'Feedback',
+            status: item.status === 'READ' ? 'READ' : 'NEW',
+            sender: typeof item.sender === 'string' ? item.sender.trim().slice(0, 80) : 'Pengunjung',
+            title: typeof item.title === 'string' ? item.title.trim().slice(0, 500) : '',
+            page: typeof item.page === 'string' ? item.page.slice(0, 30) : 'About',
+            date: typeof item.date === 'string' ? item.date.slice(0, 30) : '-'
+        };
     },
 
     // SETTINGS / RESET
     clearAll() {
-        localStorage.removeItem('alltools_favorites');
-        localStorage.removeItem('alltools_recent');
-        localStorage.removeItem('theme');
+        try {
+            localStorage.removeItem('alltools_favorites');
+            localStorage.removeItem('alltools_recent');
+            localStorage.removeItem('theme');
+        } catch (e) {
+            console.warn('StorageManager: Gagal menghapus localStorage', e);
+        }
     }
 };
-

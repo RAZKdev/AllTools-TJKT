@@ -15,7 +15,6 @@ function initRouter() {
     const contentArea = document.getElementById('tool-content-area');
 
     const searchInput = document.getElementById('global-search');
-    const searchResults = document.getElementById('search-results');
     const toolCards = document.querySelectorAll(
         '.tools-grid .tool-card[data-route]'
     );
@@ -383,6 +382,8 @@ function initRouter() {
             updateCounter();
         });
 
+        let lastSubmitTime = 0;
+
         feedbackSubmit.addEventListener('click', async () => {
             const message =
                 feedbackMessage.value.trim();
@@ -396,7 +397,16 @@ function initRouter() {
                 return;
             }
 
-            const sender = feedbackSender ? feedbackSender.value.trim() : '';
+            // Rate-limiting: cegah spam klik bertubi-tubi
+            if (Date.now() - lastSubmitTime < 4000) {
+                feedbackStatus.textContent = 'Harap tunggu beberapa detik sebelum mengirim masukan lagi.';
+                feedbackStatus.className = 'feedback-status';
+                feedbackStatus.classList.remove('hidden');
+                return;
+            }
+
+            const sender = feedbackSender ? feedbackSender.value.trim().slice(0, 80) : '';
+            const safeMessage = message.slice(0, 500);
             const CREATOR_EMAIL = 'mmmbukanpunyague@gmail.com';
             const label = feedbackLabels[selectedType];
             const dateStr = new Date().toLocaleDateString(
@@ -410,11 +420,8 @@ function initRouter() {
                 }
             );
 
-            // 1. Simpan di local storage untuk Creator Inbox
-            const existingFeedback =
-                JSON.parse(
-                    localStorage.getItem('alltools_feedback') || '[]'
-                );
+            // 1. Simpan di local storage menggunakan StorageManager (defensive parsing & validation)
+            const existingFeedback = StorageManager.getFeedback();
 
             const newFeedback = {
                 id: Date.now(),
@@ -428,17 +435,14 @@ function initRouter() {
                 label: label,
                 status: 'NEW',
                 sender: sender || 'Pengunjung',
-                title: message,
+                title: safeMessage,
                 page: 'About',
                 date: dateStr
             };
 
             existingFeedback.unshift(newFeedback);
-
-            localStorage.setItem(
-                'alltools_feedback',
-                JSON.stringify(existingFeedback)
-            );
+            StorageManager.saveFeedback(existingFeedback);
+            lastSubmitTime = Date.now();
 
             // 2. Siapkan URL pengiriman langsung
             const mailSubject = `[AllTools TJKT] Masukan ${label} dari ${sender || 'Pengunjung'}`;
@@ -655,26 +659,27 @@ function initRouter() {
                     return sessionStorage.getItem(CREATOR_SESSION_KEY) === 'true';
                 }
 
-                // Jika belum terautentikasi sebagai pembuat, tampilkan layar verifikasi PIN
+                // Jika belum masuk ke mode lokal pembuat, tampilkan layar PIN kenyamanan lokal
                 if (!isCreatorAuthenticated()) {
                     contentArea.innerHTML = `
                         <div class="creator-gate-view">
-                            <div class="creator-gate-icon">🔒</div>
-                            <h3>Verifikasi Pembuat (Creator Only)</h3>
-                            <p>
-                                Kotak masuk masukan ini bersifat privat dan hanya dapat dibuka oleh pembuat AllTools TJKT untuk meninjau laporan bug dan saran dari pengguna.
+                            <div class="creator-gate-icon">🛠️</div>
+                            <h3>Panel Masukan Lokal (Mode Pembuat)</h3>
+                            <p style="font-size: 0.86rem; line-height: 1.5; color: var(--text-secondary);">
+                                Panel ini merupakan sarana tinjauan cepat untuk masukan yang tersimpan di browser perangkat ini (localStorage). 
+                                Perlindungan PIN ini berfungsi sebagai filter kenyamanan lokal (*convenience state*), bukan sistem autentikasi server.
                             </p>
 
                             <div class="form-group" style="margin-bottom: 0.85rem; text-align: left;">
                                 <label for="creator-pin-input" style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.35rem; display: block;">
-                                    Masukkan PIN Pengembang:
+                                    Masukkan PIN Akses Lokal:
                                 </label>
                                 <input type="password" id="creator-pin-input" class="creator-pin-input" placeholder="••••" maxlength="16" autocomplete="off" autofocus>
                             </div>
 
                             <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1.25rem;">
                                 <button type="button" id="btn-unlock-inbox" class="btn-primary" style="min-height: 42px; padding: 0.65rem 1.4rem;">
-                                    Buka Inbox
+                                    Buka Panel
                                 </button>
                                 <button type="button" id="btn-cancel-gate" class="btn-outline" style="min-height: 42px; padding: 0.65rem 1.2rem;">
                                     ← Kembali
@@ -683,8 +688,8 @@ function initRouter() {
 
                             <div id="creator-pin-error" class="creator-gate-error hidden"></div>
                             
-                            <p style="margin-top: 1.5rem; margin-bottom: 0; font-size: 0.76rem; color: var(--text-secondary); opacity: 0.8;">
-                                PIN Default: <code>1234</code> (dapat diubah setelah masuk)
+                            <p style="margin-top: 1.5rem; margin-bottom: 0; font-size: 0.76rem; color: var(--text-secondary); opacity: 0.85;">
+                                PIN Lokal Default: <code>1234</code>. Data hanya berlaku pada browser perangkat ini.
                             </p>
                         </div>
                     `;
@@ -700,7 +705,7 @@ function initRouter() {
                             sessionStorage.setItem(CREATOR_SESSION_KEY, 'true');
                             navigateTo('feedback');
                         } else {
-                            pinError.textContent = '❌ PIN salah! Akses ditolak. Hanya pembuat yang berhak membuka inbox ini.';
+                            pinError.textContent = '❌ PIN salah! Masukkan PIN akses lokal yang benar.';
                             pinError.classList.remove('hidden');
                             pinInput.value = '';
                             pinInput.focus();
@@ -722,20 +727,18 @@ function initRouter() {
                     return;
                 }
 
-                // JIKA TERAUTENTIKASI: Tampilkan Feedback Inbox Lengkap
-                let feedbackData = JSON.parse(
-                    localStorage.getItem('alltools_feedback') || '[]'
-                );
+                // JIKA TERAUTENTIKASI LOKAL: Tampilkan Feedback Inbox Lengkap (defensive parsing)
+                let feedbackData = StorageManager.getFeedback();
 
                 contentArea.innerHTML = `
                     <div class="feedback-inbox-view">
                         <div class="feedback-inbox-toolbar">
                             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                                 <button type="button" id="btn-lock-inbox" class="btn-outline" style="font-size: 0.8rem; min-height: 34px;">
-                                    🔒 Kunci & Keluar Mode Pembuat
+                                    🔒 Kunci & Keluar Mode Lokal
                                 </button>
                                 <button type="button" id="btn-change-pin" class="btn-outline" style="font-size: 0.8rem; min-height: 34px;">
-                                    🔑 Ganti PIN
+                                    🔑 Ganti PIN Lokal
                                 </button>
                             </div>
                             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -749,9 +752,9 @@ function initRouter() {
                         </div>
 
                         <div class="feedback-inbox-header">
-                            <h2>📬 Feedback Inbox (Area Pembuat)</h2>
-                            <p>
-                                Seluruh masukan dan laporan bug yang dikirim oleh pengguna pada aplikasi ini.
+                            <h2>📬 Feedback Inbox (Tinjauan Lokal)</h2>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.35rem;">
+                                Menampilkan masukan yang tersimpan di browser ini (localStorage). Masukan pengunjung dari perangkat lain otomatis diteruskan ke email <strong>mmmbukanpunyague@gmail.com</strong>.
                             </p>
                         </div>
 
@@ -784,7 +787,7 @@ function initRouter() {
                 }
 
                 function saveFeedbackData() {
-                    localStorage.setItem('alltools_feedback', JSON.stringify(feedbackData));
+                    StorageManager.saveFeedback(feedbackData);
                 }
 
                 let currentFilter = 'all';
@@ -1016,6 +1019,10 @@ function initRouter() {
                                 </span>
                             </div>
 
+                            <p style="margin: 0.35rem 0 0.75rem; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4;">
+                                🔒 <em>Privasi: Masukan akan dikirimkan ke email pembuat via FormSubmit. Jangan mengirimkan kata sandi atau data rahasia pribadi.</em>
+                            </p>
+
                             <button type="button"
                                     id="feedback-submit"
                                     class="feedback-submit">
@@ -1031,7 +1038,7 @@ function initRouter() {
                                     id="feedback-inbox-btn"
                                     class="btn-outline"
                                     style="width: 100%; margin-top: 1.25rem; font-size: 0.84rem; border-style: dashed; padding: 0.6rem 0.85rem;">
-                                🔒 Buka Inbox Masukan (Khusus Pembuat)
+                                🛠️ Buka Panel Masukan Lokal (Mode Pembuat)
                             </button>
                         </div>
 
