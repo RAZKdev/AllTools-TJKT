@@ -312,7 +312,8 @@ function handleBaseConvert() {
 
 // Handler Data Unit Converter
 function handleDataConvert() {
-    const val = parseFloat(document.getElementById('data-value-input').value);
+    const rawVal = document.getElementById('data-value-input').value.trim();
+    const val = rawVal === '' ? NaN : Number(rawVal);
     const unit = document.getElementById('data-unit-select').value;
     const errorEl = document.getElementById('data-value-error');
     const resultBox = document.getElementById('data-conv-result');
@@ -320,8 +321,8 @@ function handleDataConvert() {
     errorEl.textContent = '';
     resultBox.classList.add('hidden');
 
-    if (isNaN(val) || val <= 0) {
-        errorEl.textContent = 'Nilai harus lebih besar dari 0.';
+    if (!Number.isFinite(val) || val <= 0) {
+        errorEl.textContent = 'Nilai harus berupa angka lebih besar dari 0.';
         return;
     }
 

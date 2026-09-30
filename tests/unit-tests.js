@@ -659,6 +659,66 @@ test('Data Units Cross-Conversion: 1 TiB to TB (1.09951163) and 1 TB to TiB (0.9
 });
 
 // ----------------------------------------------------
+// 8. IPv4 ADDRESS & SPECIAL-RANGE CLASSIFICATION
+// ----------------------------------------------------
+console.log('\n[8/8] Menguji Klasifikasi IPv4 Address & Special Ranges...');
+
+const { getIpClass } = require('../js/tools/ip-calculator.js');
+
+test('Special — This Network (0.0.0.0/8): 0.0.0.0 and 0.1.2.3', () => {
+    assert.strictEqual(getIpClass('0.0.0.0'), 'Special — This Network');
+    assert.strictEqual(getIpClass('0.1.2.3'), 'Special — This Network');
+    assert.strictEqual(getIpClass('0.255.255.255'), 'Special — This Network');
+});
+
+test('Special — Loopback (127.0.0.0/8): 127.0.0.1 and 127.255.255.254', () => {
+    assert.strictEqual(getIpClass('127.0.0.1'), 'Special — Loopback');
+    assert.strictEqual(getIpClass('127.255.255.254'), 'Special — Loopback');
+    assert.strictEqual(getIpClass('127.0.0.0'), 'Special — Loopback');
+});
+
+test('Special — Limited Broadcast: 255.255.255.255', () => {
+    assert.strictEqual(getIpClass('255.255.255.255'), 'Special — Limited Broadcast');
+});
+
+test('Standard Class A (1.0.0.0 to 126.255.255.255)', () => {
+    assert.strictEqual(getIpClass('1.0.0.1'), 'Class A');
+    assert.strictEqual(getIpClass('10.0.0.1'), 'Class A');
+    assert.strictEqual(getIpClass('126.255.255.254'), 'Class A');
+});
+
+test('Standard Class B (128.0.0.0 to 191.255.255.255)', () => {
+    assert.strictEqual(getIpClass('128.0.0.1'), 'Class B');
+    assert.strictEqual(getIpClass('172.16.0.1'), 'Class B');
+    assert.strictEqual(getIpClass('191.255.255.254'), 'Class B');
+});
+
+test('Standard Class C (192.0.0.0 to 223.255.255.255)', () => {
+    assert.strictEqual(getIpClass('192.0.0.1'), 'Class C');
+    assert.strictEqual(getIpClass('192.168.1.1'), 'Class C');
+    assert.strictEqual(getIpClass('223.255.255.254'), 'Class C');
+});
+
+test('Class D — Multicast (224.0.0.0 to 239.255.255.255)', () => {
+    assert.strictEqual(getIpClass('224.0.0.1'), 'Class D (Multicast)');
+    assert.strictEqual(getIpClass('239.255.255.255'), 'Class D (Multicast)');
+});
+
+test('Class E — Reserved (240.0.0.0 to 255.255.255.254)', () => {
+    assert.strictEqual(getIpClass('240.0.0.1'), 'Class E (Reserved)');
+    assert.strictEqual(getIpClass('254.255.255.254'), 'Class E (Reserved)');
+    assert.strictEqual(getIpClass('255.255.255.254'), 'Class E (Reserved)');
+});
+
+test('Invalid IP handling in getIpClass', () => {
+    assert.strictEqual(getIpClass(''), 'Invalid IP');
+    assert.strictEqual(getIpClass(null), 'Invalid IP');
+    assert.strictEqual(getIpClass(undefined), 'Invalid IP');
+    assert.strictEqual(getIpClass('not-an-ip'), 'Invalid IP');
+    assert.strictEqual(getIpClass('256.0.0.1'), 'Invalid IP');
+});
+
+// ----------------------------------------------------
 // SUMMARY
 // ----------------------------------------------------
 console.log('\n========================================');

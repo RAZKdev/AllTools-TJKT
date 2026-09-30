@@ -62,9 +62,9 @@ function renderBandwidthCalculator(container) {
 }
 
 function calculateBandwidth() {
-    const sizeVal = parseFloat(document.getElementById('file-size-input').value);
+    const rawSize = document.getElementById('file-size-input').value.trim();
     const sizeUnit = document.getElementById('file-unit-select').value;
-    const speedVal = parseFloat(document.getElementById('speed-input').value);
+    const rawSpeed = document.getElementById('speed-input').value.trim();
     const speedUnit = document.getElementById('speed-unit-select').value;
 
     const resultBox = document.getElementById('bandwidth-result');
@@ -78,12 +78,14 @@ function calculateBandwidth() {
 
     let hasError = false;
 
-    if (isNaN(sizeVal) || sizeVal <= 0) {
+    const sizeVal = rawSize === '' ? NaN : Number(rawSize);
+    if (!Number.isFinite(sizeVal) || sizeVal <= 0) {
         sizeError.textContent = 'Ukuran file harus angka lebih besar dari 0.';
         hasError = true;
     }
 
-    if (isNaN(speedVal) || speedVal <= 0) {
+    const speedVal = rawSpeed === '' ? NaN : Number(rawSpeed);
+    if (!Number.isFinite(speedVal) || speedVal <= 0) {
         speedError.textContent = 'Kecepatan transfer harus angka lebih besar dari 0.';
         hasError = true;
     }

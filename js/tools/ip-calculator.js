@@ -175,12 +175,41 @@ function cidrToMask(cidr) {
 }
 
 function getIpClass(ip) {
-    const firstOctet = parseInt(ip.split('.')[0], 10);
-    if (firstOctet >= 1 && firstOctet <= 126) return 'Class A';
-    if (firstOctet >= 128 && firstOctet <= 191) return 'Class B';
-    if (firstOctet >= 192 && firstOctet <= 223) return 'Class C';
-    if (firstOctet >= 224 && firstOctet <= 239) return 'Class D (Multicast)';
-    return 'Class E (Experimental)';
+    if (!ip || typeof ip !== 'string') return 'Invalid IP';
+    const trimmed = ip.trim();
+    if (trimmed === '255.255.255.255') {
+        return 'Special — Limited Broadcast';
+    }
+    const parts = trimmed.split('.');
+    if (parts.length !== 4) return 'Invalid IP';
+    const firstOctet = parseInt(parts[0], 10);
+    if (isNaN(firstOctet) || firstOctet < 0 || firstOctet > 255) {
+        return 'Invalid IP';
+    }
+
+    if (firstOctet === 0) {
+        return 'Special — This Network';
+    }
+    if (firstOctet === 127) {
+        return 'Special — Loopback';
+    }
+    if (firstOctet >= 1 && firstOctet <= 126) {
+        return 'Class A';
+    }
+    if (firstOctet >= 128 && firstOctet <= 191) {
+        return 'Class B';
+    }
+    if (firstOctet >= 192 && firstOctet <= 223) {
+        return 'Class C';
+    }
+    if (firstOctet >= 224 && firstOctet <= 239) {
+        return 'Class D (Multicast)';
+    }
+    if (firstOctet >= 240 && firstOctet <= 255) {
+        return 'Class E (Reserved)';
+    }
+
+    return 'Invalid IP';
 }
 
 function ipToBinary(ip) {
@@ -188,4 +217,17 @@ function ipToBinary(ip) {
         return parseInt(octet, 10).toString(2).padStart(8, '0');
     }).join('.');
 }
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        parseCIDR,
+        isValidIPv4,
+        ipToInt,
+        intToIp,
+        cidrToMask,
+        getIpClass,
+        ipToBinary
+    };
+}
+
 

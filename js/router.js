@@ -383,27 +383,37 @@ function initRouter() {
         });
 
         let lastSubmitTime = 0;
+        let isSubmitting = false;
 
         feedbackSubmit.addEventListener('click', async () => {
-            const message =
-                feedbackMessage.value.trim();
+            // Cegah concurrent execution jika proses submit sedang berlangsung
+            if (isSubmitting) return;
+
+            const message = feedbackMessage.value.trim();
 
             if (!message) {
-                feedbackStatus.textContent =
-                    'Tulis pesan terlebih dahulu.';
+                feedbackStatus.textContent = 'Tulis pesan terlebih dahulu.';
                 feedbackStatus.className = 'feedback-status';
                 feedbackStatus.classList.remove('hidden');
                 feedbackMessage.focus();
                 return;
             }
 
-            // Rate-limiting: cegah spam klik bertubi-tubi
+            // Client-side rate-limiting / cooldown (UX guard against accidental double submission)
+            // Catatan Keamanan: Cooldown sisi client ini bertujuan membantu UX pengguna dan mencegah
+            // spam klik tidak sengaja. Ini bukan batas keamanan server-side mutlak.
             if (Date.now() - lastSubmitTime < 4000) {
                 feedbackStatus.textContent = 'Harap tunggu beberapa detik sebelum mengirim masukan lagi.';
                 feedbackStatus.className = 'feedback-status';
                 feedbackStatus.classList.remove('hidden');
                 return;
             }
+
+            // Kunci tombol submit seketika secara sinkron
+            isSubmitting = true;
+            const originalBtnText = feedbackSubmit.textContent;
+            feedbackSubmit.disabled = true;
+            feedbackSubmit.textContent = '⏳ Mengirim ke email pembuat...';
 
             const sender = feedbackSender ? feedbackSender.value.trim().slice(0, 80) : '';
             const safeMessage = message.slice(0, 500);
@@ -442,7 +452,6 @@ function initRouter() {
 
             existingFeedback.unshift(newFeedback);
             const saveResult = StorageManager.saveFeedback(existingFeedback);
-            lastSubmitTime = Date.now();
 
             // 2. Siapkan URL pengiriman langsung
             const mailSubject = `[AllTools TJKT] Masukan ${label} dari ${sender || 'Pengunjung'}`;
@@ -452,13 +461,13 @@ function initRouter() {
             const mailtoUrl = `mailto:${encodeURIComponent(CREATOR_EMAIL)}?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBodyText)}`;
             const waText = encodeURIComponent(`Halo Rangga, ada masukan [${label}] untuk AllTools TJKT dari ${sender || 'Pengunjung'}:\n\n"${message}"`);
 
-            // UI loading state
-            const originalBtnText = feedbackSubmit.textContent;
-            feedbackSubmit.disabled = true;
-            feedbackSubmit.textContent = '⏳ Mengirim ke email pembuat...';
-
             let apiSent = false;
             let apiNeedsActivation = false;
+            let apiRateLimited = false;
+
+            // Timeout controller (8 detik batas waktu koneksi)
+            const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+            const timeoutId = controller ? setTimeout(() => controller.abort(), 8000) : null;
 
             try {
                 const response = await fetch(`https://formsubmit.co/ajax/${CREATOR_EMAIL}`, {
@@ -467,6 +476,7 @@ function initRouter() {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
+                    signal: controller ? controller.signal : undefined,
                     body: JSON.stringify({
                         _subject: mailSubject,
                         _template: 'table',
@@ -479,15 +489,33 @@ function initRouter() {
                     })
                 });
 
-                const resData = await response.json();
-                if (resData.success === 'true' || resData.success === true) {
-                    apiSent = true;
-                } else if (resData.message && resData.message.toLowerCase().includes('activation')) {
-                    apiNeedsActivation = true;
+                if (timeoutId) clearTimeout(timeoutId);
+
+                if (response.status === 429) {
+                    apiRateLimited = true;
+                } else if (response.ok) {
+                    const resData = await response.json().catch(() => ({}));
+                    if (resData.success === 'true' || resData.success === true) {
+                        apiSent = true;
+                    } else if (resData.message && typeof resData.message === 'string' && resData.message.toLowerCase().includes('activation')) {
+                        apiNeedsActivation = true;
+                    }
+                } else {
+                    const resData = await response.json().catch(() => ({}));
+                    if (resData.message && typeof resData.message === 'string' && resData.message.toLowerCase().includes('activation')) {
+                        apiNeedsActivation = true;
+                    }
                 }
             } catch (err) {
-                console.warn('Background email delivery notice:', err);
+                if (timeoutId) clearTimeout(timeoutId);
+                if (err && err.name === 'AbortError') {
+                    console.warn('FormSubmit request timed out (aborted after 8s).');
+                } else {
+                    console.warn('Background email delivery notice:', err);
+                }
             } finally {
+                isSubmitting = false;
+                lastSubmitTime = Date.now();
                 feedbackSubmit.disabled = false;
                 feedbackSubmit.textContent = originalBtnText;
             }
@@ -497,6 +525,12 @@ function initRouter() {
                 statusNotice = `
                     <div style="margin-bottom: 0.6rem; font-weight: 600; color: var(--success-color, #10b981);">
                         ✅ Masukan berhasil terkirim langsung ke email pembuat (${CREATOR_EMAIL})!
+                    </div>
+                `;
+            } else if (apiRateLimited) {
+                statusNotice = `
+                    <div style="margin-bottom: 0.6rem; font-weight: 600; color: #f59e0b;">
+                        ⚠️ Batas pengiriman FormSubmit tercapai (Rate Limited). Masukan tersimpan lokal dan dapat dikirim langsung via Gmail/Email/WhatsApp di bawah.
                     </div>
                 `;
             } else if (apiNeedsActivation) {
