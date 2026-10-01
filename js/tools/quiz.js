@@ -283,6 +283,7 @@ function formatQuizDuration(totalSeconds) {
 }
 
 let mcqTimer = null;
+let mcqTransitionTimeout = null;
 let mcqTimeLeft = MCQ_TIME_LIMIT;
 
 function shuffleQuestions(questions) {
@@ -303,6 +304,8 @@ function shuffleQuestions(questions) {
 function startMcqQuiz() {
     clearInterval(mcqTimer);
     mcqTimer = null;
+    clearTimeout(mcqTransitionTimeout);
+    mcqTransitionTimeout = null;
 
     currentMcqIndex = 0;
     score = 0;
@@ -403,6 +406,7 @@ function startMcqQuiz() {
 
 function renderMcqQuestion() {
     const area = document.getElementById('mcq-question-area');
+    if (!area) return;
 
     area.classList.remove('hidden');
 
@@ -569,7 +573,8 @@ function renderMcqQuestion() {
 
         area.appendChild(transitionMessage);
 
-        setTimeout(() => {
+        clearTimeout(mcqTransitionTimeout);
+        mcqTransitionTimeout = setTimeout(() => {
             renderMcqQuestion();
         }, 2000);
     };

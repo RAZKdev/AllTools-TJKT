@@ -161,7 +161,7 @@ function parseIPv4OrBinary(rawInput) {
         // B. Deteksi jika user bermaksud memasukkan Binary tetapi panjang bit tidak tepat 8
         const hasBinaryOnlyChars = parts.every(p => /^[01]+$/.test(p));
         const hasOctetOver3Digits = parts.some(p => p.length > 3);
-        if (hasBinaryOnlyChars && (hasOctetOver3Digits || parts.some(p => p.length > 1 && p.length !== 8))) {
+        if (hasBinaryOnlyChars && (hasOctetOver3Digits || input.length > 15)) {
             return { success: false, error: 'Format Binary tidak valid: setiap oktet binary harus terdiri dari tepat 8-bit (contoh: 11000000.10101000.00000001.00000001).' };
         }
 

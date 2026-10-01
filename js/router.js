@@ -1,6 +1,8 @@
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initRouter);
+} else {
     initRouter();
-});
+}
 
 function initRouter() {
     const navLinks = document.querySelectorAll(

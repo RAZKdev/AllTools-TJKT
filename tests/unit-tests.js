@@ -82,7 +82,7 @@ function parseIPv4Input(rawInput) {
         // 2. Deteksi jika user bermaksud memasukkan Binary tetapi panjang bit tidak tepat 8
         const hasBinaryOnlyChars = parts.every(p => /^[01]+$/.test(p));
         const hasOctetOver3Digits = parts.some(p => p.length > 3);
-        if (hasBinaryOnlyChars && (hasOctetOver3Digits || parts.some(p => p.length > 1 && p.length !== 8))) {
+        if (hasBinaryOnlyChars && (hasOctetOver3Digits || input.length > 15)) {
             return { success: false, error: 'Format Binary tidak valid: setiap oktet binary harus terdiri dari tepat 8-bit (contoh: 11000000.10101000.00000001.00000001).' };
         }
 
@@ -121,6 +121,21 @@ test('Valid Dotted Decimal IPv4 (192.168.1.1)', () => {
     assert.strictEqual(res.success, true);
     assert.strictEqual(res.format, 'decimal_dotted');
     assert.strictEqual(res.output, '11000000.10101000.00000001.00000001');
+});
+
+test('Valid Dotted Decimal with 0 and 1 only digits (10.0.0.1, 10.10.10.10, 1.0.0.1)', () => {
+    const res1 = parseIPv4Input('10.0.0.1');
+    assert.strictEqual(res1.success, true);
+    assert.strictEqual(res1.format, 'decimal_dotted');
+    assert.strictEqual(res1.output, '00001010.00000000.00000000.00000001');
+
+    const res2 = parseIPv4Input('10.10.10.10');
+    assert.strictEqual(res2.success, true);
+    assert.strictEqual(res2.format, 'decimal_dotted');
+
+    const res3 = parseIPv4Input('1.0.0.1');
+    assert.strictEqual(res3.success, true);
+    assert.strictEqual(res3.format, 'decimal_dotted');
 });
 
 test('Valid Dotted Binary IPv4 (11000000.10101000.00000001.00000001)', () => {

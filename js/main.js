@@ -1,8 +1,14 @@
-document.addEventListener('DOMContentLoaded', () => {
+function initMain() {
     initTheme();
     initMobileMenu();
     initSettings();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMain);
+} else {
+    initMain();
+}
 
 /* ===========================================
    THEME
