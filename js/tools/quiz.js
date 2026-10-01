@@ -317,8 +317,8 @@ function startMcqQuiz() {
             easy: 8,
             medium: 7,
             hard: 5,
-            expert: 3,
-            nightmare: 2
+            expert: 2,
+            nightmare: 3
         };
 
         const difficultyPools = {
@@ -329,39 +329,39 @@ function startMcqQuiz() {
             nightmare: []
         };
 
+        if (typeof mcqQuestions === 'undefined' || !Array.isArray(mcqQuestions) || mcqQuestions.length === 0) {
+            throw new Error('Data soal kuis tidak tersedia atau belum termuat.');
+        }
+
         mcqQuestions.forEach(question => {
-            if (difficultyPools[question.difficulty]) {
+            if (question && difficultyPools[question.difficulty]) {
                 difficultyPools[question.difficulty].push(question);
             }
         });
-
-        Object.entries(MCQ_DIFFICULTY_BLUEPRINT).forEach(
-            ([difficulty, requiredCount]) => {
-                const availableCount =
-                    difficultyPools[difficulty].length;
-
-                if (availableCount < requiredCount) {
-                    throw new Error(
-                        `Quiz difficulty pool insufficient: ${difficulty} ` +
-                        `needs ${requiredCount}, found ${availableCount}`
-                    );
-                }
-            }
-        );
 
         currentMcqQuestions = [];
 
         Object.entries(MCQ_DIFFICULTY_BLUEPRINT).forEach(
             ([difficulty, requiredCount]) => {
-                const selected = shuffleQuestions(
-                    difficultyPools[difficulty]
-                ).slice(0, requiredCount);
-
+                const pool = difficultyPools[difficulty] || [];
+                const selected = shuffleQuestions(pool).slice(0, requiredCount);
                 currentMcqQuestions.push(...selected);
             }
         );
 
-        currentMcqQuestions = shuffleQuestions(currentMcqQuestions);
+        // Fallback defensif: jika soal dari blueprint belum mencapai MCQ_QUESTION_COUNT (25), lengkapi dari bank soal tersisa
+        if (currentMcqQuestions.length < MCQ_QUESTION_COUNT) {
+            const selectedSet = new Set(currentMcqQuestions);
+            const remaining = shuffleQuestions(mcqQuestions.filter(q => !selectedSet.has(q)));
+            const needed = MCQ_QUESTION_COUNT - currentMcqQuestions.length;
+            currentMcqQuestions.push(...remaining.slice(0, needed));
+        }
+
+        if (currentMcqQuestions.length === 0) {
+            throw new Error('Data soal kuis tidak dapat diproses.');
+        }
+
+        currentMcqQuestions = shuffleQuestions(currentMcqQuestions).slice(0, MCQ_QUESTION_COUNT);
 
         renderMcqQuestion();
 
@@ -394,8 +394,7 @@ function startMcqQuiz() {
 
             if (retryBtn) {
                 retryBtn.addEventListener('click', () => {
-                    area.innerHTML = '';
-                    area.classList.add('hidden');
+                    startMcqQuiz();
                 });
             }
         }

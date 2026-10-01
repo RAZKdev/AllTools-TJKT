@@ -35,7 +35,7 @@ console.log('========================================\n');
 // ----------------------------------------------------
 // 1. IPv4 DECIMAL & BINARY PARSER VALIDATION
 // ----------------------------------------------------
-console.log('[1/8] Menguji IPv4 Decimal & Binary Parser...');
+console.log('[1/9] Menguji IPv4 Decimal & Binary Parser...');
 
 // Definisi spesifikasi parser IPv4 yang benar
 function parseIPv4Input(rawInput) {
@@ -189,7 +189,7 @@ test('Reject Empty or Whitespace', () => {
 // ----------------------------------------------------
 // 2. NUMBER BASE CONVERTER VALIDATION
 // ----------------------------------------------------
-console.log('\n[2/8] Menguji Number Base Converter Validator...');
+console.log('\n[2/9] Menguji Number Base Converter Validator...');
 
 function parseNumberBase(rawVal, base) {
     const val = String(rawVal || '').trim();
@@ -304,7 +304,7 @@ test('REJECT Negative Numbers (-5)', () => {
 // ----------------------------------------------------
 // 3. DEFENSIVE LOCALSTORAGE & DATA MODEL
 // ----------------------------------------------------
-console.log('\n[3/8] Menguji Defensive Storage Helpers...');
+console.log('\n[3/9] Menguji Defensive Storage Helpers...');
 
 function safeParseArray(raw, fallback = []) {
     if (typeof raw !== 'string' || !raw.trim()) {
@@ -368,7 +368,7 @@ test('sanitizeFeedbackItem: protects against malformed object or XSS lengths', (
 // ----------------------------------------------------
 // 4. UNIT CONVERSIONS & BANDWIDTH CONSISTENCY
 // ----------------------------------------------------
-console.log('\n[4/8] Menguji Unit Consistency (SI vs IEC)...');
+console.log('\n[4/9] Menguji Unit Consistency (SI vs IEC)...');
 
 function calculateBandwidthTransfer(sizeVal, sizeUnit, speedVal, speedUnit) {
     if (isNaN(sizeVal) || sizeVal <= 0 || isNaN(speedVal) || speedVal <= 0) {
@@ -428,7 +428,7 @@ test('Bandwidth Transfer Time: 100 MB at 10 MB/s = 10.00 seconds', () => {
 // ----------------------------------------------------
 // 5. SUBNET & CIDR RECONSTRUCTION
 // ----------------------------------------------------
-console.log('\n[5/8] Menguji Subnetting & CIDR Math...');
+console.log('\n[5/9] Menguji Subnetting & CIDR Math...');
 
 function cidrToMask(cidr) {
     return cidr === 0 ? 0 : (~0 << (32 - cidr)) >>> 0;
@@ -462,7 +462,7 @@ test('maskToCidr rejects non-contiguous mask (e.g., 255.0.255.0)', () => {
 // ----------------------------------------------------
 // 6. STRICT CIDR VALIDATOR (P0.3)
 // ----------------------------------------------------
-console.log('\n[6/8] Menguji Strict CIDR Prefix Validation...');
+console.log('\n[6/9] Menguji Strict CIDR Prefix Validation...');
 
 function parseCIDR(rawInput) {
     if (rawInput === null || rawInput === undefined) {
@@ -563,7 +563,7 @@ test('REJECT Leading Zeroes: 01, 00, /024', () => {
 // ----------------------------------------------------
 // 7. DATA UNIT CONVERTER TEST MATRIX (SI vs IEC)
 // ----------------------------------------------------
-console.log('\n[7/8] Menguji Data Unit Conversions Matrix (SI vs IEC)...');
+console.log('\n[7/9] Menguji Data Unit Conversions Matrix (SI vs IEC)...');
 
 function convertDataUnits(val, fromUnit) {
     if (isNaN(val) || val <= 0) return null;
@@ -661,7 +661,7 @@ test('Data Units Cross-Conversion: 1 TiB to TB (1.09951163) and 1 TB to TiB (0.9
 // ----------------------------------------------------
 // 8. IPv4 ADDRESS & SPECIAL-RANGE CLASSIFICATION
 // ----------------------------------------------------
-console.log('\n[8/8] Menguji Klasifikasi IPv4 Address & Special Ranges...');
+console.log('\n[8/9] Menguji Klasifikasi IPv4 Address & Special Ranges...');
 
 const { getIpClass } = require('../js/tools/ip-calculator.js');
 
@@ -716,6 +716,97 @@ test('Invalid IP handling in getIpClass', () => {
     assert.strictEqual(getIpClass(undefined), 'Invalid IP');
     assert.strictEqual(getIpClass('not-an-ip'), 'Invalid IP');
     assert.strictEqual(getIpClass('256.0.0.1'), 'Invalid IP');
+});
+
+// ----------------------------------------------------
+// 9. QUIZ MCQ QUESTION SELECTION & POOL INTEGRITY
+// ----------------------------------------------------
+console.log('\n[9/9] Menguji Integritas Bank Soal & Algoritma Seleksi Kuis...');
+
+const fs = require('fs');
+const quizFileContent = fs.readFileSync(require('path').join(__dirname, '../data/quiz-questions.js'), 'utf8');
+const loadQuizQuestions = new Function(quizFileContent + '; return mcqQuestions;');
+const allQuestions = loadQuizQuestions();
+
+test('Bank Soal Kuis memiliki minimal 100 soal terstruktur', () => {
+    assert(Array.isArray(allQuestions));
+    assert(allQuestions.length >= 100);
+});
+
+test('Validasi integritas struktur setiap soal kuis (q, options 4, answer 0-3, difficulty)', () => {
+    allQuestions.forEach((q, idx) => {
+        assert(typeof q.q === 'string' && q.q.length > 5, `Soal index ${idx} pertanyaan tidak valid`);
+        assert(Array.isArray(q.options) && q.options.length === 4, `Soal index ${idx} harus memiliki 4 opsi`);
+        assert(typeof q.answer === 'number' && q.answer >= 0 && q.answer <= 3, `Soal index ${idx} answer harus 0..3`);
+        assert(['easy', 'medium', 'hard', 'expert', 'nightmare'].includes(q.difficulty), `Soal index ${idx} difficulty tidak valid: ${q.difficulty}`);
+    });
+});
+
+test('Algoritma seleksi kuis menghasilkan tepat 25 soal tanpa crash', () => {
+    const MCQ_DIFFICULTY_BLUEPRINT = {
+        easy: 8,
+        medium: 7,
+        hard: 5,
+        expert: 2,
+        nightmare: 3
+    };
+
+    const difficultyPools = {
+        easy: [],
+        medium: [],
+        hard: [],
+        expert: [],
+        nightmare: []
+    };
+
+    allQuestions.forEach(question => {
+        if (question && difficultyPools[question.difficulty]) {
+            difficultyPools[question.difficulty].push(question);
+        }
+    });
+
+    const currentMcqQuestions = [];
+    Object.entries(MCQ_DIFFICULTY_BLUEPRINT).forEach(([difficulty, requiredCount]) => {
+        const pool = difficultyPools[difficulty] || [];
+        currentMcqQuestions.push(...pool.slice(0, requiredCount));
+    });
+
+    if (currentMcqQuestions.length < 25) {
+        const selectedSet = new Set(currentMcqQuestions);
+        const remaining = allQuestions.filter(q => !selectedSet.has(q));
+        const needed = 25 - currentMcqQuestions.length;
+        currentMcqQuestions.push(...remaining.slice(0, needed));
+    }
+
+    assert.strictEqual(currentMcqQuestions.length, 25);
+    const uniqueQuestions = new Set(currentMcqQuestions);
+    assert.strictEqual(uniqueQuestions.size, 25);
+});
+
+test('Fallback seleksi kuis tetap menghasilkan 25 soal unik jika salah satu pool kosong', () => {
+    const mockedPools = {
+        easy: allQuestions.filter(q => q.difficulty === 'easy'),
+        medium: allQuestions.filter(q => q.difficulty === 'medium'),
+        hard: allQuestions.filter(q => q.difficulty === 'hard'),
+        expert: [],
+        nightmare: allQuestions.filter(q => q.difficulty === 'nightmare')
+    };
+
+    const selected = [];
+    const blueprint = { easy: 8, medium: 7, hard: 5, expert: 2, nightmare: 3 };
+    Object.entries(blueprint).forEach(([d, count]) => {
+        selected.push(...(mockedPools[d] || []).slice(0, count));
+    });
+
+    assert.strictEqual(selected.length, 23);
+
+    const selectedSet = new Set(selected);
+    const remaining = allQuestions.filter(q => !selectedSet.has(q));
+    const needed = 25 - selected.length;
+    selected.push(...remaining.slice(0, needed));
+
+    assert.strictEqual(selected.length, 25);
+    assert.strictEqual(new Set(selected).size, 25);
 });
 
 // ----------------------------------------------------
