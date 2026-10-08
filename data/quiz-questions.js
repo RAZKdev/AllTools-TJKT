@@ -1283,3 +1283,10 @@ const mcqQuestions = [
         difficulty: "nightmare"
     },
 ];
+
+if (typeof window !== 'undefined') {
+    window.mcqQuestions = mcqQuestions;
+}
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { mcqQuestions };
+}

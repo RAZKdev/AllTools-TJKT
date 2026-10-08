@@ -314,6 +314,7 @@ function startMcqQuiz() {
     mcqEndTime = null;
 
     const area = document.getElementById('mcq-question-area');
+    const startContainer = document.getElementById('mcq-container');
 
     try {
         const MCQ_DIFFICULTY_BLUEPRINT = {
@@ -332,11 +333,15 @@ function startMcqQuiz() {
             nightmare: []
         };
 
-        if (typeof mcqQuestions === 'undefined' || !Array.isArray(mcqQuestions) || mcqQuestions.length === 0) {
+        const allQuestions = (typeof mcqQuestions !== 'undefined' && Array.isArray(mcqQuestions))
+            ? mcqQuestions
+            : (typeof window !== 'undefined' && Array.isArray(window.mcqQuestions) ? window.mcqQuestions : []);
+
+        if (allQuestions.length === 0) {
             throw new Error('Data soal kuis tidak tersedia atau belum termuat.');
         }
 
-        mcqQuestions.forEach(question => {
+        allQuestions.forEach(question => {
             if (question && difficultyPools[question.difficulty]) {
                 difficultyPools[question.difficulty].push(question);
             }
@@ -355,7 +360,7 @@ function startMcqQuiz() {
         // Fallback defensif: jika soal dari blueprint belum mencapai MCQ_QUESTION_COUNT (25), lengkapi dari bank soal tersisa
         if (currentMcqQuestions.length < MCQ_QUESTION_COUNT) {
             const selectedSet = new Set(currentMcqQuestions);
-            const remaining = shuffleQuestions(mcqQuestions.filter(q => !selectedSet.has(q)));
+            const remaining = shuffleQuestions(allQuestions.filter(q => !selectedSet.has(q)));
             const needed = MCQ_QUESTION_COUNT - currentMcqQuestions.length;
             currentMcqQuestions.push(...remaining.slice(0, needed));
         }
@@ -366,10 +371,18 @@ function startMcqQuiz() {
 
         currentMcqQuestions = shuffleQuestions(currentMcqQuestions).slice(0, MCQ_QUESTION_COUNT);
 
+        if (startContainer) {
+            startContainer.classList.add('hidden');
+        }
+
         renderMcqQuestion();
 
     } catch (error) {
         console.error('Quiz: gagal memulai kuis.', error);
+
+        if (startContainer) {
+            startContainer.classList.remove('hidden');
+        }
 
         if (area) {
             area.classList.remove('hidden');
