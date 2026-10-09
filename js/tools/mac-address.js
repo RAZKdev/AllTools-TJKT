@@ -81,19 +81,36 @@ function analyzeMacAddress() {
 
     errorEl.textContent = '';
 
-    if (!input) {
-        errorEl.textContent = 'MAC Address tidak boleh kosong.';
+    const res = parseMacInfo(input);
+    if (!res.success) {
+        errorEl.textContent = res.error;
         resultBox.classList.add('hidden');
         return;
     }
 
-    const normalized = normalizeMacAddress(input);
+    document.getElementById('mac-res-standard').textContent = res.standard;
+    document.getElementById('mac-res-raw').textContent = res.raw;
+    document.getElementById('mac-res-oui').textContent = res.oui;
+    document.getElementById('mac-res-binary').textContent = res.binary;
+    document.getElementById('mac-res-type').textContent = res.type;
+    document.getElementById('mac-res-admin').textContent = res.admin;
+    document.getElementById('mac-res-broadcast').textContent = res.broadcast;
 
+    resultBox.classList.remove('hidden');
+}
+
+function parseMacInfo(rawInput) {
+    const input = String(rawInput || '').trim();
+    if (!input) {
+        return { success: false, error: 'MAC Address tidak boleh kosong.' };
+    }
+
+    const normalized = normalizeMacAddress(input);
     if (!normalized) {
-        errorEl.textContent =
-            'Format MAC tidak valid. Gunakan AA:BB:CC:DD:EE:FF, AA-BB-CC-DD-EE-FF, atau AABBCCDDEEFF.';
-        resultBox.classList.add('hidden');
-        return;
+        return {
+            success: false,
+            error: 'Format MAC tidak valid. Gunakan format AA:BB:CC:DD:EE:FF, AA-BB-CC-DD-EE-FF, AAAA.BBBB.CCCC, atau AABBCCDDEEFF.'
+        };
     }
 
     const raw = normalized.replace(/:/g, '');
@@ -108,31 +125,29 @@ function analyzeMacAddress() {
         .map(byte => parseInt(byte, 16).toString(2).padStart(8, '0'))
         .join(' ');
 
-    document.getElementById('mac-res-standard').textContent = normalized;
-    document.getElementById('mac-res-raw').textContent = raw;
-    document.getElementById('mac-res-oui').textContent =
-        normalized.split(':').slice(0, 3).join(':');
+    const oui = isBroadcast ? 'N/A (Broadcast)' : normalized.split(':').slice(0, 3).join(':');
+    const type = isBroadcast ? 'Broadcast' : (isMulticast ? 'Multicast' : 'Unicast');
+    const admin = isBroadcast
+        ? 'N/A (Broadcast)'
+        : (isLocal ? 'Locally Administered (LAA)' : 'Universally Administered (UAA)');
 
-    document.getElementById('mac-res-binary').textContent = binary;
-
-    document.getElementById('mac-res-type').textContent =
-        isBroadcast
-            ? 'Broadcast'
-            : (isMulticast ? 'Multicast' : 'Unicast');
-
-    document.getElementById('mac-res-admin').textContent =
-        isLocal
-            ? 'Locally Administered (LAA)'
-            : 'Universally Administered (UAA)';
-
-    document.getElementById('mac-res-broadcast').textContent =
-        isBroadcast ? 'Ya' : 'Tidak';
-
-    resultBox.classList.remove('hidden');
+    return {
+        success: true,
+        standard: normalized,
+        raw: raw,
+        oui: oui,
+        binary: binary,
+        type: type,
+        admin: admin,
+        broadcast: isBroadcast ? 'Ya' : 'Tidak',
+        isBroadcast: isBroadcast,
+        isMulticast: isMulticast,
+        isLocal: isLocal
+    };
 }
 
 function normalizeMacAddress(mac) {
-    const input = mac.trim().toUpperCase();
+    const input = String(mac || '').trim().toUpperCase();
 
     const validFormats = [
         /^[0-9A-F]{12}$/,
@@ -148,4 +163,11 @@ function normalizeMacAddress(mac) {
     const raw = input.replace(/[:\-.]/g, '');
 
     return raw.match(/.{2}/g).join(':');
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        normalizeMacAddress,
+        parseMacInfo
+    };
 }

@@ -474,6 +474,58 @@ test('maskToCidr rejects non-contiguous mask (e.g., 255.0.255.0)', () => {
     assert.strictEqual(maskToCidr(invalidMask), -1);
 });
 
+// Pengujian MAC Address Normalization & Analysis
+const macTools = require('../js/tools/mac-address.js');
+
+test('MAC Normalizer: Standard Colon (AA:BB:CC:DD:EE:FF)', () => {
+    assert.strictEqual(macTools.normalizeMacAddress('AA:BB:CC:DD:EE:FF'), 'AA:BB:CC:DD:EE:FF');
+    assert.strictEqual(macTools.normalizeMacAddress('aa:bb:cc:dd:ee:ff'), 'AA:BB:CC:DD:EE:FF');
+});
+
+test('MAC Normalizer: Hyphen-separated (AA-BB-CC-DD-EE-FF)', () => {
+    assert.strictEqual(macTools.normalizeMacAddress('00-1B-44-11-3A-B7'), '00:1B:44:11:3A:B7');
+});
+
+test('MAC Normalizer: Cisco Dot Notation (AAAA.BBBB.CCCC)', () => {
+    assert.strictEqual(macTools.normalizeMacAddress('0011.2233.4455'), '00:11:22:33:44:55');
+    assert.strictEqual(macTools.normalizeMacAddress('c04a.0014.abcd'), 'C0:4A:00:14:AB:CD');
+});
+
+test('MAC Normalizer: 12-Hex Undotted (AABBCCDDEEFF)', () => {
+    assert.strictEqual(macTools.normalizeMacAddress('AABBCCDDEEFF'), 'AA:BB:CC:DD:EE:FF');
+});
+
+test('MAC Normalizer: Rejects Invalid Formats', () => {
+    assert.strictEqual(macTools.normalizeMacAddress(''), null);
+    assert.strictEqual(macTools.normalizeMacAddress('AA:BB:CC:DD:EE'), null);
+    assert.strictEqual(macTools.normalizeMacAddress('AA:BB:CC:DD:EE:GG'), null);
+    assert.strictEqual(macTools.normalizeMacAddress('12345'), null);
+});
+
+test('MAC Analysis: Broadcast (FF:FF:FF:FF:FF:FF) sets N/A for OUI and Admin', () => {
+    const info = macTools.parseMacInfo('FF:FF:FF:FF:FF:FF');
+    assert.strictEqual(info.success, true);
+    assert.strictEqual(info.type, 'Broadcast');
+    assert.strictEqual(info.broadcast, 'Ya');
+    assert.strictEqual(info.oui, 'N/A (Broadcast)');
+    assert.strictEqual(info.admin, 'N/A (Broadcast)');
+});
+
+test('MAC Analysis: Multicast and Unicast with UAA/LAA classification', () => {
+    // 01:00:5E:00:00:01 (IPv4 Multicast, UAA)
+    const mcast = macTools.parseMacInfo('01:00:5E:00:00:01');
+    assert.strictEqual(mcast.success, true);
+    assert.strictEqual(mcast.type, 'Multicast');
+    assert.strictEqual(mcast.admin, 'Universally Administered (UAA)');
+    assert.strictEqual(mcast.broadcast, 'Tidak');
+
+    // 02:00:00:00:00:01 (Unicast, LAA)
+    const laa = macTools.parseMacInfo('02:00:00:00:00:01');
+    assert.strictEqual(laa.success, true);
+    assert.strictEqual(laa.type, 'Unicast');
+    assert.strictEqual(laa.admin, 'Locally Administered (LAA)');
+});
+
 // ----------------------------------------------------
 // 6. STRICT CIDR VALIDATOR (P0.3)
 // ----------------------------------------------------

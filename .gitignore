@@ -7,4 +7,6 @@
 *.lnk
 HANDOFF.md
 scratch/
+start.bat
+*.bat
 
