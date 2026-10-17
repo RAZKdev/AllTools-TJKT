@@ -445,22 +445,8 @@ test('Bandwidth Transfer Time: 100 MB at 10 MB/s = 10.00 seconds', () => {
 // ----------------------------------------------------
 console.log('\n[5/9] Menguji Subnetting & CIDR Math...');
 
-function cidrToMask(cidr) {
-    return cidr === 0 ? 0 : (~0 << (32 - cidr)) >>> 0;
-}
-
-function maskToCidr(maskInt) {
-    let cidr = 0;
-    for (let i = 31; i >= 0; i--) {
-        if ((maskInt & (1 << i)) !== 0) {
-            cidr++;
-        } else {
-            break;
-        }
-    }
-    const reconstructed = cidr === 0 ? 0 : (~0 << (32 - cidr)) >>> 0;
-    return reconstructed === maskInt ? cidr : -1;
-}
+const { cidrToMask } = require('../js/tools/ip-calculator.js');
+const { maskToCidr } = require('../js/tools/subnet-calculator.js');
 
 test('CIDR to Mask and reverse for /24', () => {
     const mask = cidrToMask(24);
@@ -472,6 +458,45 @@ test('maskToCidr rejects non-contiguous mask (e.g., 255.0.255.0)', () => {
     // 255.0.255.0 in uint32 = (255 << 24) + (255 << 8)
     const invalidMask = ((255 << 24) | (255 << 8)) >>> 0;
     assert.strictEqual(maskToCidr(invalidMask), -1);
+});
+
+test('maskToCidr & cidrToMask: Boundary CIDRs (/0, /8, /16, /30, /32)', () => {
+    // /0 boundary
+    assert.strictEqual(cidrToMask(0), 0);
+    assert.strictEqual(maskToCidr(0), 0);
+
+    // /8 boundary (255.0.0.0)
+    const mask8 = cidrToMask(8);
+    assert.strictEqual(mask8, 4278190080);
+    assert.strictEqual(maskToCidr(mask8), 8);
+
+    // /16 boundary (255.255.0.0)
+    const mask16 = cidrToMask(16);
+    assert.strictEqual(mask16, 4294901760);
+    assert.strictEqual(maskToCidr(mask16), 16);
+
+    // /30 boundary (255.255.255.252)
+    const mask30 = cidrToMask(30);
+    assert.strictEqual(mask30, 4294967292);
+    assert.strictEqual(maskToCidr(mask30), 30);
+
+    // /32 boundary (255.255.255.255)
+    const mask32 = cidrToMask(32);
+    assert.strictEqual(mask32, 4294967295);
+    assert.strictEqual(maskToCidr(mask32), 32);
+});
+
+test('maskToCidr: Rejects arbitrary non-contiguous or inverted bit patterns', () => {
+    // 255.255.0.255 in uint32
+    const nonContig1 = ((255 << 24) | (255 << 16) | 255) >>> 0;
+    assert.strictEqual(maskToCidr(nonContig1), -1);
+
+    // 0.0.0.1 (host bit only)
+    assert.strictEqual(maskToCidr(1), -1);
+
+    // 128.0.0.1
+    const nonContig2 = ((128 << 24) | 1) >>> 0;
+    assert.strictEqual(maskToCidr(nonContig2), -1);
 });
 
 // Pengujian MAC Address Normalization & Analysis
@@ -730,7 +755,7 @@ test('Data Units Cross-Conversion: 1 TiB to TB (1.09951163) and 1 TB to TiB (0.9
 // ----------------------------------------------------
 console.log('\n[8/9] Menguji Klasifikasi IPv4 Address & Special Ranges...');
 
-const { getIpClass } = require('../js/tools/ip-calculator.js');
+const { getIpClass, isValidIPv4, ipToInt, intToIp } = require('../js/tools/ip-calculator.js');
 
 test('Special — This Network (0.0.0.0/8): 0.0.0.0 and 0.1.2.3', () => {
     assert.strictEqual(getIpClass('0.0.0.0'), 'Special — This Network');
@@ -784,6 +809,66 @@ test('Invalid IP handling in getIpClass', () => {
     assert.strictEqual(getIpClass('not-an-ip'), 'Invalid IP');
     assert.strictEqual(getIpClass('256.0.0.1'), 'Invalid IP');
 });
+
+test('isValidIPv4: Valid Standard IPv4 Addresses', () => {
+    assert.strictEqual(isValidIPv4('192.168.1.1'), true);
+    assert.strictEqual(isValidIPv4('0.0.0.0'), true);
+    assert.strictEqual(isValidIPv4('255.255.255.255'), true);
+    assert.strictEqual(isValidIPv4('10.0.0.1'), true);
+    assert.strictEqual(isValidIPv4('172.16.254.1'), true);
+});
+
+test('isValidIPv4: Rejects Non-Standard Numeric Formats (CR-001)', () => {
+    // Scientific / Exponential notation
+    assert.strictEqual(isValidIPv4('192.168.1.1e1'), false);
+    assert.strictEqual(isValidIPv4('192.168.1.2e1'), false);
+    // Embedded / leading / trailing whitespace in octets
+    assert.strictEqual(isValidIPv4('192.168.1. 1'), false);
+    assert.strictEqual(isValidIPv4('192.168. 1.1'), false);
+    assert.strictEqual(isValidIPv4('192.168.1.1 '), false);
+    // Explicit sign symbols (+/-)
+    assert.strictEqual(isValidIPv4('192.168.1.+1'), false);
+    assert.strictEqual(isValidIPv4('+192.168.1.1'), false);
+    assert.strictEqual(isValidIPv4('192.168.1.-1'), false);
+});
+
+test('isValidIPv4: Rejects Structural Malformations & Range Violations', () => {
+    // Empty octets
+    assert.strictEqual(isValidIPv4('192.168..1'), false);
+    assert.strictEqual(isValidIPv4('.192.168.1.1'), false);
+    assert.strictEqual(isValidIPv4('192.168.1.1.'), false);
+    // Octet count violations
+    assert.strictEqual(isValidIPv4('192.168.1'), false);
+    assert.strictEqual(isValidIPv4('192.168.1.1.1'), false);
+    assert.strictEqual(isValidIPv4('192'), false);
+    // Range > 255
+    assert.strictEqual(isValidIPv4('192.168.1.256'), false);
+    assert.strictEqual(isValidIPv4('999.999.999.999'), false);
+    // Leading zero policy
+    assert.strictEqual(isValidIPv4('192.168.01.1'), false);
+    assert.strictEqual(isValidIPv4('192.168.00.1'), false);
+    // Non-string / empty
+    assert.strictEqual(isValidIPv4(''), false);
+    assert.strictEqual(isValidIPv4(null), false);
+    assert.strictEqual(isValidIPv4(undefined), false);
+});
+
+test('isValidIPv4: Valid addresses produce correct integer and subnet calculations', () => {
+    assert.strictEqual(isValidIPv4('192.168.1.1'), true);
+    const intVal = ipToInt('192.168.1.1');
+    assert.strictEqual(intVal, 3232235777);
+    assert.strictEqual(intToIp(intVal), '192.168.1.1');
+
+    // Subnet calculation verification: 192.168.1.1 / 24
+    const mask = cidrToMask(24);
+    const net = (intVal & mask) >>> 0;
+    const broad = (net | (~mask >>> 0)) >>> 0;
+    assert.strictEqual(intToIp(net), '192.168.1.0');
+    assert.strictEqual(intToIp(broad), '192.168.1.255');
+    assert.strictEqual(intToIp(net + 1), '192.168.1.1');
+    assert.strictEqual(intToIp(broad - 1), '192.168.1.254');
+});
+
 
 // ----------------------------------------------------
 // 9. QUIZ MCQ QUESTION SELECTION & POOL INTEGRITY

@@ -140,3 +140,10 @@ function maskToCidr(maskInt) {
     return reconstructed === maskInt ? cidr : -1;
 }
 
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        maskToCidr,
+        calculateSubnet,
+        renderSubnetCalculator
+    };
+}

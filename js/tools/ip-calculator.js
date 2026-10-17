@@ -148,14 +148,17 @@ function parseCIDR(rawInput) {
 }
 
 function isValidIPv4(ip) {
+    if (!ip || typeof ip !== 'string') return false;
     const parts = ip.split('.');
     if (parts.length !== 4) return false;
     return parts.every(part => {
-        if (part === '' || (part.length > 1 && part.startsWith('0'))) return false;
+        if (!/^\d{1,3}$/.test(part)) return false;
+        if (part.length > 1 && part.startsWith('0')) return false;
         const num = Number(part);
-        return Number.isInteger(num) && num >= 0 && num <= 255;
+        return num >= 0 && num <= 255;
     });
 }
+
 
 function ipToInt(ip) {
     return ip.split('.').reduce((acc, octet) => ((acc << 8) + parseInt(octet, 10)) >>> 0, 0);
