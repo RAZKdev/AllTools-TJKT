@@ -53,3 +53,6 @@ Aplikasi ini dirancang untuk:
 
 9. **Pengaturan Data & Sistem Feedback**  
    Modal pengelolaan penyimpanan lokal (*localStorage*) untuk melihat atau menghapus data Favorit, Riwayat Akses, Progress Kuis, serta form pengiriman feedback pengguna.
+
+10. **Dukungan Bilingual (Bahasa Indonesia & English)**  
+    Menyediakan tombol peralihan bahasa instan (ID ⇄ EN) di header navigasi dan modal pengaturan aplikasi, dengan mesin lokalisasi ringan (zero-dependency i18n), sinkronisasi otomatis atribut aksesibilitas (`<html lang>`), serta persistensi preferensi di penyimpanan lokal browser tanpa memerlukan reload halaman.

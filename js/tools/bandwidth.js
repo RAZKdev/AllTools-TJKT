@@ -2,11 +2,11 @@
 function renderBandwidthCalculator(container) {
     container.innerHTML = `
         <div class="tool-card">
-            <h2>Bandwidth & Transfer Time Calculator</h2>
-            <p class="tool-desc">Hitung estimasi waktu unduh atau unggah file berdasarkan kapasitas bandwidth jaringan.</p>
+            <h2 data-i18n="bandwidth.title">Bandwidth & Transfer Time Calculator</h2>
+            <p class="tool-desc" data-i18n="bandwidth.desc">Hitung estimasi waktu unduh atau unggah file berdasarkan kapasitas bandwidth jaringan.</p>
             
             <div class="form-group" style="margin-top: 1rem;">
-                <label for="file-size-input">Ukuran File:</label>
+                <label for="file-size-input" data-i18n="bandwidth.fileSizeLabel">Ukuran File:</label>
                 <div style="display: flex; gap: 0.5rem;">
                     <input type="number" id="file-size-input" placeholder="Contoh: 700" value="700" min="0.001" step="any" style="flex: 2;">
                     <select id="file-unit-select" style="flex: 1.2; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color);">
@@ -24,7 +24,7 @@ function renderBandwidthCalculator(container) {
             </div>
 
             <div class="form-group">
-                <label for="speed-input">Kecepatan Transfer Jaringan:</label>
+                <label for="speed-input" data-i18n="bandwidth.speedLabel">Kecepatan Transfer Jaringan:</label>
                 <div style="display: flex; gap: 0.5rem;">
                     <input type="number" id="speed-input" placeholder="Contoh: 10" value="10" min="0.001" step="any" style="flex: 2;">
                     <select id="speed-unit-select" style="flex: 1.2; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color);">
@@ -38,14 +38,14 @@ function renderBandwidthCalculator(container) {
                 <span id="speed-error" class="error-msg"></span>
             </div>
 
-            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem; margin-bottom: 1.25rem; line-height: 1.5;">
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem; margin-bottom: 1.25rem; line-height: 1.5;" data-i18n="bandwidth.unitNote">
                 💡 <strong>Catatan Standar Satuan:</strong> Satuan desimal SI (KB, MB, GB) berbasis 1.000, sedangkan biner IEC (KiB, MiB, GiB) berbasis 1.024. Kecepatan 1 MB/s = 8 Mbps (1 Byte = 8 bit).
             </p>
 
-            <button id="calc-bandwidth-btn" class="btn-primary">Hitung Waktu Transfer</button>
+            <button id="calc-bandwidth-btn" class="btn-primary" data-i18n="bandwidth.calcBtn">Hitung Waktu Transfer</button>
 
             <div id="bandwidth-result" class="result-box hidden" style="margin-top: 1rem;">
-                <h3>Estimasi Waktu:</h3>
+                <h3 data-i18n="bandwidth.resTitle">Estimasi Waktu:</h3>
                 <p style="font-size: 1.35rem; font-weight: bold; color: var(--primary-color); margin-top: 0.5rem; margin-bottom: 1rem;" id="bw-time-output">-</p>
                 
                 <table class="result-table">

@@ -2,35 +2,35 @@
 function renderQuizModule(container) {
     container.innerHTML = `
         <div class="tool-card">
-            <h2>TJKT Practice & Quiz</h2>
-            <p class="tool-desc">Uji kemampuan dan latihan soal seputar subnetting serta konsep jaringan komputer.</p>
+            <h2 data-i18n="quiz.title">TJKT Practice & Quiz</h2>
+            <p class="tool-desc" data-i18n="quiz.desc">Uji kemampuan dan latihan soal seputar subnetting serta konsep jaringan komputer.</p>
             
             <div class="converter-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
-                <button class="btn-outline quiz-tab-btn active" data-target="practice-subnet">Latihan Subnetting</button>
-                <button class="btn-outline quiz-tab-btn" data-target="quiz-net">Kuis Jaringan & OSI</button>
+                <button class="btn-outline quiz-tab-btn active" data-target="practice-subnet" data-i18n="quiz.tabPractice">Latihan Subnetting</button>
+                <button class="btn-outline quiz-tab-btn" data-target="quiz-net" data-i18n="quiz.tabQuiz">Kuis Jaringan & OSI</button>
             </div>
 
             <div id="practice-subnet" class="quiz-panel">
-                <h3>Generator Soal Subnetting</h3>
-                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">Latih kemampuan analisis IP dan CIDR Anda secara acak.</p>
-                <button id="gen-subnet-question" class="btn-primary">Generate Soal Baru</button>
+                <h3 data-i18n="quiz.subnetHeading">Generator Soal Subnetting</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;" data-i18n="quiz.subnetDesc">Latih kemampuan analisis IP dan CIDR Anda secara acak.</p>
+                <button id="gen-subnet-question" class="btn-primary" data-i18n="quiz.genSubnetBtn">Generate Soal Baru</button>
                 
                 <div id="subnet-question-box" class="hidden" style="margin-top: 1.5rem; background: var(--bg-color); padding: 1rem; border-radius: var(--radius); border: 1px solid var(--border-color);">
                     <p id="question-text" style="font-weight: bold; margin-bottom: 1rem;"></p>
                     <div class="form-group">
-                        <label for="user-answer-input">Jawaban Anda:</label>
-                        <input type="text" id="user-answer-input" placeholder="Masukkan jawaban...">
+                        <label for="user-answer-input" data-i18n="quiz.yourAnswerLabel">Jawaban Anda:</label>
+                        <input type="text" id="user-answer-input" placeholder="Masukkan jawaban..." data-i18n-placeholder="quiz.answerPlaceholder">
                     </div>
-                    <button id="check-subnet-answer" class="btn-primary">Periksa Jawaban</button>
+                    <button id="check-subnet-answer" class="btn-primary" data-i18n="quiz.checkBtn">Periksa Jawaban</button>
                     <div id="subnet-feedback" style="margin-top: 1rem; font-weight: bold;"></div>
                 </div>
             </div>
 
             <div id="quiz-net" class="quiz-panel hidden">
-                <h3>Kuis Pilihan Ganda TJKT</h3>
+                <h3 data-i18n="quiz.mcqHeading">Kuis Pilihan Ganda TJKT</h3>
                 <div id="mcq-container">
-                    <p style="color: var(--text-secondary);">Mulai kuis untuk menguji pemahaman teori jaringan (OSI Layer, TCP/IP, Protokol).</p>
-                    <button id="start-mcq-btn" class="btn-primary" style="margin-top: 1rem;">Mulai Kuis</button>
+                    <p style="color: var(--text-secondary);" data-i18n="quiz.mcqDesc">Mulai kuis untuk menguji pemahaman teori jaringan (OSI Layer, TCP/IP, Protokol).</p>
+                    <button id="start-mcq-btn" class="btn-primary" style="margin-top: 1rem;" data-i18n="quiz.startMcqBtn">Mulai Kuis</button>
                 </div>
                 <div id="mcq-question-area" class="hidden" style="margin-top: 1rem;"></div>
             </div>

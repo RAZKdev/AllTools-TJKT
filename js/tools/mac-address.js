@@ -3,55 +3,56 @@
 function renderMacAddressTools(container) {
     container.innerHTML = `
         <div class="tool-card">
-            <h2>MAC Address Tools</h2>
-            <p class="tool-desc">
+            <h2 data-i18n="macTools.title">MAC Address Tools</h2>
+            <p class="tool-desc" data-i18n="macTools.desc">
                 Validasi, normalisasi, dan analisis informasi dasar MAC Address.
             </p>
 
             <div class="form-group">
-                <label for="mac-input">MAC Address:</label>
+                <label for="mac-input" data-i18n="macTools.macLabel">MAC Address:</label>
                 <input
                     type="text"
                     id="mac-input"
                     placeholder="Contoh: AA:BB:CC:DD:EE:FF"
+                    data-i18n-placeholder="macTools.macPlaceholder"
                     autocomplete="off"
                 >
                 <span id="mac-error" class="error-msg"></span>
             </div>
 
-            <button id="analyze-mac-btn" class="btn-primary">
+            <button id="analyze-mac-btn" class="btn-primary" data-i18n="macTools.analyzeBtn">
                 Analisis MAC
             </button>
 
             <div id="mac-result" class="result-box hidden">
-                <h3>Hasil Analisis:</h3>
+                <h3 data-i18n="macTools.resTitle">Hasil Analisis:</h3>
 
                 <table class="result-table">
                     <tr>
-                        <td>MAC Address</td>
+                        <td data-i18n="macTools.standardFormat">MAC Address</td>
                         <td id="mac-res-standard">-</td>
                     </tr>
                     <tr>
-                        <td>Tanpa Separator</td>
+                        <td data-i18n="macTools.rawFormat">Tanpa Separator</td>
                         <td id="mac-res-raw">-</td>
                     </tr>
                     <tr>
-                        <td>OUI / Prefix 24-bit</td>
+                        <td data-i18n="macTools.ouiPrefix">OUI / Prefix 24-bit</td>
                         <td id="mac-res-oui">-</td>
                     </tr>
                     <tr>
-                        <td>Binary</td>
+                        <td data-i18n="macTools.binary">Binary</td>
                         <td id="mac-res-binary"
                             style="word-break: break-all;">
                             -
                         </td>
                     </tr>
                     <tr>
-                        <td>Jenis Alamat</td>
+                        <td data-i18n="macTools.addressType">Jenis Alamat</td>
                         <td id="mac-res-type">-</td>
                     </tr>
                     <tr>
-                        <td>Administrasi</td>
+                        <td data-i18n="macTools.adminScope">Administrasi</td>
                         <td id="mac-res-admin">-</td>
                     </tr>
                     <tr>

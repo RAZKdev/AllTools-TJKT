@@ -127,17 +127,20 @@ function initRouter() {
         card.tabIndex = 0;
         card.setAttribute('role', 'button');
 
+        const catText = (typeof I18n !== 'undefined' && I18n.t(`tools.${toolId}.category`)) || info.category;
+        const titleText = (typeof I18n !== 'undefined' && I18n.t(`tools.${toolId}.title`)) || info.title;
+
         card.innerHTML = `
             <div class="dashboard-tool-icon">
-                ${info.image ? `<img src="${info.image}" alt="${info.title}" class="dashboard-tool-img">` : info.icon}
+                ${info.image ? `<img src="${info.image}" alt="${titleText}" class="dashboard-tool-img">` : info.icon}
             </div>
 
             <div class="dashboard-tool-content">
-                <span class="dashboard-tool-category">
-                    ${info.category}
+                <span class="dashboard-tool-category" data-i18n="tools.${toolId}.category">
+                    ${catText}
                 </span>
 
-                <h4>${info.title}</h4>
+                <h4 data-i18n="tools.${toolId}.title">${titleText}</h4>
             </div>
 
             <span class="dashboard-tool-arrow">→</span>
@@ -177,25 +180,30 @@ function initRouter() {
         card.tabIndex = 0;
         card.setAttribute('role', 'button');
 
+        const catText = (typeof I18n !== 'undefined' && I18n.t(`tools.${toolId}.category`)) || info.category;
+        const titleText = (typeof I18n !== 'undefined' && I18n.t(`tools.${toolId}.title`)) || info.title;
+        const descText = (typeof I18n !== 'undefined' && I18n.t(`tools.${toolId}.desc`)) || `Buka ${info.title} untuk menggunakan tool ini.`;
+        const openText = (typeof I18n !== 'undefined' && I18n.t('common.openTool')) || 'Buka Tool →';
+
         card.innerHTML = `
             <div class="card-visual">
-                ${info.image ? `<img src="${info.image}" alt="${info.title}" class="card-img" loading="lazy">` : info.icon}
+                ${info.image ? `<img src="${info.image}" alt="${titleText}" class="card-img" loading="lazy">` : info.icon}
             </div>
 
             <div class="card-content">
-                <span class="card-category">
-                    ${info.category}
+                <span class="card-category" data-i18n="tools.${toolId}.category">
+                    ${catText}
                 </span>
 
-                <h4>${info.title}</h4>
+                <h4 data-i18n="tools.${toolId}.title">${titleText}</h4>
 
-                <p>
-                    Buka ${info.title} untuk menggunakan tool ini.
+                <p data-i18n="tools.${toolId}.desc">
+                    ${descText}
                 </p>
             </div>
 
             <div class="card-footer">
-                <span class="btn-link">Buka Tool →</span>
+                <span class="btn-link" data-i18n="common.openTool">${openText}</span>
             </div>
         `;
 
@@ -278,12 +286,15 @@ function initRouter() {
             return;
         }
 
+        const addText = (typeof I18n !== 'undefined' && I18n.t('common.favoriteAdd')) || 'Tambah ke Favorit';
+        const removeText = (typeof I18n !== 'undefined' && I18n.t('common.favoriteRemove')) || 'Hapus dari Favorit';
+
         if (route === 'home' || !toolInfo[route]) {
             favoriteBtn.textContent = '☆';
             favoriteBtn.classList.remove('favorite-active');
             favoriteBtn.setAttribute(
                 'aria-label',
-                'Tambah ke Favorit'
+                addText
             );
             return;
         }
@@ -300,8 +311,8 @@ function initRouter() {
         favoriteBtn.setAttribute(
             'aria-label',
             isFavorite
-                ? 'Hapus dari Favorit'
-                : 'Tambah ke Favorit'
+                ? removeText
+                : addText
         );
     }
 
@@ -653,6 +664,8 @@ function initRouter() {
              */
             if (categoryTools[route]) {
                 const tools = categoryTools[route];
+                const catTitle = (typeof I18n !== 'undefined' && I18n.t(`categories.${route}.title`)) || route.replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+                const catDesc = (typeof I18n !== 'undefined' && I18n.t(`categories.${route}.desc`)) || 'Pilih tool yang ingin digunakan.';
 
                 contentArea.innerHTML = `
                     <div class="category-view">
@@ -661,12 +674,10 @@ function initRouter() {
                                 AllTools TJKT
                             </span>
 
-                            <h2>${route
-                                .replace(/-/g, ' ')
-                                .replace(/\b\w/g, char => char.toUpperCase())}</h2>
+                            <h2 data-i18n="categories.${route}.title">${catTitle}</h2>
 
-                            <p>
-                                Pilih tool yang ingin digunakan.
+                            <p data-i18n="categories.${route}.desc">
+                                ${catDesc}
                             </p>
                         </div>
 
@@ -970,29 +981,29 @@ function initRouter() {
                                 👨‍💻
                             </div>
 
-                            <span class="about-label">
+                            <span class="about-label" data-i18n="about.label">
                                 ABOUT THE PROJECT
                             </span>
 
-                            <h2>AllTools TJKT</h2>
+                            <h2 data-i18n="about.title">AllTools TJKT</h2>
 
-                            <p>
+                            <p data-i18n="about.lead">
                                 Dibuat oleh Rangga, pelajar TJKT yang sedang
                                 belajar membangun teknologi dari nol.
                             </p>
                         </div>
 
                         <div class="about-section">
-                            <h3>🎯 Kenapa AllTools TJKT dibuat?</h3>
+                            <h3 data-i18n="about.whyTitle">🎯 Kenapa AllTools TJKT dibuat?</h3>
 
-                            <p>
+                            <p data-i18n="about.whyP1">
                                 AllTools TJKT dibuat untuk mengumpulkan berbagai
                                 tools yang berguna dalam proses belajar TJKT
                                 ke dalam satu tempat yang sederhana, cepat,
                                 dan mudah digunakan.
                             </p>
 
-                            <p>
+                            <p data-i18n="about.whyP2">
                                 Project ini juga menjadi bagian dari perjalanan
                                 belajar membangun website menggunakan HTML,
                                 CSS, JavaScript, Git, dan teknologi web lainnya.
@@ -1000,18 +1011,18 @@ function initRouter() {
                         </div>
 
                         <div class="about-section">
-                            <h3>🛠️ Status Project</h3>
+                            <h3 data-i18n="about.statusTitle">🛠️ Status Project</h3>
 
                             <div class="about-status">
-                                <strong>Active Development</strong>
-                                <span>AllTools TJKT terus dikembangkan dan diperbaiki.</span>
+                                <strong data-i18n="about.statusActive">Active Development</strong>
+                                <span data-i18n="about.statusDesc">AllTools TJKT terus dikembangkan dan diperbaiki.</span>
                             </div>
                         </div>
 
                         <div class="about-section feedback-section">
-                            <h3>💬 Ceritain masalah atau idemu</h3>
+                            <h3 data-i18n="about.feedbackHeading">💬 Ceritain masalah atau idemu</h3>
 
-                            <p>
+                            <p data-i18n="about.feedbackLead">
                                 Ada bug, punya saran, atau sekadar mau kasih feedback?
                                 Ceritain aja seperti ngobrol dengan developer.
                             </p>
@@ -1022,19 +1033,22 @@ function initRouter() {
 
                                 <button type="button"
                                         class="feedback-type active"
-                                        data-feedback-type="bug">
+                                        data-feedback-type="bug"
+                                        data-i18n="about.typeBug">
                                     🐛 Bug
                                 </button>
 
                                 <button type="button"
                                         class="feedback-type"
-                                        data-feedback-type="suggestion">
+                                        data-feedback-type="suggestion"
+                                        data-i18n="about.typeSuggestion">
                                     💡 Saran
                                 </button>
 
                                 <button type="button"
                                         class="feedback-type"
-                                        data-feedback-type="feedback">
+                                        data-feedback-type="feedback"
+                                        data-i18n="about.typeFeedback">
                                     ❤️ Feedback
                                 </button>
 
@@ -1045,6 +1059,7 @@ function initRouter() {
                                 id="feedback-sender"
                                 class="feedback-sender-input"
                                 placeholder="Nama atau Kontak / Email kamu (opsional)"
+                                data-i18n-placeholder="about.senderPlaceholder"
                                 maxlength="80"
                                 aria-label="Nama atau Kontak pengirim">
 
@@ -1053,6 +1068,7 @@ function initRouter() {
                                 class="feedback-input"
                                 maxlength="500"
                                 placeholder="Tulis kritik, saran, atau laporan bug di sini..."
+                                data-i18n-placeholder="about.msgPlaceholder"
                                 aria-label="Tulis feedback"></textarea>
 
                             <div class="feedback-meta">
@@ -1065,13 +1081,14 @@ function initRouter() {
                                 </span>
                             </div>
 
-                            <p style="margin: 0.35rem 0 0.75rem; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4;">
+                            <p style="margin: 0.35rem 0 0.75rem; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4;" data-i18n="about.privacyNote">
                                 🔒 <em>Privasi: Masukan akan dikirimkan ke email pembuat via FormSubmit. Jangan mengirimkan kata sandi atau data rahasia pribadi.</em>
                             </p>
 
                             <button type="button"
                                     id="feedback-submit"
-                                    class="feedback-submit">
+                                    class="feedback-submit"
+                                    data-i18n="about.submitBtn">
                                 🚀 Kirim Feedback
                             </button>
 
@@ -1083,7 +1100,8 @@ function initRouter() {
                             <button type="button"
                                     id="feedback-inbox-btn"
                                     class="btn-outline"
-                                    style="width: 100%; margin-top: 1.25rem; font-size: 0.84rem; border-style: dashed; padding: 0.6rem 0.85rem;">
+                                    style="width: 100%; margin-top: 1.25rem; font-size: 0.84rem; border-style: dashed; padding: 0.6rem 0.85rem;"
+                                    data-i18n="about.openLocalInboxBtn">
                                 🛠️ Buka Panel Masukan Lokal (Mode Pembuat)
                             </button>
                         </div>
@@ -1147,6 +1165,10 @@ function initRouter() {
                         </p>
                     </div>
                 `;
+            }
+
+            if (typeof I18n !== 'undefined' && I18n.translateDOM) {
+                I18n.translateDOM(contentArea);
             }
 
             updateFavoriteButton(route);
@@ -1290,6 +1312,33 @@ function initRouter() {
             renderDashboard();
         });
     }
+
+    /*
+     * ==========================================
+     * LANGUAGE CHANGE LISTENER
+     * ==========================================
+     */
+
+    window.addEventListener('languagechange', () => {
+        if (currentRoute === 'home') {
+            renderDashboard();
+        } else {
+            updateFavoriteButton(currentRoute);
+            const categoryToolsMap = {
+                networking: true,
+                calculator: true,
+                converter: true,
+                practice: true,
+                reference: true
+            };
+            if (categoryToolsMap[currentRoute]) {
+                navigateTo(currentRoute);
+            }
+        }
+        if (typeof I18n !== 'undefined' && I18n.translateDOM) {
+            I18n.translateDOM(document.body);
+        }
+    });
 
     /*
      * ==========================================

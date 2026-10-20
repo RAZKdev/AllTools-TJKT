@@ -2,32 +2,32 @@
 function renderSubnetCalculator(container) {
     container.innerHTML = `
         <div class="tool-card">
-            <h2>Subnet Calculator</h2>
-            <p class="tool-desc">Analisis detail subnet jaringan berdasarkan Network IP dan Subnet Mask atau CIDR.</p>
+            <h2 data-i18n="subnetCalc.title">Subnet Calculator</h2>
+            <p class="tool-desc" data-i18n="subnetCalc.desc">Analisis detail subnet jaringan berdasarkan Network IP dan Subnet Mask atau CIDR.</p>
             
             <div class="form-group">
-                <label for="subnet-ip-input">Network IP / IP Address:</label>
-                <input type="text" id="subnet-ip-input" placeholder="Contoh: 192.168.1.0">
+                <label for="subnet-ip-input" data-i18n="subnetCalc.ipLabel">Network IP / IP Address:</label>
+                <input type="text" id="subnet-ip-input" placeholder="Contoh: 192.168.1.0" data-i18n-placeholder="subnetCalc.ipPlaceholder">
                 <span id="subnet-ip-error" class="error-msg"></span>
             </div>
 
             <div class="form-group">
-                <label for="subnet-mask-input">Subnet Mask / CIDR:</label>
-                <input type="text" id="subnet-mask-input" placeholder="Contoh: 255.255.255.0 atau 24">
+                <label for="subnet-mask-input" data-i18n="subnetCalc.maskLabel">Subnet Mask / CIDR:</label>
+                <input type="text" id="subnet-mask-input" placeholder="Contoh: 255.255.255.0 atau 24" data-i18n-placeholder="subnetCalc.maskPlaceholder">
                 <span id="subnet-mask-error" class="error-msg"></span>
             </div>
 
-            <button id="calc-subnet-btn" class="btn-primary">Hitung Subnet</button>
+            <button id="calc-subnet-btn" class="btn-primary" data-i18n="subnetCalc.calcBtn">Hitung Subnet</button>
 
             <div id="subnet-result" class="result-box hidden">
-                <h3>Hasil Subnetting:</h3>
+                <h3 data-i18n="subnetCalc.resTitle">Hasil Subnetting:</h3>
                 <table class="result-table">
-                    <tr><td>Network Address</td><td id="sub-res-network">-</td></tr>
-                    <tr><td>Broadcast Address</td><td id="sub-res-broadcast">-</td></tr>
-                    <tr><td>Host Range</td><td id="sub-res-range">-</td></tr>
-                    <tr><td>Number of Hosts</td><td id="sub-res-hosts">-</td></tr>
-                    <tr><td>Subnet Mask</td><td id="sub-res-mask">-</td></tr>
-                    <tr><td>Wildcard Mask</td><td id="sub-res-wildcard">-</td></tr>
+                    <tr><td data-i18n="subnetCalc.network">Network Address</td><td id="sub-res-network">-</td></tr>
+                    <tr><td data-i18n="subnetCalc.broadcast">Broadcast Address</td><td id="sub-res-broadcast">-</td></tr>
+                    <tr><td data-i18n="subnetCalc.hostRange">Host Range</td><td id="sub-res-range">-</td></tr>
+                    <tr><td data-i18n="subnetCalc.numHosts">Number of Hosts</td><td id="sub-res-hosts">-</td></tr>
+                    <tr><td data-i18n="subnetCalc.subnetMask">Subnet Mask</td><td id="sub-res-mask">-</td></tr>
+                    <tr><td data-i18n="subnetCalc.wildcardMask">Wildcard Mask</td><td id="sub-res-wildcard">-</td></tr>
                 </table>
             </div>
         </div>
@@ -48,12 +48,14 @@ function calculateSubnet() {
     ipError.textContent = '';
     maskError.textContent = '';
 
+    const t = (path) => (typeof I18n !== 'undefined' ? I18n.t(path) : path);
+
     let hasError = false;
     if (!ipInput) {
-        ipError.textContent = 'Input tidak boleh kosong.';
+        ipError.textContent = t('subnetCalc.errEmptyIp') || 'Input tidak boleh kosong.';
         hasError = true;
     } else if (!isValidIPv4(ipInput)) {
-        ipError.textContent = 'IPv4 tidak valid.';
+        ipError.textContent = t('subnetCalc.errInvalidIp') || 'IP Address tidak valid.';
         hasError = true;
     }
 

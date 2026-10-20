@@ -2,37 +2,37 @@
 function renderConverters(container) {
     container.innerHTML = `
         <div class="tool-card">
-            <h2>Converters & Number Base</h2>
-            <p class="tool-desc">Konversi format IPv4, basis angka (Decimal, Binary, Hexadecimal, Octal), dan unit data.</p>
+            <h2 data-i18n="converters.title">Converters & Number Base</h2>
+            <p class="tool-desc" data-i18n="converters.desc">Konversi format IPv4, basis angka (Decimal, Binary, Hexadecimal, Octal), dan unit data.</p>
             
             <div class="converter-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
-                <button class="btn-outline conv-tab-btn active" data-target="conv-ip">IPv4 Binary</button>
-                <button class="btn-outline conv-tab-btn" data-target="conv-base">Number Base</button>
-                <button class="btn-outline conv-tab-btn" data-target="conv-data">Data Unit</button>
+                <button class="btn-outline conv-tab-btn active" data-target="conv-ip" data-i18n="converters.tabIp">IPv4 Binary</button>
+                <button class="btn-outline conv-tab-btn" data-target="conv-base" data-i18n="converters.tabBase">Number Base</button>
+                <button class="btn-outline conv-tab-btn" data-target="conv-data" data-i18n="converters.tabData">Data Unit</button>
             </div>
 
             <div id="conv-ip" class="conv-panel">
-                <h3>IPv4 Decimal ↔ Binary</h3>
+                <h3 data-i18n="converters.ipHeading">IPv4 Decimal ↔ Binary</h3>
                 <div class="form-group" style="margin-top: 1rem;">
-                    <label for="ipv4-conv-input">Masukkan IP atau Binary:</label>
-                    <input type="text" id="ipv4-conv-input" placeholder="192.168.1.1 atau 11000000...">
+                    <label for="ipv4-conv-input" data-i18n="converters.ipLabel">Masukkan IP atau Binary:</label>
+                    <input type="text" id="ipv4-conv-input" placeholder="192.168.1.1 atau 11000000..." data-i18n-placeholder="converters.ipPlaceholder">
                     <span id="ipv4-conv-error" class="error-msg"></span>
                 </div>
-                <button id="convert-ipv4-btn" class="btn-primary">Konversi</button>
+                <button id="convert-ipv4-btn" class="btn-primary" data-i18n="converters.convertBtn">Konversi</button>
                 <div id="ipv4-conv-result" class="result-box hidden" style="margin-top: 1rem;">
                     <p><strong>Hasil:</strong> <span id="ipv4-conv-output" style="word-break: break-all; font-family: monospace;">-</span></p>
                 </div>
             </div>
 
             <div id="conv-base" class="conv-panel hidden">
-                <h3>Number Base Converter (Dec, Bin, Hex, Oct)</h3>
+                <h3 data-i18n="converters.baseHeading">Number Base Converter (Dec, Bin, Hex, Oct)</h3>
                 <div class="form-group" style="margin-top: 1rem;">
-                    <label for="base-input">Nilai Angka:</label>
-                    <input type="text" id="base-input" placeholder="Masukkan angka...">
+                    <label for="base-input" data-i18n="converters.baseLabel">Nilai Angka:</label>
+                    <input type="text" id="base-input" placeholder="Masukkan angka..." data-i18n-placeholder="converters.basePlaceholder">
                     <span id="base-error" class="error-msg"></span>
                 </div>
                 <div class="form-group">
-                    <label for="base-from">Dari Basis:</label>
+                    <label for="base-from" data-i18n="converters.baseFromLabel">Dari Basis:</label>
                     <select id="base-from" style="width: 100%; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color);">
                         <option value="10">Decimal (10)</option>
                         <option value="2">Binary (2)</option>
@@ -40,7 +40,7 @@ function renderConverters(container) {
                         <option value="8">Octal (8)</option>
                     </select>
                 </div>
-                <button id="convert-base-btn" class="btn-primary">Konversi Basis</button>
+                <button id="convert-base-btn" class="btn-primary" data-i18n="converters.convertBaseBtn">Konversi Basis</button>
                 <div id="base-conv-result" class="result-box hidden" style="margin-top: 1rem;">
                     <table class="result-table">
                         <tr><td>Decimal (10)</td><td id="base-res-dec">-</td></tr>
@@ -52,15 +52,15 @@ function renderConverters(container) {
             </div>
 
             <div id="conv-data" class="conv-panel hidden">
-                <h3>Data Unit Converter (Decimal vs Binary Units)</h3>
+                <h3 data-i18n="converters.dataHeading">Data Unit Converter (Decimal vs Binary Units)</h3>
                 <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">Catatan: Satuan Desimal berbasis 1000 (KB, MB, GB), sedangkan Biner (KiB, MiB, GiB) berbasis 1024.</p>
                 <div class="form-group">
-                    <label for="data-value-input">Nilai:</label>
+                    <label for="data-value-input" data-i18n="converters.dataValueLabel">Nilai:</label>
                     <input type="number" id="data-value-input" placeholder="Contoh: 1024" value="1">
                     <span id="data-value-error" class="error-msg"></span>
                 </div>
                 <div class="form-group">
-                    <label for="data-unit-select">Satuan Asal:</label>
+                    <label for="data-unit-select" data-i18n="converters.dataFromLabel">Satuan Asal:</label>
                     <select id="data-unit-select" style="width: 100%; padding: 0.75rem; border-radius: var(--radius); border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color);">
                         <option value="bit">bit</option>
                         <option value="Byte" selected>Byte</option>

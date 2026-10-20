@@ -1,4 +1,5 @@
 function initMain() {
+    initI18n();
     initTheme();
     initMobileMenu();
     initSettings();
@@ -8,6 +9,48 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initMain);
 } else {
     initMain();
+}
+
+/* ===========================================
+   LOCALIZATION (I18N)
+   =========================================== */
+function initI18n() {
+    if (typeof I18n !== 'undefined' && typeof I18N_DICTIONARY !== 'undefined') {
+        I18n.init(I18N_DICTIONARY, {
+            storageKey: 'alltools_lang',
+            defaultLang: 'id'
+        });
+    }
+
+    const langBtn = document.getElementById('lang-toggle');
+    if (!langBtn) return;
+
+    function updateLangBtn() {
+        if (typeof I18n === 'undefined') return;
+        const current = I18n.currentLang;
+        if (current === 'id') {
+            langBtn.textContent = '🌐 EN';
+            langBtn.setAttribute('aria-label', I18n.t('common.langToggleAria'));
+            langBtn.title = I18n.t('common.langToggleTitle');
+        } else {
+            langBtn.textContent = '🌐 ID';
+            langBtn.setAttribute('aria-label', I18n.t('common.langToggleAria'));
+            langBtn.title = I18n.t('common.langToggleTitle');
+        }
+    }
+
+    langBtn.addEventListener('click', () => {
+        if (typeof I18n !== 'undefined') {
+            I18n.toggle();
+            updateLangBtn();
+        }
+    });
+
+    window.addEventListener('languagechange', () => {
+        updateLangBtn();
+    });
+
+    updateLangBtn();
 }
 
 /* ===========================================
@@ -60,80 +103,99 @@ function openSettingsModal() {
     /* Jangan buat modal duplikat */
     if (document.getElementById('settings-modal')) return;
 
+    const t = (path, params) => typeof I18n !== 'undefined' ? I18n.t(path, params) : path;
+    const currentLang = typeof I18n !== 'undefined' ? I18n.currentLang : 'id';
+
     const overlay = document.createElement('div');
     overlay.id    = 'settings-modal';
     overlay.className = 'settings-overlay';
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-modal', 'true');
-    overlay.setAttribute('aria-label', 'Pengaturan Data');
+    overlay.setAttribute('aria-label', t('settings.modalTitle'));
 
     overlay.innerHTML = `
         <div class="settings-dialog">
             <div class="settings-dialog-header">
-                <h2 class="settings-dialog-title">⚙️ Pengaturan Data</h2>
+                <h2 class="settings-dialog-title" data-i18n="settings.modalTitle">${t('settings.modalTitle')}</h2>
                 <button
                     id="settings-close-btn"
                     class="settings-close-btn"
-                    aria-label="Tutup pengaturan"
+                    aria-label="${t('settings.closeAria')}"
+                    data-i18n-aria="settings.closeAria"
                 >✕</button>
             </div>
 
-            <p class="settings-dialog-desc">
-                Kelola data yang tersimpan di browser ini.<br>
-                Data hanya ada di perangkat ini dan tidak tersinkron ke perangkat lain.
+            <p class="settings-dialog-desc" data-i18n="settings.modalDesc">
+                ${t('settings.modalDesc')}
             </p>
 
             <div class="settings-action-list">
 
+                <!-- Pengaturan Bahasa -->
                 <div class="settings-action-item">
                     <div class="settings-action-info">
-                        <strong>⭐ Favorit</strong>
-                        <span>Daftar tool yang kamu tandai sebagai favorit.</span>
+                        <strong data-i18n="settings.languageLabel">${t('settings.languageLabel')}</strong>
+                        <span data-i18n="settings.languageDesc">${t('settings.languageDesc')}</span>
+                    </div>
+                    <select id="settings-lang-select" style="padding: 0.4rem 0.65rem; border-radius: var(--radius); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); font-weight: 600; cursor: pointer;">
+                        <option value="id" ${currentLang === 'id' ? 'selected' : ''}>🇮🇩 Bahasa Indonesia</option>
+                        <option value="en" ${currentLang === 'en' ? 'selected' : ''}>🇬🇧 English</option>
+                    </select>
+                </div>
+
+                <div class="settings-action-item">
+                    <div class="settings-action-info">
+                        <strong data-i18n="settings.favoritesLabel">${t('settings.favoritesLabel')}</strong>
+                        <span data-i18n="settings.favoritesDesc">${t('settings.favoritesDesc')}</span>
                     </div>
                     <button
                         class="btn-outline settings-action-btn"
                         data-settings-action="clear-favorites"
+                        data-i18n="settings.clearBtn"
                     >
-                        Hapus
+                        ${t('settings.clearBtn')}
                     </button>
                 </div>
 
                 <div class="settings-action-item">
                     <div class="settings-action-info">
-                        <strong>🕒 Riwayat</strong>
-                        <span>Tool yang terakhir kamu buka (max 5 item).</span>
+                        <strong data-i18n="settings.recentLabel">${t('settings.recentLabel')}</strong>
+                        <span data-i18n="settings.recentDesc">${t('settings.recentDesc')}</span>
                     </div>
                     <button
                         class="btn-outline settings-action-btn"
                         data-settings-action="clear-recent"
+                        data-i18n="settings.clearBtn"
                     >
-                        Hapus
+                        ${t('settings.clearBtn')}
                     </button>
                 </div>
 
                 <div class="settings-action-item">
                     <div class="settings-action-info">
-                        <strong>📊 Progress Kuis</strong>
-                        <span>Statistik dan riwayat sesi kuis.</span>
+                        <strong data-i18n="settings.quizLabel">${t('settings.quizLabel')}</strong>
+                        <span data-i18n="settings.quizDesc">${t('settings.quizDesc')}</span>
                     </div>
                     <button
                         class="btn-outline settings-action-btn"
                         data-settings-action="clear-quiz"
+                        data-i18n="settings.clearBtn"
                     >
-                        Hapus
+                        ${t('settings.clearBtn')}
                     </button>
                 </div>
 
                 <div class="settings-action-item">
                     <div class="settings-action-info">
-                        <strong>💬 Feedback</strong>
-                        <span>Feedback yang tersimpan di browser ini.</span>
+                        <strong data-i18n="settings.feedbackLabel">${t('settings.feedbackLabel')}</strong>
+                        <span data-i18n="settings.feedbackDesc">${t('settings.feedbackDesc')}</span>
                     </div>
                     <button
                         class="btn-outline settings-action-btn"
                         data-settings-action="clear-feedback"
+                        data-i18n="settings.clearBtn"
                     >
-                        Hapus
+                        ${t('settings.clearBtn')}
                     </button>
                 </div>
 
@@ -142,8 +204,8 @@ function openSettingsModal() {
             <div id="settings-confirm-area" class="settings-confirm-area hidden">
                 <p id="settings-confirm-msg" class="settings-confirm-msg"></p>
                 <div class="settings-confirm-actions">
-                    <button id="settings-confirm-yes" class="btn-primary">Ya, Hapus</button>
-                    <button id="settings-confirm-no"  class="btn-outline">Batal</button>
+                    <button id="settings-confirm-yes" class="btn-primary">Ya / Confirm</button>
+                    <button id="settings-confirm-no"  class="btn-outline">Batal / Cancel</button>
                 </div>
             </div>
 
@@ -153,6 +215,15 @@ function openSettingsModal() {
     `;
 
     document.body.appendChild(overlay);
+
+    /* Event listener ganti bahasa dari modal */
+    const langSelect = document.getElementById('settings-lang-select');
+    if (langSelect && typeof I18n !== 'undefined') {
+        langSelect.addEventListener('change', (e) => {
+            I18n.setLanguage(e.target.value);
+            I18n.translateDOM(overlay);
+        });
+    }
 
     /* Tutup saat klik overlay (luar dialog) */
     overlay.addEventListener('click', (e) => {
@@ -168,14 +239,6 @@ function openSettingsModal() {
     };
     document.addEventListener('keydown', overlay._escHandler);
 
-    /* Action buttons */
-    const actionLabels = {
-        'clear-favorites': 'Hapus semua data Favorit?',
-        'clear-recent':    'Hapus semua Riwayat akses?',
-        'clear-quiz':      'Hapus semua Progress Kuis? Statistik dan riwayat sesi akan hilang.',
-        'clear-feedback':  'Hapus semua data Feedback di browser ini?'
-    };
-
     let pendingAction = null;
 
     const confirmArea  = document.getElementById('settings-confirm-area');
@@ -184,9 +247,19 @@ function openSettingsModal() {
     const confirmNo    = document.getElementById('settings-confirm-no');
     const statusEl     = document.getElementById('settings-status');
 
+    function getActionLabel(action) {
+        switch (action) {
+            case 'clear-favorites': return t('settings.confirmFavorites');
+            case 'clear-recent':    return t('settings.confirmRecent');
+            case 'clear-quiz':      return t('settings.confirmQuiz');
+            case 'clear-feedback':  return t('settings.confirmFeedback');
+            default: return 'Konfirmasi tindakan?';
+        }
+    }
+
     function showConfirm(action) {
         pendingAction = action;
-        confirmMsg.textContent = actionLabels[action];
+        confirmMsg.textContent = getActionLabel(action);
         confirmArea.classList.remove('hidden');
         statusEl.classList.add('hidden');
         confirmYes.focus();
@@ -216,19 +289,19 @@ function openSettingsModal() {
         switch (pendingAction) {
             case 'clear-favorites':
                 localStorage.removeItem('alltools_favorites');
-                showStatus('✓ Favorit berhasil dihapus.');
+                showStatus(t('settings.clearedAlert'));
                 break;
             case 'clear-recent':
                 localStorage.removeItem('alltools_recent');
-                showStatus('✓ Riwayat berhasil dihapus.');
+                showStatus(t('settings.clearedAlert'));
                 break;
             case 'clear-quiz':
                 localStorage.removeItem('alltools-tjkt-quiz-progress-v1');
-                showStatus('✓ Progress kuis berhasil dihapus.');
+                showStatus(t('settings.clearedAlert'));
                 break;
             case 'clear-feedback':
                 localStorage.removeItem('alltools_feedback');
-                showStatus('✓ Data feedback berhasil dihapus.');
+                showStatus(t('settings.clearedAlert'));
                 break;
         }
 

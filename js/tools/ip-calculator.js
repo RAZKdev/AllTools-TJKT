@@ -2,36 +2,36 @@
 function renderIpCalculator(container) {
     container.innerHTML = `
         <div class="tool-card">
-            <h2>IP Address Calculator</h2>
-            <p class="tool-desc">Hitung Network, Broadcast, Subnet Mask, dan Range Host dari IPv4 & CIDR.</p>
+            <h2 data-i18n="ipCalc.title">IP Address Calculator</h2>
+            <p class="tool-desc" data-i18n="ipCalc.desc">Hitung Network, Broadcast, Subnet Mask, dan Range Host dari IPv4 & CIDR.</p>
             
             <div class="form-group">
-                <label for="ip-input">IPv4 Address:</label>
-                <input type="text" id="ip-input" placeholder="Contoh: 192.168.1.10">
+                <label for="ip-input" data-i18n="ipCalc.ipLabel">IPv4 Address:</label>
+                <input type="text" id="ip-input" placeholder="Contoh: 192.168.1.10" data-i18n-placeholder="ipCalc.ipPlaceholder">
                 <span id="ip-error" class="error-msg"></span>
             </div>
 
             <div class="form-group">
-                <label for="cidr-input">CIDR Prefix (0 - 32):</label>
-                <input type="text" id="cidr-input" placeholder="Contoh: 24 atau /24">
+                <label for="cidr-input" data-i18n="ipCalc.cidrLabel">CIDR Prefix (0 - 32):</label>
+                <input type="text" id="cidr-input" placeholder="Contoh: 24 atau /24" data-i18n-placeholder="ipCalc.cidrPlaceholder">
                 <span id="cidr-error" class="error-msg"></span>
             </div>
 
-            <button id="calc-ip-btn" class="btn-primary">Hitung</button>
+            <button id="calc-ip-btn" class="btn-primary" data-i18n="ipCalc.calcBtn">Hitung</button>
 
             <div id="ip-result" class="result-box hidden">
-                <h3>Hasil Perhitungan:</h3>
+                <h3 data-i18n="ipCalc.resTitle">Hasil Perhitungan:</h3>
                 <table class="result-table">
-                    <tr><td>Network Address</td><td id="res-network">-</td></tr>
-                    <tr><td>Broadcast Address</td><td id="res-broadcast">-</td></tr>
-                    <tr><td>Subnet Mask</td><td id="res-subnet">-</td></tr>
-                    <tr><td>Wildcard Mask</td><td id="res-wildcard">-</td></tr>
-                    <tr><td>First Usable IP</td><td id="res-first">-</td></tr>
-                    <tr><td>Last Usable IP</td><td id="res-last">-</td></tr>
-                    <tr><td>Total Address</td><td id="res-total">-</td></tr>
-                    <tr><td>Usable Hosts</td><td id="res-hosts">-</td></tr>
-                    <tr><td>IP Class</td><td id="res-class">-</td></tr>
-                    <tr><td>Binary Representation</td><td id="res-binary" style="word-break: break-all;">-</td></tr>
+                    <tr><td data-i18n="ipCalc.network">Network Address</td><td id="res-network">-</td></tr>
+                    <tr><td data-i18n="ipCalc.broadcast">Broadcast Address</td><td id="res-broadcast">-</td></tr>
+                    <tr><td data-i18n="ipCalc.subnet">Subnet Mask</td><td id="res-subnet">-</td></tr>
+                    <tr><td data-i18n="ipCalc.wildcard">Wildcard Mask</td><td id="res-wildcard">-</td></tr>
+                    <tr><td data-i18n="ipCalc.firstIp">First Usable IP</td><td id="res-first">-</td></tr>
+                    <tr><td data-i18n="ipCalc.lastIp">Last Usable IP</td><td id="res-last">-</td></tr>
+                    <tr><td data-i18n="ipCalc.totalAddr">Total Address</td><td id="res-total">-</td></tr>
+                    <tr><td data-i18n="ipCalc.usableHosts">Usable Hosts</td><td id="res-hosts">-</td></tr>
+                    <tr><td data-i18n="ipCalc.ipClass">IP Class</td><td id="res-class">-</td></tr>
+                    <tr><td data-i18n="ipCalc.binaryRep">Binary Representation</td><td id="res-binary" style="word-break: break-all;">-</td></tr>
                 </table>
             </div>
         </div>
@@ -54,13 +54,15 @@ function calculateIP() {
     ipError.textContent = '';
     cidrError.textContent = '';
 
+    const t = (path) => (typeof I18n !== 'undefined' ? I18n.t(path) : path);
+
     // Validasi kosong
     let hasError = false;
     if (!ipInput) {
-        ipError.textContent = 'Input tidak boleh kosong.';
+        ipError.textContent = t('ipCalc.errEmpty') || 'Input tidak boleh kosong.';
         hasError = true;
     } else if (!isValidIPv4(ipInput)) {
-        ipError.textContent = 'IPv4 tidak valid.';
+        ipError.textContent = t('ipCalc.errInvalidIp') || 'IPv4 tidak valid.';
         hasError = true;
     }
 

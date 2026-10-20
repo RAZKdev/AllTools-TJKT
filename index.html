@@ -11,22 +11,23 @@
 <body>
     <header>
         <div class="header-container">
-            <a href="#" class="logo" id="nav-home-logo" aria-label="Ke Halaman Utama">
-                <h1>AllTools TJKT</h1>
+            <a href="#" class="logo" id="nav-home-logo" aria-label="Ke Halaman Utama" data-i18n-aria="common.logoAria">
+                <h1 data-i18n="common.appTitle">AllTools TJKT</h1>
             </a>
             <div class="header-controls">
-                <button id="theme-toggle" aria-label="Ganti Tema Gelap/Terang">🌙</button>
-                <button id="mobile-menu-btn" aria-label="Buka Menu Navigasi">☰</button>
+                <button id="lang-toggle" aria-label="Switch to English" title="Switch to English" data-i18n-title="common.langToggleTitle">🌐 EN</button>
+                <button id="theme-toggle" aria-label="Ganti Tema Gelap/Terang" data-i18n-aria="common.themeToggleAria">🌙</button>
+                <button id="mobile-menu-btn" aria-label="Buka Menu Navigasi" data-i18n-aria="common.mobileMenuAria">☰</button>
             </div>
             <nav id="main-nav" aria-label="Navigasi Utama">
                 <ul>
-                    <li><a href="#" data-route="home" class="active">Home</a></li>
-                    <li><a href="#" data-route="networking">Networking Tools</a></li>
-                    <li><a href="#" data-route="calculator">Calculator</a></li>
-                    <li><a href="#" data-route="converter">Converter</a></li>
-                    <li><a href="#" data-route="practice">Practice</a></li>
-                    <li><a href="#" data-route="reference">Reference</a></li>
-                    <li><a href="#" data-route="about">About</a></li>
+                    <li><a href="#" data-route="home" class="active" data-i18n="nav.home">Home</a></li>
+                    <li><a href="#" data-route="networking" data-i18n="nav.networking">Networking Tools</a></li>
+                    <li><a href="#" data-route="calculator" data-i18n="nav.calculator">Calculator</a></li>
+                    <li><a href="#" data-route="converter" data-i18n="nav.converter">Converter</a></li>
+                    <li><a href="#" data-route="practice" data-i18n="nav.practice">Practice</a></li>
+                    <li><a href="#" data-route="reference" data-i18n="nav.reference">Reference</a></li>
+                    <li><a href="#" data-route="about" data-i18n="nav.about">About</a></li>
                 </ul>
             </nav>
         </div>
@@ -35,7 +36,7 @@
     <main>
         <section class="search-section">
             <div class="search-container">
-                <input type="text" id="global-search" placeholder="Cari tools (contoh: subnet, IP, port)..." aria-label="Cari Tools">
+                <input type="text" id="global-search" placeholder="Cari tools (contoh: subnet, IP, port)..." aria-label="Cari Tools" data-i18n-placeholder="common.searchPlaceholder" data-i18n-aria="common.searchAria">
             </div>
         </section>
 
@@ -43,23 +44,23 @@
             
             <section id="home-view" class="view-section active">
                 <div class="hero">
-                    <h2>Selamat Datang di AllTools TJKT</h2>
-                    <p class="welcome-text">Satu tempat untuk berbagai tools praktis belajar, latihan, dan troubleshooting jaringan komputer.</p>
+                    <h2 data-i18n="home.welcomeTitle">Selamat Datang di AllTools TJKT</h2>
+                    <p class="welcome-text" data-i18n="home.welcomeDesc">Satu tempat untuk berbagai tools praktis belajar, latihan, dan troubleshooting jaringan komputer.</p>
                 </div>
                 
                 <div id="dashboard-top">
                     <div id="favorites-container" class="dashboard-widget hidden">
-                        <h3>⭐ Favorit</h3>
+                        <h3 data-i18n="home.favoritesTitle">⭐ Favorit</h3>
                         <div class="widget-grid" id="favorites-grid"></div>
                     </div>
                     <div id="recent-container" class="dashboard-widget hidden">
-                        <h3>🕒 Terakhir Digunakan</h3>
+                        <h3 data-i18n="home.recentTitle">🕒 Terakhir Digunakan</h3>
                         <div class="widget-grid" id="recent-grid"></div>
                     </div>
                 </div>
 
                 <div class="category-section">
-                    <h3>Kategori & Daftar Tools</h3>
+                    <h3 data-i18n="home.categoriesTitle">Kategori & Daftar Tools</h3>
 
                     <div class="tools-grid">
 
@@ -71,12 +72,12 @@
                                 <img src="assets/images/ip-calculator.jpg" alt="IP Address Calculator" class="card-img" loading="lazy">
                             </div>
                             <div class="card-content">
-                                <span class="card-category">Networking</span>
-                                <h4>IP Address Calculator</h4>
-                                <p>Hitung Network, Broadcast, Host Range, dan informasi IPv4.</p>
+                                <span class="card-category" data-i18n="tools.ip-calculator.category">Networking</span>
+                                <h4 data-i18n="tools.ip-calculator.title">IP Address Calculator</h4>
+                                <p data-i18n="tools.ip-calculator.desc">Hitung Network, Broadcast, Host Range, dan informasi IPv4.</p>
                             </div>
                             <div class="card-footer">
-                                <span class="btn-link">Buka Tool →</span>
+                                <span class="btn-link" data-i18n="common.openTool">Buka Tool →</span>
                             </div>
                         </div>
 
@@ -88,12 +89,12 @@
                                 <img src="assets/images/subnet-calculator.jpg" alt="Subnet Calculator" class="card-img" loading="lazy">
                             </div>
                             <div class="card-content">
-                                <span class="card-category">Networking</span>
-                                <h4>Subnet Calculator</h4>
-                                <p>Analisis subnet dan pembagian network secara lebih detail.</p>
+                                <span class="card-category" data-i18n="tools.subnet-calculator.category">Networking</span>
+                                <h4 data-i18n="tools.subnet-calculator.title">Subnet Calculator</h4>
+                                <p data-i18n="tools.subnet-calculator.desc">Analisis subnet dan pembagian network secara lebih detail.</p>
                             </div>
                             <div class="card-footer">
-                                <span class="btn-link">Buka Tool →</span>
+                                <span class="btn-link" data-i18n="common.openTool">Buka Tool →</span>
                             </div>
                         </div>
 
@@ -105,12 +106,12 @@
                                 <img src="assets/images/mac-address.jpg" alt="MAC Address Tools" class="card-img" loading="lazy">
                             </div>
                             <div class="card-content">
-                                <span class="card-category">Networking</span>
-                                <h4>MAC Address Tools</h4>
-                                <p>Tools untuk informasi dan analisis MAC Address.</p>
+                                <span class="card-category" data-i18n="tools.mac-address.category">Networking</span>
+                                <h4 data-i18n="tools.mac-address.title">MAC Address Tools</h4>
+                                <p data-i18n="tools.mac-address.desc">Tools untuk informasi dan analisis MAC Address.</p>
                             </div>
                             <div class="card-footer">
-                                <span class="btn-link">Buka Tool →</span>
+                                <span class="btn-link" data-i18n="common.openTool">Buka Tool →</span>
                             </div>
                         </div>
 
@@ -122,12 +123,12 @@
                                 <img src="assets/images/cable-wiring.jpg" alt="Kabel UTP & Crimping" class="card-img" loading="lazy">
                             </div>
                             <div class="card-content">
-                                <span class="card-category">Networking</span>
-                                <h4>Kabel UTP & Crimping</h4>
-                                <p>Susunan pin T568A, T568B, straight, crossover, dan panduan kabel LAN.</p>
+                                <span class="card-category" data-i18n="tools.cable-wiring.category">Networking</span>
+                                <h4 data-i18n="tools.cable-wiring.title">Kabel UTP & Crimping</h4>
+                                <p data-i18n="tools.cable-wiring.desc">Susunan pin T568A, T568B, straight, crossover, dan panduan kabel LAN.</p>
                             </div>
                             <div class="card-footer">
-                                <span class="btn-link">Buka Tool →</span>
+                                <span class="btn-link" data-i18n="common.openTool">Buka Tool →</span>
                             </div>
                         </div>
 
@@ -139,12 +140,12 @@
                                 <img src="assets/images/bandwidth-calculator.jpg" alt="Bandwidth Calculator" class="card-img" loading="lazy">
                             </div>
                             <div class="card-content">
-                                <span class="card-category">Calculator</span>
-                                <h4>Bandwidth Calculator</h4>
-                                <p>Hitung estimasi waktu transfer dan kebutuhan bandwidth.</p>
+                                <span class="card-category" data-i18n="tools.bandwidth-calculator.category">Calculator</span>
+                                <h4 data-i18n="tools.bandwidth-calculator.title">Bandwidth Calculator</h4>
+                                <p data-i18n="tools.bandwidth-calculator.desc">Hitung estimasi waktu transfer dan kebutuhan bandwidth.</p>
                             </div>
                             <div class="card-footer">
-                                <span class="btn-link">Buka Tool →</span>
+                                <span class="btn-link" data-i18n="common.openTool">Buka Tool →</span>
                             </div>
                         </div>
 
@@ -156,12 +157,12 @@
                                 <img src="assets/images/converters.jpg" alt="Data Unit & Base Converter" class="card-img" loading="lazy">
                             </div>
                             <div class="card-content">
-                                <span class="card-category">Converter</span>
-                                <h4>Data Unit & Base Converter</h4>
-                                <p>Konversi data, desimal, biner, dan hexadecimal.</p>
+                                <span class="card-category" data-i18n="tools.converters.category">Converter</span>
+                                <h4 data-i18n="tools.converters.title">Data Unit & Base Converter</h4>
+                                <p data-i18n="tools.converters.desc">Konversi data, desimal, biner, dan hexadecimal.</p>
                             </div>
                             <div class="card-footer">
-                                <span class="btn-link">Buka Tool →</span>
+                                <span class="btn-link" data-i18n="common.openTool">Buka Tool →</span>
                             </div>
                         </div>
 
@@ -173,12 +174,12 @@
                                 <img src="assets/images/quiz.jpg" alt="Subnetting & Quiz" class="card-img" loading="lazy">
                             </div>
                             <div class="card-content">
-                                <span class="card-category">TJKT Practice</span>
-                                <h4>Subnetting & Quiz</h4>
-                                <p>Latihan subnetting dan kuis interaktif untuk TJKT.</p>
+                                <span class="card-category" data-i18n="tools.quiz.category">TJKT Practice</span>
+                                <h4 data-i18n="tools.quiz.title">Subnetting & Quiz</h4>
+                                <p data-i18n="tools.quiz.desc">Latihan subnetting dan kuis interaktif untuk TJKT.</p>
                             </div>
                             <div class="card-footer">
-                                <span class="btn-link">Buka Tool →</span>
+                                <span class="btn-link" data-i18n="common.openTool">Buka Tool →</span>
                             </div>
                         </div>
 
@@ -190,12 +191,12 @@
                                 <img src="assets/images/network-reference.jpg" alt="Network Reference" class="card-img" loading="lazy">
                             </div>
                             <div class="card-content">
-                                <span class="card-category">Reference</span>
-                                <h4>Network Reference</h4>
-                                <p>Referensi OSI, TCP/IP, port, protokol, dan jaringan.</p>
+                                <span class="card-category" data-i18n="tools.network-reference.category">Reference</span>
+                                <h4 data-i18n="tools.network-reference.title">Network Reference</h4>
+                                <p data-i18n="tools.network-reference.desc">Referensi OSI, TCP/IP, port, protokol, dan jaringan.</p>
                             </div>
                             <div class="card-footer">
-                                <span class="btn-link">Buka Tool →</span>
+                                <span class="btn-link" data-i18n="common.openTool">Buka Tool →</span>
                             </div>
                         </div>
 
@@ -205,11 +206,11 @@
 
             <section id="tool-view" class="view-section hidden">
                 <div class="tool-header">
-                    <button id="back-btn" class="btn-outline">← Kembali</button>
-                    <button id="favorite-btn" class="btn-icon" aria-label="Tambah ke Favorit">☆</button>
+                    <button id="back-btn" class="btn-outline" data-i18n="common.back">← Kembali</button>
+                    <button id="favorite-btn" class="btn-icon" aria-label="Tambah ke Favorit" data-i18n-aria="common.favoriteAdd">☆</button>
                 </div>
                 <div id="tool-content-area">
-                    </div>
+                </div>
             </section>
 
         </div>
@@ -217,11 +218,13 @@
 
     <footer>
         <div class="footer-content">
-            <p>&copy; 2026 AllTools TJKT. Dibuat untuk pembelajaran.</p>
-            <button id="settings-btn" class="btn-text">⚙️ Pengaturan Data</button>
+            <p data-i18n="common.footerText">&copy; 2026 AllTools TJKT. Dibuat untuk pembelajaran.</p>
+            <button id="settings-btn" class="btn-text" data-i18n="common.settingsBtn">⚙️ Pengaturan Data</button>
         </div>
     </footer>
 
+    <script src="data/translations.js?v=1.1.0"></script>
+    <script src="js/i18n.js?v=1.1.0"></script>
     <script src="data/ports.js?v=1.1.0"></script>
     <script src="data/protocols.js?v=1.1.0"></script>
     <script src="js/storage.js?v=1.1.0"></script>
@@ -238,4 +241,3 @@
     <script src="js/main.js?v=1.1.0"></script>
 </body>
 </html>
-

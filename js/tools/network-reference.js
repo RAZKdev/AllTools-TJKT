@@ -3,8 +3,8 @@
 function renderNetworkReference(container) {
     container.innerHTML = `
         <div class="tool-card">
-            <h2>Network Reference</h2>
-            <p class="tool-desc">
+            <h2 data-i18n="networkRef.title">Network Reference</h2>
+            <p class="tool-desc" data-i18n="networkRef.desc">
                 Referensi cepat OSI Model, TCP/IP, port, dan protokol jaringan.
             </p>
 
@@ -12,22 +12,26 @@ function renderNetworkReference(container) {
                  style="display:flex; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap;">
 
                 <button class="btn-outline reference-tab-btn active"
-                        data-target="reference-osi">
+                        data-target="reference-osi"
+                        data-i18n="networkRef.tabOsi">
                     OSI Model
                 </button>
 
                 <button class="btn-outline reference-tab-btn"
-                        data-target="reference-tcpip">
+                        data-target="reference-tcpip"
+                        data-i18n="networkRef.tabTcpip">
                     TCP/IP
                 </button>
 
                 <button class="btn-outline reference-tab-btn"
-                        data-target="reference-ports">
+                        data-target="reference-ports"
+                        data-i18n="networkRef.tabPorts">
                     Ports
                 </button>
 
                 <button class="btn-outline reference-tab-btn"
-                        data-target="reference-protocols">
+                        data-target="reference-protocols"
+                        data-i18n="networkRef.tabProtocols">
                     Protocols
                 </button>
             </div>

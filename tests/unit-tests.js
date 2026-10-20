@@ -962,6 +962,151 @@ test('Fallback seleksi kuis tetap menghasilkan 25 soal unik jika salah satu pool
 });
 
 // ----------------------------------------------------
+// 10. BILINGUAL I18N ENGINE & DICTIONARY INTEGRITY
+// ----------------------------------------------------
+console.log('\n[10/10] Menguji Bilingual I18n Engine & Dictionary Integrity...');
+
+const { I18n } = require('../js/i18n.js');
+const { I18N_DICTIONARY } = require('../data/translations.js');
+
+test('Kamus terjemahan memiliki root bahasa id dan en', () => {
+    assert(I18N_DICTIONARY.id, 'Dictionary id harus tersedia');
+    assert(I18N_DICTIONARY.en, 'Dictionary en harus tersedia');
+    assert.strictEqual(typeof I18N_DICTIONARY.id, 'object');
+    assert.strictEqual(typeof I18N_DICTIONARY.en, 'object');
+});
+
+test('Integritas dan paritas kunci antara bahasa id dan en', () => {
+    const requiredSections = [
+        'common', 'nav', 'home', 'categories', 'tools',
+        'ipCalc', 'subnetCalc', 'macTools', 'cableWiring',
+        'bandwidth', 'converters', 'quiz', 'networkRef', 'about', 'settings'
+    ];
+
+    requiredSections.forEach(section => {
+        assert(I18N_DICTIONARY.id[section], `Section ${section} harus ada di id`);
+        assert(I18N_DICTIONARY.en[section], `Section ${section} harus ada di en`);
+
+        const idKeys = Object.keys(I18N_DICTIONARY.id[section]);
+        const enKeys = Object.keys(I18N_DICTIONARY.en[section]);
+
+        idKeys.forEach(k => {
+            assert(k in I18N_DICTIONARY.en[section], `Kunci ${section}.${k} hilang di en`);
+        });
+        enKeys.forEach(k => {
+            assert(k in I18N_DICTIONARY.id[section], `Kunci ${section}.${k} hilang di id`);
+        });
+    });
+});
+
+test('I18n Engine: Inisialisasi default ke bahasa Indonesia (id)', () => {
+    I18n.init(I18N_DICTIONARY, { defaultLang: 'id' });
+    assert.strictEqual(I18n.currentLang, 'id');
+    assert.strictEqual(I18n.t('common.back'), '← Kembali');
+    assert.strictEqual(I18n.t('common.calculate'), 'Hitung');
+});
+
+test('I18n Engine: Mengganti bahasa ke English (en)', () => {
+    I18n.setLanguage('en');
+    assert.strictEqual(I18n.currentLang, 'en');
+    assert.strictEqual(I18n.t('common.back'), '← Back');
+    assert.strictEqual(I18n.t('common.calculate'), 'Calculate');
+});
+
+test('I18n Engine: Toggle bahasa antara id dan en', () => {
+    I18n.setLanguage('id');
+    const toggled1 = I18n.toggle();
+    assert.strictEqual(toggled1, 'en');
+    assert.strictEqual(I18n.currentLang, 'en');
+
+    const toggled2 = I18n.toggle();
+    assert.strictEqual(toggled2, 'id');
+    assert.strictEqual(I18n.currentLang, 'id');
+});
+
+test('I18n Engine: Fallback otomatis jika kunci tidak ada di bahasa aktif', () => {
+    const testDict = {
+        id: { sample: { message: 'Halo Dunia', onlyId: 'Hanya ID' } },
+        en: { sample: { message: 'Hello World' } }
+    };
+    I18n.init(testDict, { defaultLang: 'id' });
+    I18n.setLanguage('en');
+
+    assert.strictEqual(I18n.t('sample.message'), 'Hello World');
+    // onlyId tidak ada di en -> fallback ke id
+    assert.strictEqual(I18n.t('sample.onlyId'), 'Hanya ID');
+    // Jika tidak ada di kedua bahasa -> kembalikan key
+    assert.strictEqual(I18n.t('sample.nonExistent'), 'sample.nonExistent');
+
+    // Kembalikan ke kamus utama
+    I18n.init(I18N_DICTIONARY, { defaultLang: 'id' });
+});
+
+test('I18n Engine: Interpolasi parameter {placeholder}', () => {
+    const testDict = {
+        id: { welcome: 'Halo {user}, selamat datang!' },
+        en: { welcome: 'Hello {user}, welcome!' }
+    };
+    I18n.init(testDict, { defaultLang: 'id' });
+
+    assert.strictEqual(I18n.t('welcome', { user: 'Rangga' }), 'Halo Rangga, selamat datang!');
+    I18n.setLanguage('en');
+    assert.strictEqual(I18n.t('welcome', { user: 'Rangga' }), 'Hello Rangga, welcome!');
+
+    // Kembalikan ke kamus utama
+    I18n.init(I18N_DICTIONARY, { defaultLang: 'id' });
+});
+
+test('I18n Engine: translateDOM menangani text, placeholder, aria-label, title, dan alt', () => {
+    I18n.init(I18N_DICTIONARY, { defaultLang: 'id' });
+
+    // Mock DOM node
+    function createMockElement(attrs = {}) {
+        const attributes = { ...attrs };
+        return {
+            textContent: '',
+            getAttribute: (name) => attributes[name],
+            setAttribute: (name, val) => { attributes[name] = val; }
+        };
+    }
+
+    const elText = createMockElement({ 'data-i18n': 'common.calculate' });
+    const elPlaceholder = createMockElement({ 'data-i18n-placeholder': 'common.searchPlaceholder' });
+    const elAria = createMockElement({ 'data-i18n-aria': 'common.searchAria' });
+    const elTitle = createMockElement({ 'data-i18n-title': 'common.langToggleTitle' });
+    const elAlt = createMockElement({ 'data-i18n-alt': 'tools.ip-calculator.title' });
+
+    const mockRoot = {
+        querySelectorAll: (selector) => {
+            if (selector === '[data-i18n]') return [elText];
+            if (selector === '[data-i18n-placeholder]') return [elPlaceholder];
+            if (selector === '[data-i18n-aria]') return [elAria];
+            if (selector === '[data-i18n-title]') return [elTitle];
+            if (selector === '[data-i18n-alt]') return [elAlt];
+            return [];
+        }
+    };
+
+    // Bahasa ID
+    I18n.setLanguage('id');
+    I18n.translateDOM(mockRoot);
+    assert.strictEqual(elText.textContent, 'Hitung');
+    assert.strictEqual(elPlaceholder.getAttribute('placeholder'), 'Cari tools (contoh: subnet, IP, port)...');
+    assert.strictEqual(elAria.getAttribute('aria-label'), 'Cari Tools');
+    assert.strictEqual(elTitle.getAttribute('title'), 'Switch to English');
+    assert.strictEqual(elAlt.getAttribute('alt'), 'IP Address Calculator');
+
+    // Ganti ke Bahasa EN
+    I18n.setLanguage('en');
+    I18n.translateDOM(mockRoot);
+    assert.strictEqual(elText.textContent, 'Calculate');
+    assert.strictEqual(elPlaceholder.getAttribute('placeholder'), 'Search tools (e.g. subnet, IP, port)...');
+    assert.strictEqual(elAria.getAttribute('aria-label'), 'Search Tools');
+    assert.strictEqual(elTitle.getAttribute('title'), 'Ganti ke Bahasa Indonesia');
+    assert.strictEqual(elAlt.getAttribute('alt'), 'IP Address Calculator');
+});
+
+// ----------------------------------------------------
 // SUMMARY
 // ----------------------------------------------------
 console.log('\n========================================');

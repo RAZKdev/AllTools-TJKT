@@ -6,25 +6,25 @@
 function renderCableWiring(container) {
     container.innerHTML = `
         <div class="tool-card">
-            <h2>Kabel UTP & Panduan Crimping</h2>
-            <p class="tool-desc">
+            <h2 data-i18n="cableWiring.title">Kabel UTP & Panduan Crimping</h2>
+            <p class="tool-desc" data-i18n="cableWiring.desc">
                 Panduan susunan warna pin RJ45, standar T568A/T568B, jenis pengkabelan, dan referensi praktikum jaringan TJKT.
             </p>
 
             <div class="converter-tabs wiring-tabs">
-                <button type="button" class="btn-outline wiring-tab-btn active" data-tab="visual">
+                <button type="button" class="btn-outline wiring-tab-btn active" data-tab="visual" data-i18n="cableWiring.tabVisual">
                     🔌 Diagram Susunan Pin
                 </button>
-                <button type="button" class="btn-outline wiring-tab-btn" data-tab="devices">
+                <button type="button" class="btn-outline wiring-tab-btn" data-tab="devices" data-i18n="cableWiring.tabDevices">
                     🔄 Panduan Perangkat
                 </button>
-                <button type="button" class="btn-outline wiring-tab-btn" data-tab="pinout">
+                <button type="button" class="btn-outline wiring-tab-btn" data-tab="pinout" data-i18n="cableWiring.tabPinout">
                     📋 Fungsi Pin & Spek
                 </button>
-                <button type="button" class="btn-outline wiring-tab-btn" data-tab="steps">
+                <button type="button" class="btn-outline wiring-tab-btn" data-tab="steps" data-i18n="cableWiring.tabSteps">
                     🛠️ Langkah Praktik Crimping
                 </button>
-                <button type="button" class="btn-outline wiring-tab-btn" data-tab="practice">
+                <button type="button" class="btn-outline wiring-tab-btn" data-tab="practice" data-i18n="cableWiring.tabPractice">
                     🎯 Kuis Hafalan Warna
                 </button>
             </div>
@@ -32,13 +32,13 @@ function renderCableWiring(container) {
             <!-- Panel 1: Diagram Susunan Pin -->
             <div id="wiring-panel-visual" class="wiring-panel">
                 <div class="form-group" style="margin-bottom: 1.25rem;">
-                    <label for="cable-type-select">Pilih Jenis Kabel / Standar:</label>
+                    <label for="cable-type-select" data-i18n="cableWiring.selectStandard">Pilih Jenis Kabel / Standar:</label>
                     <select id="cable-type-select">
-                        <option value="straight" selected>Kabel Straight-Through (T568B - T568B)</option>
-                        <option value="crossover">Kabel Cross-Over (T568B - T568A)</option>
-                        <option value="t568b">Standar T568B (Konektor Tunggal)</option>
-                        <option value="t568a">Standar T568A (Konektor Tunggal)</option>
-                        <option value="rollover">Kabel Rollover / Console Cisco</option>
+                        <option value="straight" selected data-i18n="cableWiring.optStraight">Kabel Straight-Through (T568B - T568B)</option>
+                        <option value="crossover" data-i18n="cableWiring.optCrossover">Kabel Cross-Over (T568B - T568A)</option>
+                        <option value="t568b" data-i18n="cableWiring.optT568b">Standar T568B (Konektor Tunggal)</option>
+                        <option value="t568a" data-i18n="cableWiring.optT568a">Standar T568A (Konektor Tunggal)</option>
+                        <option value="rollover" data-i18n="cableWiring.optRollover">Kabel Rollover / Console Cisco</option>
                     </select>
                 </div>
 
