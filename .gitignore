@@ -1,6 +1,7 @@
 *.backup
 *.before-*
 *.corrupted
+/_archive/
 .agent/
 .vscode/
 *.zip
