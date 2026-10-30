@@ -132,7 +132,7 @@ function initRouter() {
 
         card.innerHTML = `
             <div class="dashboard-tool-icon">
-                ${info.image ? `<img src="${info.image}" alt="${titleText}" class="dashboard-tool-img">` : info.icon}
+                ${info.image ? `<img src="${info.image}" alt="${titleText}" class="dashboard-tool-img" loading="lazy" decoding="async">` : info.icon}
             </div>
 
             <div class="dashboard-tool-content">
