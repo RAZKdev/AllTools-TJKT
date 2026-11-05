@@ -1,58 +1,109 @@
 # AllTools TJKT
 
-## 1. Identitas
-- **Nama Proyek:** AllTools TJKT
-- **Kategori:** Media Pembelajaran & Toolkit Utilitas Jaringan Komputer
-- **Target Pengguna:** Siswa SMK jurusan Teknik Jaringan Komputer dan Telekomunikasi (TJKT), guru pengampu, serta teknisi pemula.
-- **Model Aplikasi:** Single Page Application (SPA), client-side, dan offline-friendly.
+> Toolkit jaringan komputer untuk siswa dan guru SMK jurusan Teknik Jaringan Komputer dan Telekomunikasi (TJKT).
 
-## 2. Bahasa & Teknologi yang Digunakan
-- **HTML5:** Struktur semantik halaman web.
-- **CSS3:** Tata letak responsif (Flexbox & CSS Grid), animasi halus, serta sistem tema terang/gelap (*CSS Custom Properties*).
-- **JavaScript (Vanilla ES6+):** Logika kalkulasi jaringan, interaktivitas antarmuka, routing client-side, serta manajemen state lokal tanpa ketergantungan framework atau library eksternal.
+## 1. Deskripsi Proyek
 
-## 3. Fungsi
-AllTools TJKT berfungsi sebagai platform sarana belajar, latihan mandiri, dan alat bantu troubleshooting praktis untuk mempercepat pemahaman materi jaringan komputer tanpa perlu menginstal aplikasi berat atau memerlukan koneksi internet aktif.
+**AllTools TJKT** adalah aplikasi web satu halaman (*Single Page Application*) yang menyatukan kalkulator jaringan, alat konversi, panduan pengkabelan, referensi standar, dan latihan soal dalam satu antarmuka. Seluruh proses berjalan di browser (*client-side*), tanpa framework, tanpa proses build, dan tetap dapat digunakan tanpa koneksi internet setelah halaman dimuat.
 
-Aplikasi ini dirancang untuk:
-1. Membantu perhitungan pengalamatan jaringan (IP Addressing & Subnetting) secara presisi.
-2. Menyediakan konversi format data dan unit kecepatan transmisi secara instan.
-3. Memberikan panduan visual perangkat keras dan pengkabelan untuk praktikum laboratorium.
-4. Menguji pemahaman teori dan kompetensi keahlian siswa melalui kuis interaktif.
+Aplikasi ini ditujukan untuk:
 
-## 4. Penjelasan Fitur
+- Siswa SMK jurusan TJKT yang sedang belajar pengalamatan jaringan, subnetting, dan pengkabelan.
+- Guru pengampu yang membutuhkan alat bantu demonstrasi di kelas atau laboratorium.
+- Teknisi pemula yang membutuhkan referensi cepat saat melakukan *troubleshooting*.
 
-1. **IP Address Calculator**  
-   Menganalisis alamat IPv4 dengan memasukkan IP dan CIDR/Netmask untuk menghitung Network Address, Broadcast Address, Usable Host Range, Subnet Mask, Wildcard Mask, kelas IP, serta representasi biner.
+## 2. Kenapa Proyek Ini Dibuat
 
-2. **Subnet Calculator**  
-   Melakukan analisis pembagian subnet dan segmentasi jaringan secara mendalam, baik menggunakan notasi CIDR (`/24`, `/28`, dll.) maupun Dotted Decimal Mask (`255.255.255.0`).
+Materi jaringan komputer sering kali tersebar di banyak alat dan situs: kalkulator subnet di satu tempat, tabel port di tempat lain, panduan kabel di buku, dan latihan soal di kertas. Kondisi ini menyulitkan siswa yang ingin belajar mandiri atau melakukan praktikum dengan cepat.
 
-3. **MAC Address Tools**  
-   Memeriksa dan menormalisasi format penulisan MAC address (titik dua, tanda hubung, atau format Cisco), mengekstrak 24-bit OUI (identifikasi vendor), representasi biner, serta mendeteksi jenis transmisi (Unicast, Multicast, Broadcast, LAA/UAA).
+AllTools TJKT dibuat untuk menyatukan kebutuhan tersebut dalam satu halaman yang ringan dan bisa dibuka di laptop laboratorium berspesifikasi rendah. Fokusnya adalah:
 
-4. **Bandwidth & Transfer Time Calculator**  
-   Mengestimasi durasi unduh atau unggah file berdasarkan ukuran data (KB, MB, GB, TB) dan kecepatan koneksi (Kbps, Mbps, Gbps) untuk perencanaan kapasitas bandwidth jaringan.
+- **Praktis:** perhitungan jaringan langsung terlihat hasilnya tanpa perlu menghafal rumus.
+- **Ringan:** tidak membutuhkan instalasi aplikasi berat atau server backend.
+- **Bisa offline:** cocok untuk laboratorium dengan koneksi internet terbatas.
+- **Mendidik:** setiap alat disertai penjelasan, dan tersedia latihan soal untuk menguji pemahaman.
 
-5. **Data Unit & Base Converter**  
-   Alat konversi multi-tab untuk:
-   - Konversi biner IPv4 ke desimal.
-   - Konversi basis bilangan (Desimal, Biner, Oktal, Heksadesimal).
-   - Konversi satuan data (Bit, Byte, KB, KiB, MB, MiB, GB, GiB, TB, TiB).
+## 3. Fungsi & Fitur Utama
 
-6. **Kabel UTP & Panduan Crimping (Wiring Guide)**  
-   Panduan visual susunan warna pin RJ45 standar T568A dan T568B, perbandingan kabel Straight-Through dan Cross-Over secara side-by-side, spesifikasi fungsi pin data (Tx/Rx) dan PoE, serta tips praktikum crimping kabel LAN.
+1. **IP Address Calculator** — menghitung Network Address, Broadcast Address, rentang host yang dapat dipakai, subnet mask, wildcard mask, kelas IP, dan representasi biner dari sebuah alamat IPv4.
+2. **Subnet Calculator** — menganalisis pembagian subnet menggunakan notasi CIDR (`/24`, `/28`, dan sebagainya) maupun *dotted decimal mask* (`255.255.255.0`).
+3. **MAC Address Tools** — menormalisasi format MAC address, mengekstrak OUI (identitas vendor), menampilkan representasi biner, serta mendeteksi jenis transmisi (Unicast, Multicast, Broadcast, LAA/UAA).
+4. **Bandwidth & Transfer Time Calculator** — memperkirakan waktu unduh/unggah berdasarkan ukuran data dan kecepatan koneksi.
+5. **Data Unit & Base Converter** — mengonversi biner IPv4 ke desimal, basis bilangan (desimal, biner, oktal, heksadesimal), dan satuan data (Bit, Byte, KB, KiB, MB, MiB, GB, GiB, TB, TiB).
+6. **Panduan Kabel UTP & Crimping** — susunan warna pin RJ45 standar T568A dan T568B, perbandingan *Straight-Through* dan *Cross-Over*, fungsi pin data/PoE, serta tips praktikum.
+7. **Subnetting Practice & Kuis TJKT** — generator latihan subnetting dengan umpan balik instan dan kuis pilihan ganda dengan beberapa tingkat kesulitan, timer, riwayat sesi, dan analisis kategori materi.
+8. **Network Reference** — ringkasan model OSI 7 lapisan, TCP/IP 4 lapisan, tabel port umum, dan protokol jaringan utama.
+9. **Pengaturan Data & Feedback** — pengelolaan data `localStorage` (favorit, riwayat akses, progres kuis) dan formulir umpan balik pengguna.
+10. **Dukungan Bilingual** — peralihan Bahasa Indonesia dan English secara instan, termasuk penyesuaian atribut aksesibilitas `<html lang>` dan penyimpanan preferensi bahasa.
 
-7. **Subnetting Practice & Kuis TJKT**  
-   Modul latihan interaktif yang mencakup:
-   - Generator latihan subnetting acak dengan feedback jawaban instan.
-   - Kuis pilihan ganda 25 soal dengan blueprint tingkat kesulitan berimbang (Easy hingga Nightmare), timer per soal, rekap riwayat sesi, dan analisis kategori materi yang perlu diperdalam.
+## 4. Bahasa Pemrograman & Teknologi
 
-8. **Network Reference**  
-   Katalog referensi cepat standar jaringan yang memuat ringkasan 7 Lapisan OSI Model, 4 Lapisan TCP/IP, tabel port umum jaringan (HTTP, HTTPS, SSH, FTP, DNS, DHCP, dll.), serta protokol jaringan utama.
+| Lapisan | Teknologi |
+| --- | --- |
+| Struktur halaman | HTML5 semantik |
+| Tampilan | CSS3 (Flexbox, CSS Grid, CSS Custom Properties, tema terang/gelap) |
+| Logika aplikasi | JavaScript Vanilla ES6+ |
+| Penyimpanan lokal | Web Storage API (`localStorage`) |
+| Internasionalisasi | Modul i18n ringan tanpa dependensi |
 
-9. **Pengaturan Data & Sistem Feedback**  
-   Modal pengelolaan penyimpanan lokal (*localStorage*) untuk melihat atau menghapus data Favorit, Riwayat Akses, Progress Kuis, serta form pengiriman feedback pengguna.
+Proyek ini sengaja tidak memakai framework atau library eksternal agar mudah dipelajari, ringan, dan tidak memerlukan langkah build.
 
-10. **Dukungan Bilingual (Bahasa Indonesia & English)**  
-    Menyediakan tombol peralihan bahasa instan (ID ⇄ EN) di header navigasi dan modal pengaturan aplikasi, dengan mesin lokalisasi ringan (zero-dependency i18n), sinkronisasi otomatis atribut aksesibilitas (`<html lang>`), serta persistensi preferensi di penyimpanan lokal browser tanpa memerlukan reload halaman.
+## 5. Struktur Direktori
+
+```text
+AllTools-TJKT/
+├── index.html              # Shell aplikasi dan seluruh markup utama
+├── css/
+│   └── style.css           # Tema, layout responsif, dan animasi
+├── js/
+│   ├── main.js             # Inisialisasi aplikasi
+│   ├── router.js           # Navigasi antar-halaman berbasis hash
+│   ├── storage.js          # Pembungkus localStorage yang aman
+│   ├── i18n.js             # Mesin lokalisasi ID/EN
+│   └── tools/              # Modul kalkulator dan fitur
+│       ├── ip-calculator.js
+│       ├── subnet-calculator.js
+│       ├── mac-address.js
+│       ├── bandwidth.js
+│       ├── converters.js
+│       ├── cable-wiring.js
+│       ├── network-reference.js
+│       └── quiz.js
+├── data/                   # Data statis (port, protokol, soal kuis, terjemahan)
+└── tests/
+    └── unit-tests.js       # Pengujian unit berbasis Node.js
+```
+
+## 6. Cara Menjalankan
+
+Tidak ada proses instalasi atau build.
+
+**Opsi 1 — Buka langsung:**
+
+```text
+Buka file index.html di browser modern (Chrome, Edge, atau Firefox).
+```
+
+**Opsi 2 — Server lokal (disarankan agar perilaku sama seperti hosting):**
+
+```bash
+python -m http.server 8000
+```
+
+Lalu buka `http://localhost:8000` di browser.
+
+## 7. Pengujian
+
+Pengujian unit dapat dijalankan dengan Node.js:
+
+```bash
+node tests/unit-tests.js
+```
+
+Pengujian mencakup parser IPv4, konverter basis bilangan, konsistensi satuan data, helper `localStorage`, serta perhitungan MAC address dan subnet.
+
+## 8. Catatan
+
+- Aplikasi tidak memiliki backend dan tidak mengirim data ke server mana pun.
+- Data favorit, riwayat, dan progres kuis disimpan di `localStorage` browser masing-masing.
+- Repo ini belum menyertakan berkas lisensi. Untuk penggunaan di luar keperluan pribadi/pendidikan, hubungi pemilik repo.
