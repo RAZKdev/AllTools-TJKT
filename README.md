@@ -4,7 +4,7 @@
 
 ## 1. Deskripsi Proyek
 
-**AllTools TJKT** adalah aplikasi web satu halaman (*Single Page Application*) yang menyatukan kalkulator jaringan, alat konversi, panduan pengkabelan, referensi standar, dan latihan soal dalam satu antarmuka. Seluruh proses berjalan di browser (*client-side*), tanpa framework, tanpa proses build, dan tetap dapat digunakan tanpa koneksi internet setelah halaman dimuat.
+**AllTools TJKT** adalah aplikasi web satu halaman (*Single Page Application*) yang menyatukan kalkulator jaringan, alat konversi, panduan pengkabelan, referensi standar, dan latihan soal dalam satu antarmuka. Seluruh alat berjalan di browser (*client-side*), tanpa framework, dan tanpa proses build. Setelah halaman dimuat, alat inti tetap dapat digunakan tanpa koneksi internet; formulir umpan balik adalah pengecualian karena mengirim pesan melalui FormSubmit.
 
 Aplikasi ini ditujukan untuk:
 
@@ -20,20 +20,20 @@ AllTools TJKT dibuat untuk menyatukan kebutuhan tersebut dalam satu halaman yang
 
 - **Praktis:** perhitungan jaringan langsung terlihat hasilnya tanpa perlu menghafal rumus.
 - **Ringan:** tidak membutuhkan instalasi aplikasi berat atau server backend.
-- **Bisa offline:** cocok untuk laboratorium dengan koneksi internet terbatas.
+- **Bisa offline:** alat inti tetap berjalan tanpa koneksi setelah halaman dimuat; hanya pengiriman umpan balik yang membutuhkan internet.
 - **Mendidik:** setiap alat disertai penjelasan, dan tersedia latihan soal untuk menguji pemahaman.
 
 ## 3. Fungsi & Fitur Utama
 
 1. **IP Address Calculator** — menghitung Network Address, Broadcast Address, rentang host yang dapat dipakai, subnet mask, wildcard mask, kelas IP, dan representasi biner dari sebuah alamat IPv4.
-2. **Subnet Calculator** — menganalisis pembagian subnet menggunakan notasi CIDR (`/24`, `/28`, dan sebagainya) maupun *dotted decimal mask* (`255.255.255.0`).
-3. **MAC Address Tools** — menormalisasi format MAC address, mengekstrak OUI (identitas vendor), menampilkan representasi biner, serta mendeteksi jenis transmisi (Unicast, Multicast, Broadcast, LAA/UAA).
+2. **Subnet Calculator** — menganalisis satu subnet menggunakan notasi CIDR (`/24`, `/28`, dan sebagainya) maupun *dotted decimal mask* (`255.255.255.0`). Belum mendukung VLSM atau pembagian beberapa subnet sekaligus.
+3. **MAC Address Tools** — menormalisasi format MAC address, mengekstrak prefix OUI 24-bit (tanpa lookup nama vendor), menampilkan representasi biner, serta mendeteksi jenis transmisi (Unicast, Multicast, Broadcast, LAA/UAA).
 4. **Bandwidth & Transfer Time Calculator** — memperkirakan waktu unduh/unggah berdasarkan ukuran data dan kecepatan koneksi.
 5. **Data Unit & Base Converter** — mengonversi biner IPv4 ke desimal, basis bilangan (desimal, biner, oktal, heksadesimal), dan satuan data (Bit, Byte, KB, KiB, MB, MiB, GB, GiB, TB, TiB).
 6. **Panduan Kabel UTP & Crimping** — susunan warna pin RJ45 standar T568A dan T568B, perbandingan *Straight-Through* dan *Cross-Over*, fungsi pin data/PoE, serta tips praktikum.
 7. **Subnetting Practice & Kuis TJKT** — generator latihan subnetting dengan umpan balik instan dan kuis pilihan ganda dengan beberapa tingkat kesulitan, timer, riwayat sesi, dan analisis kategori materi.
 8. **Network Reference** — ringkasan model OSI 7 lapisan, TCP/IP 4 lapisan, tabel port umum, dan protokol jaringan utama.
-9. **Pengaturan Data & Feedback** — pengelolaan data `localStorage` (favorit, riwayat akses, progres kuis) dan formulir umpan balik pengguna.
+9. **Pengaturan Data & Feedback** — pengelolaan data `localStorage` (favorit, riwayat akses, progres kuis) dan formulir umpan balik pengguna yang dikirim melalui FormSubmit.
 10. **Dukungan Bilingual** — peralihan Bahasa Indonesia dan English secara instan, termasuk penyesuaian atribut aksesibilitas `<html lang>` dan penyimpanan preferensi bahasa.
 
 ## 4. Bahasa Pemrograman & Teknologi
@@ -57,7 +57,7 @@ AllTools-TJKT/
 │   └── style.css           # Tema, layout responsif, dan animasi
 ├── js/
 │   ├── main.js             # Inisialisasi aplikasi
-│   ├── router.js           # Navigasi antar-halaman berbasis hash
+│   ├── router.js           # Navigasi antar-view (tanpa hash routing)
 │   ├── storage.js          # Pembungkus localStorage yang aman
 │   ├── i18n.js             # Mesin lokalisasi ID/EN
 │   └── tools/              # Modul kalkulator dan fitur
@@ -100,10 +100,10 @@ Pengujian unit dapat dijalankan dengan Node.js:
 node tests/unit-tests.js
 ```
 
-Pengujian mencakup parser IPv4, konverter basis bilangan, konsistensi satuan data, helper `localStorage`, serta perhitungan MAC address dan subnet.
+Pengujian mencakup parser IPv4, konverter basis bilangan, konsistensi satuan data, helper `localStorage`, serta perhitungan MAC address dan subnet. Sebagian pengujian mendefinisikan ulang logika di dalam file test, sehingga belum semuanya mengimpor modul produksi secara langsung.
 
 ## 8. Catatan
 
-- Aplikasi tidak memiliki backend dan tidak mengirim data ke server mana pun.
+- Aplikasi tidak memiliki backend sendiri. Seluruh alat berjalan di browser, tetapi formulir umpan balik mengirim isi pesan ke `formsubmit.co` saat pengguna menekan tombol kirim; jangan masukkan kata sandi atau data rahasia.
 - Data favorit, riwayat, dan progres kuis disimpan di `localStorage` browser masing-masing.
 - Repo ini belum menyertakan berkas lisensi. Untuk penggunaan di luar keperluan pribadi/pendidikan, hubungi pemilik repo.
