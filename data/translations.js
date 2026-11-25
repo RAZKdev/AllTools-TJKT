@@ -142,7 +142,19 @@ const I18N_DICTIONARY = {
             ipClass: "IP Class",
             binaryRep: "Binary Representation",
             errEmpty: "Input tidak boleh kosong.",
-            errInvalidIp: "IPv4 tidak valid."
+            errInvalidIp: "IPv4 tidak valid.",
+            checkSectionTitle: "Cek IP dalam Subnet",
+            checkSectionDesc: "Periksa apakah suatu IP termasuk host, network, broadcast, atau di luar subnet.",
+            checkIpLabel: "Target IPv4 Address:",
+            checkIpPlaceholder: "Contoh: 192.168.1.50",
+            checkCidrLabel: "Subnet CIDR:",
+            checkCidrPlaceholder: "Contoh: 192.168.1.0/26",
+            checkBtn: "Cek",
+            resHost: "Termasuk. IP ini adalah host yang bisa dipakai.",
+            resNetwork: "Termasuk. IP ini adalah network address.",
+            resBroadcast: "Termasuk. IP ini adalah broadcast address.",
+            resOutside: "Tidak termasuk dalam jaringan ini.",
+            resError: "IP atau CIDR tidak valid."
         },
         subnetCalc: {
             title: "Subnet Calculator",
@@ -309,7 +321,21 @@ const I18N_DICTIONARY = {
             confirmQuiz: "Yakin ingin menghapus semua riwayat kuis?",
             confirmFeedback: "Yakin ingin menghapus semua data masukan yang tersimpan di perangkat ini?",
             confirmResetAll: "PERINGATAN: Seluruh data lokal (favorit, riwayat, kuis, masukan) akan dihapus secara permanen. Lanjutkan?",
-            clearedAlert: "✓ Data berhasil dihapus."
+            clearedAlert: "✓ Data berhasil dihapus.",
+            exportLabel: "📦 Ekspor Progres Belajar",
+            exportDesc: "Unduh cadangan data favorit, riwayat, progres kuis, dan preferensi (format JSON).",
+            exportBtn: "Ekspor progres",
+            importLabel: "📥 Impor Progres Belajar",
+            importDesc: "Pulihkan cadangan data progres belajar dari berkas JSON yang valid.",
+            importBtn: "Impor progres",
+            confirmImport: "Impor akan menimpa progres di perangkat ini. Lanjutkan?",
+            importSuccess: "✓ Progres belajar berhasil diimpor!",
+            importError: "Gagal mengimpor berkas: ",
+            errTooBig: "Ukuran berkas melebihi 1 MB.",
+            errInvalidJson: "Format berkas rusak atau bukan JSON yang valid.",
+            errWrongApp: "Berkas bukan cadangan AllTools TJKT.",
+            errUnknownVersion: "Versi skema tidak didukung.",
+            errInvalidField: "Data cadangan tidak valid atau terindikasi rusak."
         }
     },
     en: {
@@ -449,7 +475,19 @@ const I18N_DICTIONARY = {
             ipClass: "IP Class",
             binaryRep: "Binary Representation",
             errEmpty: "Input cannot be empty.",
-            errInvalidIp: "Invalid IPv4 address."
+            errInvalidIp: "Invalid IPv4 address.",
+            checkSectionTitle: "Check IP in Subnet",
+            checkSectionDesc: "Check whether an IP is a host, network, broadcast, or outside the subnet.",
+            checkIpLabel: "Target IPv4 Address:",
+            checkIpPlaceholder: "e.g. 192.168.1.50",
+            checkCidrLabel: "Subnet CIDR:",
+            checkCidrPlaceholder: "e.g. 192.168.1.0/26",
+            checkBtn: "Check",
+            resHost: "Included. This IP is a usable host address.",
+            resNetwork: "Included. This IP is a network address.",
+            resBroadcast: "Included. This IP is a broadcast address.",
+            resOutside: "Not included in this subnet.",
+            resError: "Invalid IP or CIDR."
         },
         subnetCalc: {
             title: "Subnet Calculator",
@@ -616,7 +654,21 @@ const I18N_DICTIONARY = {
             confirmQuiz: "Are you sure you want to clear all quiz history?",
             confirmFeedback: "Are you sure you want to clear all local feedback saved on this device?",
             confirmResetAll: "WARNING: All local data (favorites, history, quiz, feedback) will be permanently deleted. Continue?",
-            clearedAlert: "✓ Data cleared successfully."
+            clearedAlert: "✓ Data cleared successfully.",
+            exportLabel: "📦 Export Learning Progress",
+            exportDesc: "Download backup of favorites, recent tools, quiz progress, and preferences (JSON format).",
+            exportBtn: "Export progress",
+            importLabel: "📥 Import Learning Progress",
+            importDesc: "Restore learning progress data backup from a valid JSON file.",
+            importBtn: "Import progress",
+            confirmImport: "Import will overwrite progress on this device. Continue?",
+            importSuccess: "✓ Learning progress successfully imported!",
+            importError: "Failed to import file: ",
+            errTooBig: "File size exceeds 1 MB.",
+            errInvalidJson: "File is corrupted or not valid JSON.",
+            errWrongApp: "File is not an AllTools TJKT backup.",
+            errUnknownVersion: "Schema version is not supported.",
+            errInvalidField: "Backup data is invalid or corrupt."
         }
     }
 };

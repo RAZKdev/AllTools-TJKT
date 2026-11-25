@@ -11,3 +11,7 @@ scratch/
 start.bat
 *.bat
 
+STATUS.md
+qa/
+.env
+TOOL_SPEC.md

@@ -1133,6 +1133,9 @@ main {
 
 .reference-panel {
     width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .reference-panel h3 {
@@ -1269,7 +1272,7 @@ main {
     background: var(--surface-color);
     color: var(--text-color);
     font: inherit;
-    font-size: 0.9rem;
+    font-size: 16px;
     transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease,
@@ -1300,7 +1303,8 @@ main {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 42px;
+    min-height: 44px;
+    min-width: 44px;
     padding: 0.65rem 0.9rem;
     border-radius: var(--radius);
     font: inherit;
@@ -2170,12 +2174,13 @@ footer {
     .form-group input,
     .form-group select,
     .form-group textarea {
-        font-size: 0.85rem;
+        font-size: 16px;
     }
 
     .btn-primary,
     .btn-outline {
-        min-height: 40px;
+        min-height: 44px;
+        min-width: 44px;
         font-size: 0.84rem;
     }
 
@@ -2241,7 +2246,19 @@ footer {
         gap: 0.65rem;
     }
 
-    .settings-action-btn { align-self: flex-end; }
+    .settings-action-btn {
+        align-self: flex-end;
+        min-height: 44px;
+        min-width: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #settings-lang-select {
+        font-size: 16px;
+        min-height: 44px;
+    }
 
     .settings-confirm-actions { flex-direction: column; }
 }

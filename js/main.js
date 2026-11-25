@@ -143,6 +143,37 @@ function openSettingsModal() {
                     </select>
                 </div>
 
+                <!-- Ekspor Progres Belajar -->
+                <div class="settings-action-item">
+                    <div class="settings-action-info">
+                        <strong data-i18n="settings.exportLabel">${t('settings.exportLabel')}</strong>
+                        <span data-i18n="settings.exportDesc">${t('settings.exportDesc')}</span>
+                    </div>
+                    <button
+                        id="settings-export-btn"
+                        class="btn-primary settings-action-btn"
+                        data-i18n="settings.exportBtn"
+                    >
+                        ${t('settings.exportBtn')}
+                    </button>
+                </div>
+
+                <!-- Impor Progres Belajar -->
+                <div class="settings-action-item">
+                    <div class="settings-action-info">
+                        <strong data-i18n="settings.importLabel">${t('settings.importLabel')}</strong>
+                        <span data-i18n="settings.importDesc">${t('settings.importDesc')}</span>
+                    </div>
+                    <button
+                        id="settings-import-btn"
+                        class="btn-primary settings-action-btn"
+                        data-i18n="settings.importBtn"
+                    >
+                        ${t('settings.importBtn')}
+                    </button>
+                    <input type="file" id="settings-import-file" accept=".json" class="hidden" style="display: none;">
+                </div>
+
                 <div class="settings-action-item">
                     <div class="settings-action-info">
                         <strong data-i18n="settings.favoritesLabel">${t('settings.favoritesLabel')}</strong>
@@ -240,6 +271,7 @@ function openSettingsModal() {
     document.addEventListener('keydown', overlay._escHandler);
 
     let pendingAction = null;
+    let pendingImportData = null;
 
     const confirmArea  = document.getElementById('settings-confirm-area');
     const confirmMsg   = document.getElementById('settings-confirm-msg');
@@ -253,12 +285,14 @@ function openSettingsModal() {
             case 'clear-recent':    return t('settings.confirmRecent');
             case 'clear-quiz':      return t('settings.confirmQuiz');
             case 'clear-feedback':  return t('settings.confirmFeedback');
+            case 'import':          return t('settings.confirmImport');
             default: return 'Konfirmasi tindakan?';
         }
     }
 
-    function showConfirm(action) {
+    function showConfirm(action, importData = null) {
         pendingAction = action;
+        pendingImportData = importData;
         confirmMsg.textContent = getActionLabel(action);
         confirmArea.classList.remove('hidden');
         statusEl.classList.add('hidden');
@@ -267,6 +301,7 @@ function openSettingsModal() {
 
     function hideConfirm() {
         pendingAction = null;
+        pendingImportData = null;
         confirmArea.classList.add('hidden');
     }
 
@@ -275,16 +310,126 @@ function openSettingsModal() {
         statusEl.classList.remove('hidden');
     }
 
-    overlay.querySelectorAll('.settings-action-btn').forEach(btn => {
+    overlay.querySelectorAll('.settings-action-btn[data-settings-action]').forEach(btn => {
         btn.addEventListener('click', () => {
             showConfirm(btn.dataset.settingsAction);
         });
     });
 
+    /* Ekspor progres belajar (JSON) */
+    const exportBtn = document.getElementById('settings-export-btn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+            try {
+                if (typeof StorageManager === 'undefined' || typeof buildBackupPayload !== 'function') {
+                    showStatus('Error: Storage backup is unavailable.');
+                    return;
+                }
+                const snap = StorageManager.createBackupSnapshot();
+                const payload = buildBackupPayload(snap);
+                const jsonStr = JSON.stringify(payload, null, 2);
+                const blob = new Blob([jsonStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `alltools_progres_${Date.now()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            } catch (err) {
+                showStatus('Error: ' + err.message);
+            }
+        });
+    }
+
+    /* Impor progres belajar (JSON) */
+    const importBtn = document.getElementById('settings-import-btn');
+    const importFileInput = document.getElementById('settings-import-file');
+    if (importBtn && importFileInput) {
+        importBtn.addEventListener('click', () => {
+            importFileInput.value = '';
+            importFileInput.click();
+        });
+
+        importFileInput.addEventListener('change', (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+
+            // Tolak berkas > 1 MB sebelum membaca isinya
+            if (file.size > 1048576) {
+                showStatus(t('settings.importError') + t('settings.errTooBig'));
+                importFileInput.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                const text = evt.target.result;
+                if (typeof parseBackupPayload !== 'function') {
+                    showStatus(t('settings.importError') + 'Parser unavailable');
+                    return;
+                }
+                const res = parseBackupPayload(text);
+                if (!res.ok) {
+                    let errText = '';
+                    switch (res.error) {
+                        case 'too_big':
+                            errText = t('settings.errTooBig');
+                            break;
+                        case 'invalid_json':
+                            errText = t('settings.errInvalidJson');
+                            break;
+                        case 'wrong_app':
+                            errText = t('settings.errWrongApp');
+                            break;
+                        case 'unknown_version':
+                            errText = t('settings.errUnknownVersion');
+                            break;
+                        case 'invalid_field':
+                        default:
+                            errText = t('settings.errInvalidField');
+                            break;
+                    }
+                    showStatus(t('settings.importError') + errText);
+                    return;
+                }
+
+                if (typeof StorageManager !== 'undefined' && StorageManager.hasSavedData()) {
+                    showConfirm('import', res.data);
+                } else {
+                    if (typeof StorageManager !== 'undefined') {
+                        StorageManager.applyBackupData(res.data);
+                    }
+                    showStatus(t('settings.importSuccess'));
+                    if (langSelect && typeof StorageManager !== 'undefined') {
+                        langSelect.value = StorageManager.getLang();
+                    }
+                }
+            };
+            reader.onerror = () => {
+                showStatus(t('settings.importError') + t('settings.errInvalidJson'));
+            };
+            reader.readAsText(file);
+        });
+    }
+
     confirmNo.addEventListener('click', hideConfirm);
 
     confirmYes.addEventListener('click', () => {
         if (!pendingAction) return;
+
+        if (pendingAction === 'import') {
+            if (pendingImportData && typeof StorageManager !== 'undefined') {
+                StorageManager.applyBackupData(pendingImportData);
+                showStatus(t('settings.importSuccess'));
+                if (langSelect) {
+                    langSelect.value = StorageManager.getLang();
+                }
+            }
+            hideConfirm();
+            return;
+        }
 
         switch (pendingAction) {
             case 'clear-favorites':

@@ -379,6 +379,144 @@ test('sanitizeFeedbackItem: protects against malformed object or XSS lengths', (
     assert.strictEqual(sanitized.sender.length, 80);
 });
 
+const { buildBackupPayload, parseBackupPayload } = require('../js/storage.js');
+
+test('M2: 1. buildBackupPayload menghasilkan app, schemaVersion 1, dan lima kunci di data', () => {
+    const payload = buildBackupPayload({
+        favorites: ['ip-calculator'],
+        recent: ['quiz'],
+        quizProgress: { sessions: 1 },
+        theme: 'dark',
+        lang: 'id'
+    }, '2026-11-16T12:00:00.000Z');
+
+    assert.strictEqual(payload.app, 'alltools-tjkt');
+    assert.strictEqual(payload.schemaVersion, 1);
+    assert.strictEqual(payload.exportedAt, '2026-11-16T12:00:00.000Z');
+    assert.ok(payload.data, 'data property exists');
+    assert.deepStrictEqual(Object.keys(payload.data).sort(), ['favorites', 'lang', 'quizProgress', 'recent', 'theme'].sort());
+});
+
+test('M2: 2. Hasil ekspor lolos parseBackupPayload dan datanya sama', () => {
+    const sampleSnapshot = {
+        favorites: ['ip-calculator', 'mac-address'],
+        recent: ['quiz', 'converters'],
+        quizProgress: {
+            sessions: 2,
+            totalQuestions: 50,
+            totalCorrect: 45,
+            totalTimeouts: 0,
+            bestPercentage: 90,
+            bestScore: 23,
+            bestTotal: 25,
+            totalDurationSeconds: 120,
+            categories: { subnetting: { total: 25, correct: 23 } },
+            history: [{ score: 23, total: 25, date: '2026-11-16' }]
+        },
+        theme: 'dark',
+        lang: 'en'
+    };
+    const exported = buildBackupPayload(sampleSnapshot);
+    const jsonStr = JSON.stringify(exported);
+    const parsed = parseBackupPayload(jsonStr);
+
+    assert.strictEqual(parsed.ok, true);
+    assert.deepStrictEqual(parsed.data.favorites, sampleSnapshot.favorites);
+    assert.deepStrictEqual(parsed.data.recent, sampleSnapshot.recent);
+    assert.deepStrictEqual(parsed.data.quizProgress, sampleSnapshot.quizProgress);
+    assert.strictEqual(parsed.data.theme, sampleSnapshot.theme);
+    assert.strictEqual(parsed.data.lang, sampleSnapshot.lang);
+});
+
+test('M2: 3. Teks bukan JSON -> invalid_json', () => {
+    assert.deepStrictEqual(parseBackupPayload('bukan json {'), { ok: false, error: 'invalid_json' });
+    assert.deepStrictEqual(parseBackupPayload(''), { ok: false, error: 'invalid_json' });
+    assert.deepStrictEqual(parseBackupPayload('12345'), { ok: false, error: 'invalid_json' });
+});
+
+test('M2: 4. app salah -> wrong_app', () => {
+    const invalidApp = JSON.stringify({
+        app: 'wrong-app',
+        schemaVersion: 1,
+        data: {}
+    });
+    assert.deepStrictEqual(parseBackupPayload(invalidApp), { ok: false, error: 'wrong_app' });
+});
+
+test('M2: 5. schemaVersion 2 -> unknown_version', () => {
+    const invalidVer = JSON.stringify({
+        app: 'alltools-tjkt',
+        schemaVersion: 2,
+        data: {}
+    });
+    assert.deepStrictEqual(parseBackupPayload(invalidVer), { ok: false, error: 'unknown_version' });
+});
+
+test('M2: 6. favorites berisi angka -> invalid_field', () => {
+    const invalidFav = JSON.stringify({
+        app: 'alltools-tjkt',
+        schemaVersion: 1,
+        data: {
+            favorites: ['ip-calculator', 12345]
+        }
+    });
+    assert.deepStrictEqual(parseBackupPayload(invalidFav), { ok: false, error: 'invalid_field' });
+});
+
+test('M2: 7. Kunci __proto__ -> invalid_field, dan Object.prototype tidak berubah', () => {
+    const beforePolluted = Object.prototype.polluted;
+    const protoPayload = '{"app":"alltools-tjkt","schemaVersion":1,"data":{"favorites":[],"__proto__":{"polluted":"yes"}}}';
+    const res = parseBackupPayload(protoPayload);
+
+    assert.strictEqual(res.ok, false);
+    assert.strictEqual(res.error, 'invalid_field');
+    assert.strictEqual(Object.prototype.polluted, undefined);
+    assert.strictEqual(beforePolluted, undefined);
+});
+
+test('M2: 8. Berkas lebih dari 1 MB -> too_big', () => {
+    const padding = 'x'.repeat(1048577);
+    const res = parseBackupPayload(padding);
+    assert.deepStrictEqual(res, { ok: false, error: 'too_big' });
+});
+
+test('M2b: 1. theme "purple" -> invalid_field', () => {
+    const invalidTheme = JSON.stringify({
+        app: 'alltools-tjkt',
+        schemaVersion: 1,
+        data: {
+            theme: 'purple'
+        }
+    });
+    assert.deepStrictEqual(parseBackupPayload(invalidTheme), { ok: false, error: 'invalid_field' });
+});
+
+test('M2b: 2. lang "fr" -> invalid_field', () => {
+    const invalidLang = JSON.stringify({
+        app: 'alltools-tjkt',
+        schemaVersion: 1,
+        data: {
+            lang: 'fr'
+        }
+    });
+    assert.deepStrictEqual(parseBackupPayload(invalidLang), { ok: false, error: 'invalid_field' });
+});
+
+test('M2b: 3. theme "dark" dan lang "en" -> ok', () => {
+    const validPayload = JSON.stringify({
+        app: 'alltools-tjkt',
+        schemaVersion: 1,
+        data: {
+            theme: 'dark',
+            lang: 'en'
+        }
+    });
+    const res = parseBackupPayload(validPayload);
+    assert.strictEqual(res.ok, true);
+    assert.strictEqual(res.data.theme, 'dark');
+    assert.strictEqual(res.data.lang, 'en');
+});
+
 
 // ----------------------------------------------------
 // 4. UNIT CONVERSIONS & BANDWIDTH CONSISTENCY
@@ -755,7 +893,7 @@ test('Data Units Cross-Conversion: 1 TiB to TB (1.09951163) and 1 TB to TiB (0.9
 // ----------------------------------------------------
 console.log('\n[8/9] Menguji Klasifikasi IPv4 Address & Special Ranges...');
 
-const { getIpClass, isValidIPv4, ipToInt, intToIp } = require('../js/tools/ip-calculator.js');
+const { getIpClass, isValidIPv4, ipToInt, intToIp, checkIpInSubnet } = require('../js/tools/ip-calculator.js');
 
 test('Special — This Network (0.0.0.0/8): 0.0.0.0 and 0.1.2.3', () => {
     assert.strictEqual(getIpClass('0.0.0.0'), 'Special — This Network');
@@ -867,6 +1005,28 @@ test('isValidIPv4: Valid addresses produce correct integer and subnet calculatio
     assert.strictEqual(intToIp(broad), '192.168.1.255');
     assert.strictEqual(intToIp(net + 1), '192.168.1.1');
     assert.strictEqual(intToIp(broad - 1), '192.168.1.254');
+});
+
+test('F1 checkIpInSubnet: 192.168.1.50 di 192.168.1.0/26 = host', () => {
+    assert.strictEqual(checkIpInSubnet('192.168.1.50', '192.168.1.0/26'), 'host');
+});
+
+test('F1 checkIpInSubnet: 192.168.1.70 di 192.168.1.0/26 = outside', () => {
+    assert.strictEqual(checkIpInSubnet('192.168.1.70', '192.168.1.0/26'), 'outside');
+});
+
+test('F1 checkIpInSubnet: 192.168.1.0 di 192.168.1.0/26 = network', () => {
+    assert.strictEqual(checkIpInSubnet('192.168.1.0', '192.168.1.0/26'), 'network');
+});
+
+test('F1 checkIpInSubnet: 192.168.1.63 di 192.168.1.0/26 = broadcast', () => {
+    assert.strictEqual(checkIpInSubnet('192.168.1.63', '192.168.1.0/26'), 'broadcast');
+});
+
+test('F1 checkIpInSubnet: 192.168.1.300 di 192.168.1.0/26 melempar Error', () => {
+    assert.throws(() => {
+        checkIpInSubnet('192.168.1.300', '192.168.1.0/26');
+    }, Error);
 });
 
 
